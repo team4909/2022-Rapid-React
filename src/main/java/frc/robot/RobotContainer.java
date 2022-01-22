@@ -26,9 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.TrajectoryFollow;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.utils.LoadPath;
 
 
 /**
@@ -85,18 +83,6 @@ public class RobotContainer {
  * @throws IOException
    */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-
-        // String trajectoryJSON = "pathplanner/generatedJSON/holonomicPath.wpilib.json";
-        // Trajectory trajectory = new Trajectory();
-        
-        // Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(trajectoryJSON);
-        // try {
-        //     trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
-        // } catch (IOException e) {
-        //     e.printStackTrace();
-        // }
-        
         PathPlannerTrajectory trajectory = null;
         try {
             trajectory = PathPlanner.loadPath("holonomicPath", 1, 4);
