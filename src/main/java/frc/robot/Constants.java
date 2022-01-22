@@ -51,7 +51,7 @@ public final class Constants {
      * From L1-L4
      */
     public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
-    
+
     /**
      * CAN ID of the PigeonIMU
      */
@@ -61,24 +61,29 @@ public final class Constants {
     public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
     public static final int FRONT_LEFT_STEER_MOTOR = 2;
     public static final int FRONT_LEFT_STEER_ENCODER = 9;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(192.205810546875); // FIXME Measure and set front left steer offset
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(194.238); // FIXME Measure and set front left steer offset //192.205810546875
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;
     public static final int FRONT_RIGHT_STEER_MOTOR = 4;
     public static final int FRONT_RIGHT_STEER_ENCODER = 10;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(9.3109130859375); // FIXME Measure and set back left steer offset
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(10.272); // FIXME Measure and set back left steer offset //9.3109130859375
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_DRIVE_MOTOR = 5;
     public static final int BACK_RIGHT_STEER_MOTOR = 6;
     public static final int BACK_RIGHT_STEER_ENCODER = 11;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(305.419921875); // FIXME Measure and set back right steer offset
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(302.783); // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 7;
     public static final int BACK_LEFT_STEER_MOTOR = 8;
     public static final int BACK_LEFT_STEER_ENCODER = 12;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(126.28784179687499); // FIXME Measure and set back left steer offset
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(124.708); // FIXME Measure and set back left steer offset //126.28784179687499
     
+    // The Max Acceleration Value for the robot [only in AUTO]
+    public static final double MAX_ACCEL = 4;
+
+    // The Max Velocity for the robot [only in AUTO]
+    public static final double MAX_VEL = 6.5;
 }

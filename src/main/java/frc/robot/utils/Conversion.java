@@ -6,7 +6,6 @@ package frc.robot.utils;
 public class Conversion {
 
     /**
-     * 
      * @param inches
      *  Value to convert
      * @return
@@ -17,7 +16,6 @@ public class Conversion {
     }
 
     /**
-     * 
      * @param meters
      *  Value to convert
      * @return

@@ -9,10 +9,13 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -22,14 +25,27 @@ import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
 
+import java.util.Map;
+
 public class DrivetrainSubsystem extends SubsystemBase {
+
+    
+    private static DrivetrainSubsystem instance = null;
+
     /**
+     * The scale factor that the speed during Auto trajectories will be affected by.
+     * <p>
+     * This can be increased to go faster in auto, decreased to go slower.
+     * Make sure you change in both the PathPlanner gui and in the swerve controller command!
+     */
+    public static final double AUTO_DRIVE_SCALE = 1;
+    /**+
      * The maximum voltage that will be delivered to the drive motors.
      * <p>
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
      * Calculate by: Motor fre speed RPM / 60 * Drive Reduction * Wheel Diameter Meters * pi
      */
-    public static final double MAX_VOLTAGE = Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
+    public static final double MAX_VOLTAGE = 12; //Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
     /**
      * The maximum velocity of the robot in meters per second.
      * <p>
@@ -64,26 +80,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
 
-    // These are our modules. We initialize them in the constructor.
+    // These are our modules. We initialize them in the initializeMotors method.
     private SwerveModule m_frontLeftModule;
     private SwerveModule m_frontRightModule;
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
 
+    // Absolute Cancoders (1 per module)
     private CANCoder m_frontLeftCanCoder;
     private CANCoder m_frontRightCanCoder;
     private CANCoder m_backLeftCanCoder;
     private CANCoder m_backRightCanCoder;
+    
+    // Odometry for storing the position of the robot
+    private SwerveDriveOdometry m_odometry;
 
-    private ShuffleboardTab tab;
+    private ShuffleboardTab m_tab;
 
-    private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+    // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
+    private ChassisSpeeds m_chassisSpeeds;
 
-    public DrivetrainSubsystem() {
-        tab = Shuffleboard.getTab("Drivetrain");
-        System.out.println("In DrivetrainSubsystem constructor");
+    private DrivetrainSubsystem() {
+        m_tab = Shuffleboard.getTab("Drivetrain");
+
+        m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
+        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
+
         initilizeEncoders();
-        initializeModules(tab);
+        initializeMotors();       
     }
 
     public void initilizeEncoders(){
@@ -103,15 +127,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backRightCanCoder.configSensorDirection(true);
     }
 
-    /**
-     * Constructs the SwerveModules
-     * @param tab Shuffleboard Drivetrain tab
-     */
-    public void initializeModules(ShuffleboardTab tab){
+    public void initializeMotors(){
         m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
-            tab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
+                    .withSize(1, 4)
                     .withPosition(0, 0),
             // L1 - L4 Change in Constants
             GEAR_RATIO,
@@ -126,8 +146,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
+                    .withSize(1, 4)
                     .withPosition(2, 0),
             GEAR_RATIO,
             FRONT_RIGHT_DRIVE_MOTOR,
@@ -137,8 +157,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
 
         m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
+                    .withSize(1, 4)
                     .withPosition(4, 0),
             GEAR_RATIO,
             BACK_LEFT_DRIVE_MOTOR,
@@ -146,10 +166,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_LEFT_STEER_ENCODER,
             BACK_LEFT_STEER_OFFSET
         );
+        
 
         m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
-            tab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                    .withSize(2, 4)
+            m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
+                    .withSize(1, 4)
                     .withPosition(6, 0),
             GEAR_RATIO,
             BACK_RIGHT_DRIVE_MOTOR,
@@ -159,7 +180,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
     }
 
-
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
      * 'forwards' direction.
@@ -168,24 +188,95 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.setFusedHeading(0.0);
     }
 
+    /**
+     * Gets the current rotation from the Gyroscope
+     * @return
+     *  Degreess from the Pigeon (NOT ROTATION2D)
+     */
     public Rotation2d getGyroscopeRotation() {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
     }
 
+    /**
+     * Sets the chassisSpeeds object in drivetrain
+     */
     public void drive(ChassisSpeeds chassisSpeeds) {
         m_chassisSpeeds = chassisSpeeds;
     }
 
+    public void driveAuto(ChassisSpeeds chassisSpeeds) {
+        m_chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE;
+        m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond * AUTO_DRIVE_SCALE;
+        m_chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond;
+        
+    }
+
+    /**
+     * Sets module states of all the modules
+     * @param states
+     *  SwerveModuleState array, Order: FL, FR, BL, BR
+     */
+    public void actuateModules(SwerveModuleState[] states){
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        drive(m_kinematics.toChassisSpeeds(states));
+    }
+
+    public void actuateModulesAuto(SwerveModuleState[] states){
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        driveAuto(m_kinematics.toChassisSpeeds(states));
+    }
+
+    /**
+     * Periodic method of Drivetrain, runs every 20ms
+     */
     @Override
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-
+        m_odometry.update(getGyroscopeRotation(), states);
+        // System.out.println(getGyroscopeRotation());
+        // System.out.println(getCurrentPose());
+        // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
+        // System.out.println(MAX_VOLTAGE);
+        // System.out.println("w/o scale:" + m_chassisSpeeds.vxMetersPerSecond);
+        // System.out.println("S0 m/s" + states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
+        // System.out.println("rad/s" + m_chassisSpeeds.omegaRadiansPerSecond);
+        // System.out.println("rad state [0] " + states[0].angle.getRadians());
+        // System.out.println(m_chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE);
         m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
         m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
         m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
-    
+    }
+
+    /**
+     * Returns the SwerveDriveKinematics object
+     */
+    public SwerveDriveKinematics getKinematics(){
+        return m_kinematics;
+    }
+
+    /**
+     * Returns the current position of the robot from the Odometry
+     */
+    public Pose2d getCurrentPose(){
+        return m_odometry.getPoseMeters();
+    }
+
+    /**
+     * Resets the Odometry to the specified Pose
+     * ONLY USE IF YOU KNOW WHAT YOU ARE DOING
+     * @param pose
+     *  The Pose to reset the odometry to
+     */
+    public void resetOdometry(Pose2d pose){
+        m_odometry.resetPosition(pose, getGyroscopeRotation());
+    }
+
+    public static DrivetrainSubsystem getInstance() {
+        if (instance == null) {
+            instance = new DrivetrainSubsystem();
+        }
+
+        return instance;
     }
 }
