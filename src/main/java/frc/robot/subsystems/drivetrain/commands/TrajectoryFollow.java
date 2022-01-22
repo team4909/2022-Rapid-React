@@ -28,7 +28,7 @@ public class TrajectoryFollow extends CommandBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("AHAHOIWEHCOIWAHCOIEHC");
+
         DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
         var finalAngle = ((PathPlannerState) trajectory.getEndState());
         new SwerveControllerCommand(trajectory, 
