@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
+import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 
 
 /**
@@ -83,25 +84,8 @@ public class RobotContainer {
  * @throws IOException
    */
     public Command getAutonomousCommand() {
-        PathPlannerTrajectory trajectory = null;
-        try {
-            trajectory = PathPlanner.loadPath("holonomicPath", 1, 4);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } 
-        //System.out.println("\n\n\n\n\n*************" + trajectory.getInitialPose());
-        DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
-        var finalAngle = ((PathPlannerState) trajectory.getEndState());
-        return new SwerveControllerCommand(trajectory, 
-        DrivetrainSubsystem.getInstance()::getCurrentPose, 
-        DrivetrainSubsystem.getInstance().getKinematics(), 
-        new PIDController(1, 0, 0), 
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2))),
-        () -> finalAngle.holonomicRotation,
-        DrivetrainSubsystem.getInstance()::actuateModulesAuto, 
-        DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
-    
+
+        return new TrajectoryFollow("holonomicPath");
     }
 
     // public PathPlannerTrajectory getTrajectory(){

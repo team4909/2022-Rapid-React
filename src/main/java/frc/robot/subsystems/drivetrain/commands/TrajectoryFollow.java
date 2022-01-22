@@ -27,7 +27,8 @@ public class TrajectoryFollow extends CommandBase {
             trajectory = PathPlanner.loadPath(pathName, 1, 4);
         } catch (Exception e) {
             e.printStackTrace();
-        } 
+        }
+        System.out.println("AHAHOIWEHCOIWAHCOIEHC");
         DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
         var finalAngle = ((PathPlannerState) trajectory.getEndState());
         new SwerveControllerCommand(trajectory, 
@@ -38,7 +39,7 @@ public class TrajectoryFollow extends CommandBase {
         new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2))),
         () -> finalAngle.holonomicRotation,
         DrivetrainSubsystem.getInstance()::actuateModulesAuto, 
-        DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)));
+        DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0))).schedule();
     }
 
 }
