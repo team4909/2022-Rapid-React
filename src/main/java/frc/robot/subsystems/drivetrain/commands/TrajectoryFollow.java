@@ -16,12 +16,19 @@ public class TrajectoryFollow extends CommandBase {
 
     private String pathName;
 
+    public TrajectoryFollow() {
+        //TODO add default stationary path
+        this.pathName = "";
+    }
+
     public TrajectoryFollow(String pathName) {
         this.pathName = pathName;
     }
 
     @Override
     public void initialize() {
+
+
         PathPlannerTrajectory trajectory = null;
         try {
             trajectory = PathPlanner.loadPath(pathName, 1, 4);
@@ -30,7 +37,7 @@ public class TrajectoryFollow extends CommandBase {
         }
 
         DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
-        var finalAngle = ((PathPlannerState) trajectory.getEndState());
+        PathPlannerState finalAngle = ((PathPlannerState) trajectory.getEndState());
         new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
         DrivetrainSubsystem.getInstance().getKinematics(), 
