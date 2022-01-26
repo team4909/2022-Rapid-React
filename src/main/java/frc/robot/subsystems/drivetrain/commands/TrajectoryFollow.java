@@ -27,7 +27,7 @@ public class TrajectoryFollow extends CommandBase {
 
     @Override
     public void initialize() {
-
+        System.out.println("Trajectory begun");
 
         PathPlannerTrajectory trajectory = null;
         try {
@@ -41,12 +41,18 @@ public class TrajectoryFollow extends CommandBase {
         new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
         DrivetrainSubsystem.getInstance().getKinematics(), 
-        new PIDController(1, 0, 0), 
-        new PIDController(1, 0, 0),
-        new ProfiledPIDController(1, 0, 0, new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2))),
+        new PIDController(1.5, 0, 0), 
+        new PIDController(1.5, 0, 0),
+        new ProfiledPIDController(1.5, 0, 0, new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2))),
         () -> finalAngle.holonomicRotation,
         DrivetrainSubsystem.getInstance()::actuateModulesAuto, 
         DrivetrainSubsystem.getInstance()).andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0))).schedule();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        // TODO Auto-generated method stub
+        super.end(interrupted);
     }
 
 }

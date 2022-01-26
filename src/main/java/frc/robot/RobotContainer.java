@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 
 
 /**
@@ -85,7 +87,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
-        return new TrajectoryFollow("holonomicPath");
+        return new FourBallTest();
     }
 
     // public PathPlannerTrajectory getTrajectory(){

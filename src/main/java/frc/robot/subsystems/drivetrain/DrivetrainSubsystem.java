@@ -224,7 +224,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     //Note: to get to max speed multiply by max voltage on the desaturateWheelSpeeds
     //To control speed of auto multiply by any number, 0 < x < max voltage
     public void actuateModulesAuto(SwerveModuleState[] states){
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND * 2); 
         driveAuto(m_kinematics.toChassisSpeeds(states));
     }
 
