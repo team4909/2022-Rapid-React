@@ -36,7 +36,6 @@ public class TrajectoryFollow extends CommandBase {
             e.printStackTrace();
         }
 
-        DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
         PathPlannerState finalAngle = ((PathPlannerState) trajectory.getEndState());
         new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
@@ -51,8 +50,8 @@ public class TrajectoryFollow extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        // TODO Auto-generated method stub
         super.end(interrupted);
     }
+
 
 }
