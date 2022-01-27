@@ -87,8 +87,8 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
-
-    public void update() {
+    @Override
+    public void periodic() {
         if (!runningOpenLoop_) {
             leader_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
         } else {
