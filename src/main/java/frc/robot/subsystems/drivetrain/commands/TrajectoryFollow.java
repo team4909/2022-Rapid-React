@@ -15,6 +15,7 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 public class TrajectoryFollow extends CommandBase {
 
     private String pathName;
+    
 
     public TrajectoryFollow() {
         //TODO add default stationary path
@@ -31,7 +32,7 @@ public class TrajectoryFollow extends CommandBase {
 
         PathPlannerTrajectory trajectory = null;
         try {
-            trajectory = PathPlanner.loadPath(pathName, 2.9, 4);
+            trajectory = PathPlanner.loadPath(pathName, 4.9, 4);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -40,8 +41,8 @@ public class TrajectoryFollow extends CommandBase {
         new SwerveControllerCommand(trajectory, 
         DrivetrainSubsystem.getInstance()::getCurrentPose, 
         DrivetrainSubsystem.getInstance().getKinematics(), 
-        new PIDController(1.5, 0, 0), 
-        new PIDController(1.5, 0, 0),
+        new PIDController(3, 0, 0), 
+        new PIDController(3, 0, 0),
         new ProfiledPIDController(1.5, 0, 0, new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2))),
         () -> finalAngle.holonomicRotation,
         DrivetrainSubsystem.getInstance()::actuateModulesAuto, 

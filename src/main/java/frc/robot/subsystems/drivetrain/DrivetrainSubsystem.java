@@ -271,7 +271,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  The Pose to reset the odometry to
      */
     public void resetOdometry(Pose2d pose){
-        m_odometry.resetPosition(pose, getGyroscopeRotation());
+        m_odometry.resetPosition(pose, pose.getRotation());
     }
 
     public static DrivetrainSubsystem getInstance() {
