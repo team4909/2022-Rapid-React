@@ -31,7 +31,7 @@ public class TrajectoryFollow extends CommandBase {
 
         PathPlannerTrajectory trajectory = null;
         try {
-            trajectory = PathPlanner.loadPath(pathName, 1, 4);
+            trajectory = PathPlanner.loadPath(pathName, 2.9, 4);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -52,6 +52,5 @@ public class TrajectoryFollow extends CommandBase {
     public void end(boolean interrupted) {
         super.end(interrupted);
     }
-
 
 }

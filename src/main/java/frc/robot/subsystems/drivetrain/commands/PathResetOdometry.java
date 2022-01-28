@@ -24,5 +24,16 @@ public class PathResetOdometry extends CommandBase {
         DrivetrainSubsystem.getInstance().resetOdometry(trajectory.getInitialPose());
     
     }
+
+    @Override
+    public void end(boolean interrupted) {
+        super.end(interrupted);
+    }
+
+    @Override
+    public boolean isFinished() {
+        // TODO Auto-generated method stub
+        return true;
+    }
     
 }
