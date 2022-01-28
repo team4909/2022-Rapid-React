@@ -86,4 +86,13 @@ public final class Constants {
 
     // The Max Velocity for the robot [only in AUTO]
     public static final double MAX_VEL = 6.5;
+
+    // Superstructure Constants
+    public static final double kIntakeForwardVoltage = 6.0;
+    public static final double kIntakeReverseVotlage = -6.0;
+    public static final double kFeederFeedingVoltage = 1.0;
+    public static final double kFeederShootingVoltage = 12.0;
+    public static final double kCenteringWheelForwardVoltage = 4.0;
+    public static final double kCenteringWheelReverseVotlage = -4.0;
+
 }
