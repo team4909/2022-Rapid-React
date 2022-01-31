@@ -7,6 +7,7 @@ import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
@@ -14,6 +15,7 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 public class TrajectoryFollow extends CommandBase {
 
     private String m_pathName;
+    private PathPlannerTrajectory m_trajectory = null;
 
     /**
      * Executes a trajectory that makes it remain still
@@ -26,15 +28,21 @@ public class TrajectoryFollow extends CommandBase {
         m_pathName = pathName;
     }
 
+    public TrajectoryFollow(Trajectory traj) {
+        m_trajectory = (PathPlannerTrajectory) traj;
+    }
+
     @Override
     public void initialize() {
         System.out.println("Trajectory begun");
 
-        PathPlannerTrajectory trajectory = null;
-        try {
-            trajectory = PathPlanner.loadPath(m_pathName, 4.9, 4);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        if (m_trajectory == null) {
+            try {
+                m_trajectory = PathPlanner.loadPath(m_pathName, 4.9, 4);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         ProfiledPIDController thetaController = new ProfiledPIDController(1.5, 0, 0,
@@ -42,7 +50,7 @@ public class TrajectoryFollow extends CommandBase {
                         Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2)));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
 
-        new PPSwerveControllerCommand(trajectory,
+        new PPSwerveControllerCommand(m_trajectory,
                 DrivetrainSubsystem.getInstance()::getCurrentPose,
                 DrivetrainSubsystem.getInstance().getKinematics(),
                 new PIDController(3, 0, 0),
