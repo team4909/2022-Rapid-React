@@ -30,6 +30,8 @@ import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
+import frc.robot.subsystems.vision.LimeLight;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 
 /**
@@ -41,7 +43,7 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    
+    private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     private final XboxController m_controller = new XboxController(0);
 
   /**
@@ -65,6 +67,7 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
     }
+
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
