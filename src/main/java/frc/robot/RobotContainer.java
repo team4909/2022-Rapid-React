@@ -68,10 +68,13 @@ public class RobotContainer {
         // Configure the button bindings
         configureButtonBindings();
 
-            new AlignWithGoal(m_drivetrainSubsystem, () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, m_VisionSubsystem);
+
     }
 
+    public Command getLimelightCommand() {
+        return new AlignWithGoal(m_drivetrainSubsystem, () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, m_VisionSubsystem);
+    }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
