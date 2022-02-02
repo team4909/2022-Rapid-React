@@ -16,8 +16,8 @@ public class AlignWithGoal extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
     // Movement suppliers for the creation of chassis speeds
-    private final double m_translationXSupplier;
-    private final double m_translationYSupplier;
+    private final DoubleSupplier m_translationXSupplier;
+    private final DoubleSupplier m_translationYSupplier;
     private final VisionSubsystem m_visionSubsystem;
 
     /**
@@ -32,11 +32,10 @@ public class AlignWithGoal extends CommandBase {
      *  DoubleSupplier for the Rotation of the robot
      */
     public AlignWithGoal(DrivetrainSubsystem drivetrainSubsystem,
-                               Double d,
-                               Double e,
+                               DoubleSupplier d,
+                               DoubleSupplier e,
                                VisionSubsystem visionSubsystem) {
 
-        SmartDashboard.putBoolean("Vision", true);
 
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = d;
@@ -49,16 +48,18 @@ public class AlignWithGoal extends CommandBase {
 
     @Override
     public void execute() {
-        // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-        m_drivetrainSubsystem.drive(
-                // fromFielRelativeSpeeds, provides Field Relative drive
-                ChassisSpeeds.fromFieldRelativeSpeeds(
-                        m_translationXSupplier,
-                        m_translationYSupplier,
-                        m_visionSubsystem.getXDegrees(),
-                        m_drivetrainSubsystem.getGyroscopeRotation()
-                )
-        );
+        if (SmartDashboard.getBoolean("Align", false) == true){
+            // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
+            m_drivetrainSubsystem.drive(
+                    // fromFielRelativeSpeeds, provides Field Relative drive
+                    ChassisSpeeds.fromFieldRelativeSpeeds(
+                            m_translationXSupplier.getAsDouble(),
+                            m_translationYSupplier.getAsDouble(),
+                            m_visionSubsystem.getXDegrees(),
+                            m_drivetrainSubsystem.getGyroscopeRotation()
+                    )
+            );
+        }
     }
 
     @Override

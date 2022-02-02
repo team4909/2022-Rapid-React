@@ -36,7 +36,8 @@ public class Robot extends TimedRobot {
      * Instantiate our RobotContainer.  This will perform all our button bindings, and put our
      * autonomous chooser on the dashboard.
      */
-    
+
+    SmartDashboard.putBoolean("Vision", true);
     m_robotContainer = new RobotContainer();
     DrivetrainSubsystem.getInstance();
     
@@ -58,10 +59,7 @@ public class Robot extends TimedRobot {
      * block in order for anything in the Command-based framework to work.
      */
     CommandScheduler.getInstance().run();
-
-    if ( SmartDashboard.getBoolean("Align", false)){
-      new AlignWithGoal(m_drivetrainSubsystem, 0.5, 0.5, m_VisionSubsystem);
-    }
+    
     // if (smartdashboard_button == true) {
     // new AlignWithGoal();
     // }
