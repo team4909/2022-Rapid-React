@@ -57,7 +57,6 @@ public class AlignWithGoal extends CommandBase {
                         m_translationYSupplier.getAsDouble(),
                         m_visionSubsystem.getXDegrees(),
                         m_drivetrainSubsystem.getGyroscopeRotation()
-                        )
                 )
         );
     }
