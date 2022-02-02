@@ -31,7 +31,8 @@ public class AlignWithGoal extends CommandBase {
      * @param rotationSupplier
      *  DoubleSupplier for the Rotation of the robot
      */
-    public AlignWithGoal(DrivetrainSubsystem drivetrainSubsystem,
+    public 
+    AlignWithGoal(DrivetrainSubsystem drivetrainSubsystem,
                                DoubleSupplier d,
                                DoubleSupplier e,
                                VisionSubsystem visionSubsystem) {
@@ -55,7 +56,7 @@ public class AlignWithGoal extends CommandBase {
                     ChassisSpeeds.fromFieldRelativeSpeeds(
                             m_translationXSupplier.getAsDouble(),
                             m_translationYSupplier.getAsDouble(),
-                            m_visionSubsystem.getXDegrees(),
+                            -m_visionSubsystem.getXDegrees(), //not sure if we need this negative, may be neccesary otherwise it goes backwards?
                             m_drivetrainSubsystem.getGyroscopeRotation()
                     )
             );
