@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -15,32 +16,31 @@ public class AlignWithGoal extends CommandBase {
     private final DrivetrainSubsystem m_drivetrainSubsystem;
 
     // Movement suppliers for the creation of chassis speeds
-    private final DoubleSupplier m_translationXSupplier;
-    private final DoubleSupplier m_translationYSupplier;
-    private final DoubleSupplier m_rotationSupplier;
+    private final double m_translationXSupplier;
+    private final double m_translationYSupplier;
     private final VisionSubsystem m_visionSubsystem;
 
     /**
      * 
      * @param drivetrainSubsystem
      *  Drivetrain that this command will drive
-     * @param translationXSupplier
+     * @param d
      *  DoubleSupplier for the X translantion of the robot
-     * @param translationYSupplier
+     * @param e
      *  DoubleSupplier for the Y translation of the robot
      * @param rotationSupplier
      *  DoubleSupplier for the Rotation of the robot
      */
     public AlignWithGoal(DrivetrainSubsystem drivetrainSubsystem,
-                               DoubleSupplier translationXSupplier,
-                               DoubleSupplier translationYSupplier,
-                               DoubleSupplier rotationSupplier,
+                               Double d,
+                               Double e,
                                VisionSubsystem visionSubsystem) {
 
+        SmartDashboard.putBoolean("Vision", true);
+
         this.m_drivetrainSubsystem = drivetrainSubsystem;
-        this.m_translationXSupplier = translationXSupplier;
-        this.m_translationYSupplier = translationYSupplier;
-        this.m_rotationSupplier = rotationSupplier;
+        this.m_translationXSupplier = d;
+        this.m_translationYSupplier = e;
         this.m_visionSubsystem = visionSubsystem;
 
         // Adds a DrivetrainSubsystem requirment for this command, makes sure that it can't be called wihtout a drivetrain
@@ -53,8 +53,8 @@ public class AlignWithGoal extends CommandBase {
         m_drivetrainSubsystem.drive(
                 // fromFielRelativeSpeeds, provides Field Relative drive
                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                        m_translationXSupplier.getAsDouble(),
-                        m_translationYSupplier.getAsDouble(),
+                        m_translationXSupplier,
+                        m_translationYSupplier,
                         m_visionSubsystem.getXDegrees(),
                         m_drivetrainSubsystem.getGyroscopeRotation()
                 )
