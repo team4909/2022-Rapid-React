@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
      * autonomous chooser on the dashboard.
      */
 
-    SmartDashboard.putBoolean("Align", true);
+    SmartDashboard.putBoolean("Align", false);
     m_robotContainer = new RobotContainer();
     DrivetrainSubsystem.getInstance();
     

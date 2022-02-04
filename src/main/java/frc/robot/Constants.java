@@ -87,4 +87,7 @@ public final class Constants {
     // The Max Acceleration Value for the robot [only in AUTO]
     public static final double T_MAX_ACCEL = 4;
 
+    // The PID Values for the Limelight driven alignment to the goal.
+    public static final double GOAL_ALIGN_KP = 0.1;
+    public static final double GOAL_ALIGN_KD = 0.001;
 }

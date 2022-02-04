@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,7 +19,13 @@ public class AlignWithGoal extends CommandBase {
     // Movement suppliers for the creation of chassis speeds
     private final DoubleSupplier m_translationXSupplier;
     private final DoubleSupplier m_translationYSupplier;
-    private final VisionSubsystem m_visionSubsystem;
+    private final DoubleSupplier m_rotationSupplier;
+
+    private double offset;
+    private double angularSpeed;
+    private double angularVelocity;
+    private final VisionSubsystem m_visionSubsystem = VisionSubsystem.getInstance();
+    private double lastError = m_visionSubsystem.getXDegrees();
 
     /**
      * 
@@ -35,13 +42,13 @@ public class AlignWithGoal extends CommandBase {
     AlignWithGoal(DrivetrainSubsystem drivetrainSubsystem,
                                DoubleSupplier d,
                                DoubleSupplier e,
-                               VisionSubsystem visionSubsystem) {
+                               DoubleSupplier rotationSupplier) {
 
 
         this.m_drivetrainSubsystem = drivetrainSubsystem;
         this.m_translationXSupplier = d;
         this.m_translationYSupplier = e;
-        this.m_visionSubsystem = visionSubsystem;
+        this.m_rotationSupplier = rotationSupplier;
 
         // Adds a DrivetrainSubsystem requirment for this command, makes sure that it can't be called wihtout a drivetrain
         addRequirements(drivetrainSubsystem);
@@ -49,17 +56,33 @@ public class AlignWithGoal extends CommandBase {
 
     @Override
     public void execute() {
+
+        offset = -m_visionSubsystem.getXDegrees();
+        angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - lastError) * Constants.GOAL_ALIGN_KD);
+
         if (SmartDashboard.getBoolean("Align", false) == true){
+
+            if (m_visionSubsystem.isAligned == true) {
+                angularVelocity = 0;
+            } else {
+                if (m_visionSubsystem.getXDegrees() <= 0)
+                    angularVelocity = angularSpeed;
+
+                if (m_visionSubsystem.getXDegrees() >= 0) 
+                    angularVelocity = angularSpeed;
+            }
             // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
             m_drivetrainSubsystem.drive(
                     // fromFielRelativeSpeeds, provides Field Relative drive
                     ChassisSpeeds.fromFieldRelativeSpeeds(
                             m_translationXSupplier.getAsDouble(),
                             m_translationYSupplier.getAsDouble(),
-                            -m_visionSubsystem.getXDegrees(), //not sure if we need this negative, may be neccesary otherwise it goes backwards?
+                            m_rotationSupplier.getAsDouble() + angularVelocity, //not sure if we need this negative, may be neccesary otherwise it goes backwards?
                             m_drivetrainSubsystem.getGyroscopeRotation()
                     )
             );
+
+            lastError = m_visionSubsystem.getXDegrees();
         }
     }
 
