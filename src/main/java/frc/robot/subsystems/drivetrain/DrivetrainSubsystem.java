@@ -197,6 +197,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
     }
 
+    public double getGyroPitch() {
+        return m_pigeon.getPitch();
+    }
+
     /**
      * Sets the chassisSpeeds object in drivetrain
      */

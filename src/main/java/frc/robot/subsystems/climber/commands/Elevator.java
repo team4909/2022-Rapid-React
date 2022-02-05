@@ -3,19 +3,19 @@ package frc.robot.subsystems.climber.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.climber.Climber;
 
-public class Pivot extends CommandBase {
+public class Elevator extends CommandBase {
 
-    private double angle_;
+    private double inches_;
     private double goal_;
     private Climber climber_ = Climber.getInstance();
 
-    public Pivot(double angle) {
-        angle_ = angle;
+    public Elevator(double inches) {
+        inches_ = inches;
     }
 
     @Override
     public void initialize() {
-        goal_ = angle_; //TODO Convert degrees to ticks
+        goal_ = inches_; // TODO Convert degrees to ticks
     }
 
     public void execute() {
@@ -24,7 +24,7 @@ public class Pivot extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return climber_.m_isAtPivotGoal;
+        return climber_.m_isAtElevatorGoal;
     }
-    
+
 }

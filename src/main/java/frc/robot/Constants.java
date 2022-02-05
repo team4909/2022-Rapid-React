@@ -86,4 +86,18 @@ public final class Constants {
 
     // The Max Velocity for the robot [only in AUTO]
     public static final double MAX_VEL = 6.5;
+
+    //Climber Constants
+    public static final int RIGHT_PIVOT_MOTOR = 15; //CAN SparkMax
+    public static final int LEFT_PIVOT_MOTOR = 14; //CAN SparkMax
+    public static final int RIGHT_ELEVATOR_MOTOR = 17; //Talon FX
+    public static final int LEFT_ELEVATOR_MOTOR = 16; //TalonFX
+
+    public static final double PIVOT_KP = 0;
+    public static final double PIVOT_KI = 0;
+    public static final double PIVOT_KD = 0;
+    public static final double ELEVATOR_KP = 0;
+    public static final double ELEVATOR_KI = 0;
+    public static final double ELEVATOR_KD = 0;
+
 }
