@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
@@ -53,7 +54,7 @@ public class TrajectoryFollow extends CommandBase {
         new PPSwerveControllerCommand(m_trajectory,
                 DrivetrainSubsystem.getInstance()::getCurrentPose,
                 DrivetrainSubsystem.getInstance().getKinematics(),
-                new PIDController(3, 0, 0),
+                new PIDController(SmartDashboard.getNumber("x_P", 1), SmartDashboard.getNumber("x_I", 0), SmartDashboard.getNumber("x_D", 0)),
                 new PIDController(3, 0, 0),
                 thetaController,
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,

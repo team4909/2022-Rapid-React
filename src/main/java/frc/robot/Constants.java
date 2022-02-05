@@ -88,6 +88,12 @@ public final class Constants {
     public static final double T_MAX_ACCEL = 4;
 
     // The PID Values for the Limelight driven alignment to the goal.
-    public static final double GOAL_ALIGN_KP = 0.1;
-    public static final double GOAL_ALIGN_KD = 0.001;
+    public static final double GOAL_ALIGN_KP = 0.05;
+    public static final double GOAL_ALIGN_KD = 0.0009;
+
+    // Shooter Constants 
+
+    public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
+    public static final double limelightHeight = 27.0; // Height of the limelight off the ground in INCHES
+    public static final double limelightAngle = 18.75; // Angle of the limelight in DEGREES
 }

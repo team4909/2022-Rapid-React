@@ -38,6 +38,9 @@ public class Robot extends TimedRobot {
      */
 
     SmartDashboard.putBoolean("Align", false);
+    SmartDashboard.putNumber("x_P", 1);
+    SmartDashboard.putNumber("x_I", 0);
+    SmartDashboard.putNumber("x_D", 0);
     m_robotContainer = new RobotContainer();
     DrivetrainSubsystem.getInstance();
     
@@ -75,6 +78,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    System.out.println("Auto Starting");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // Schedule the autonomous command
@@ -103,6 +107,7 @@ public class Robot extends TimedRobot {
     Command llCommand = m_robotContainer.getLimelightCommand();
     llCommand.schedule();
   }
+
 
   /** This function is called periodically during operator control. */
   @Override

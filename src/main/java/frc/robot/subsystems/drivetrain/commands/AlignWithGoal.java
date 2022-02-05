@@ -58,7 +58,7 @@ public class AlignWithGoal extends CommandBase {
     public void execute() {
 
         offset = -m_visionSubsystem.getXDegrees();
-        angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - lastError) * Constants.GOAL_ALIGN_KD);
+        angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - lastError) * Constants.GOAL_ALIGN_KD) * 2; //TODO make this a constant pls
 
         if (SmartDashboard.getBoolean("Align", false) == true){
 

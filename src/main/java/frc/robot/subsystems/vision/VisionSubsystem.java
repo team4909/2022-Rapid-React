@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
 
@@ -38,26 +39,22 @@ public static VisionSubsystem instance = null;
 
     public double getDistance(){
         double distance;
-        double angle;
-
-        // double distance = (targetHeight - cameraHeight) / Math.tan(Math.toRadians(CameraAngle + YOffset))
-        angle =  Math.tan(Math.toRadians(18.75+ty.getDouble(0.0)));
-        distance = (103-27) / angle;
+        distance = (Constants.tapeHeight-Constants.limelightHeight) / Math.tan(Math.toRadians(Constants.limelightAngle+ty.getDouble(0.0)));;
         SmartDashboard.putNumber("Distance", distance);
-        SmartDashboard.putNumber("angle", angle);
         return distance;
-
     }
 
     public double getGoal(){
         double goal;
+        double m = 18;
+        double b = 2150;
         double y = ty.getDouble(0.0);
 
         if(y == 0.0){
             return 0;
         }
 
-        goal = 18 * getDistance() + 2150;
+        goal = m * getDistance() + b; // Linear equation, goal = mx+b
         SmartDashboard.putNumber("Goal", goal);
         return goal;
     }
