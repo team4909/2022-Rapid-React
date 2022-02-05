@@ -73,7 +73,7 @@ public static VisionSubsystem instance = null;
     }
 
     public void periodic() {
-        if (Math.abs(getXDegrees()) <= 5) {
+        if (Math.abs(getXDegrees()) <=2) {
             isAligned = true;
         } else {
             isAligned = false;

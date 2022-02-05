@@ -60,30 +60,29 @@ public class AlignWithGoal extends CommandBase {
         offset = -m_visionSubsystem.getXDegrees();
         angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - lastError) * Constants.GOAL_ALIGN_KD) * 2; //TODO make this a constant pls
 
-        if (SmartDashboard.getBoolean("Align", false) == true){
 
-            if (m_visionSubsystem.isAligned == true) {
-                angularVelocity = 0;
-            } else {
-                if (m_visionSubsystem.getXDegrees() <= 0)
-                    angularVelocity = angularSpeed;
+        if (m_visionSubsystem.isAligned == true) {
+            angularVelocity = 0;
+        } else {
+            if (m_visionSubsystem.getXDegrees() <= 0)
+                angularVelocity = angularSpeed;
 
-                if (m_visionSubsystem.getXDegrees() >= 0) 
-                    angularVelocity = angularSpeed;
-            }
-            // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-            m_drivetrainSubsystem.drive(
-                    // fromFielRelativeSpeeds, provides Field Relative drive
-                    ChassisSpeeds.fromFieldRelativeSpeeds(
-                            m_translationXSupplier.getAsDouble(),
-                            m_translationYSupplier.getAsDouble(),
-                            m_rotationSupplier.getAsDouble() + angularVelocity, //not sure if we need this negative, may be neccesary otherwise it goes backwards?
-                            m_drivetrainSubsystem.getGyroscopeRotation()
-                    )
-            );
-
-            lastError = m_visionSubsystem.getXDegrees();
+            if (m_visionSubsystem.getXDegrees() >= 0) 
+                angularVelocity = angularSpeed;
         }
+        // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
+        m_drivetrainSubsystem.drive(
+                // fromFielRelativeSpeeds, provides Field Relative drive
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        m_translationXSupplier.getAsDouble(),
+                        m_translationYSupplier.getAsDouble(),
+                        m_rotationSupplier.getAsDouble() + angularVelocity, //not sure if we need this negative, may be neccesary otherwise it goes backwards?
+                        m_drivetrainSubsystem.getGyroscopeRotation()
+                )
+        );
+
+        lastError = m_visionSubsystem.getXDegrees();
+        
     }
 
     @Override
