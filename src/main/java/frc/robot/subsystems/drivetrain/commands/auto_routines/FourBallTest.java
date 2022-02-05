@@ -11,10 +11,10 @@ public class FourBallTest extends SequentialCommandGroup {
     public FourBallTest() {      
         super(
             new PathResetOdometry("RightAngle1"),
-            new TrajectoryFollow("RightAngle1").withTimeout(1.5),
+            new TrajectoryFollow("RightAngle1").withTimeout(15)
             // new WaitCommand(1),
             // new Shoot().withTimeout(2),
-            new TrajectoryFollow("RightAngle2").withTimeout(2.9)
+            // new TrajectoryFollow("RightAngle2").withTimeout(2.9)
         );
     }
 

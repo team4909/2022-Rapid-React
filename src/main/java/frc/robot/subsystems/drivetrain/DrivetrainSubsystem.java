@@ -240,7 +240,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_odometry.update(getGyroscopeRotation(), states);
         SmartDashboard.putNumber("Gyro Rot", m_pigeon.getFusedHeading());
         // System.out.println(getGyroscopeRotation());
-        // System.out.println(getCurrentPose());
+        ////System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);
         // System.out.println("w/o scale:" + m_chassisSpeeds.vxMetersPerSecond);
