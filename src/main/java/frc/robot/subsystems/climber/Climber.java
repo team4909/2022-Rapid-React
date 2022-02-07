@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
@@ -17,14 +18,15 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 public class Climber extends SubsystemBase {
 
     private static Climber instance_ = null;
+    private static final int kTimeoutMs = 100;
+    private static final double kVelocityConversion = 600 / 2048d;
     
-    private CANSparkMax pivotLeft_;
-    private CANSparkMax pivotRight_;
+    private CANSparkMax elevatorLeft_;
+    private CANSparkMax elevatorRight_;
 
-    private TalonFX climberLeft_;
-    private TalonFX climberRight_;
+    private TalonFX pivotLeft_;
+    private TalonFX pivotRight_;
 
-    private SparkMaxPIDController pivotController_;
     private SparkMaxPIDController elevatorController_;
 
     //isDone flags
@@ -43,17 +45,29 @@ public class Climber extends SubsystemBase {
     }
 
     private Climber() {
+        //Elevator: NEOs (CANSparkMaxs)
+        //Pivot: Falcons (TalonFXs)
         //TODO Configure these
-        pivotRight_ = new CANSparkMax(Constants.RIGHT_PIVOT_MOTOR, null);
-        pivotLeft_ = new CANSparkMax(Constants.LEFT_PIVOT_MOTOR, null);
-        pivotLeft_.follow(pivotLeft_, true);
+        //#region Motor Config
+        elevatorRight_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, null);
+        elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, null);
+        elevatorLeft_.follow(elevatorRight_, true);
 
-        climberRight_ = new TalonFX(Constants.RIGHT_ELEVATOR_MOTOR);
-        climberLeft_ = new TalonFX(Constants.LEFT_ELEVATOR_MOTOR);
-        climberLeft_.follow(climberRight_);
-        climberLeft_.setInverted(InvertType.InvertMotorOutput);
+        elevatorController_ = elevatorLeft_.getPIDController();
 
-        pivotController_ = pivotLeft_.getPIDController();
+        pivotRight_ = new TalonFX(Constants.RIGHT_ELEVATOR_MOTOR);
+        pivotLeft_ = new TalonFX(Constants.LEFT_ELEVATOR_MOTOR);
+
+        pivotRight_.clearStickyFaults(kTimeoutMs);
+        pivotLeft_.set(ControlMode.Follower, Constants.RIGHT_PIVOT_MOTOR);
+        pivotLeft_.setInverted(InvertType.OpposeMaster);
+
+        pivotLeft_.config_kP(0, Constants.PIVOT_KP);
+        pivotLeft_.config_kI(0, Constants.PIVOT_KI);
+        pivotLeft_.config_kD(0, Constants.PIVOT_KD);
+        pivotLeft_.config_kF(0, Constants.PIVOT_KF);
+        pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
+        //#endregion
 
         state_ = ClimberStates.IDLE;
     }
@@ -69,9 +83,9 @@ public class Climber extends SubsystemBase {
                 nextElevatorCommand = new Elevator(0);
                 break;
             case PIVOT_FORWARD:
-                nextPivotCommand = new Pivot(00); //FIXME assign value, overshoot a little
+                nextPivotCommand = new Pivot(Constants.BAR_THETA); //FIXME assign value, overshoot a little
                 nextElevatorCommand = new Elevator(0);
-                if (pivotLeft_.getEncoder().getPosition() < 00 || pivotLeft_.getEncoder().getPosition() < 00) { //FIXME Add values, degrees of tolerence
+                if (elevatorLeft_.getEncoder().getPosition() < 00 || elevatorLeft_.getEncoder().getPosition() < 00) { //FIXME Add values, degrees of tolerence
                     state_ = ClimberStates.EXTEND_HOOK;
                 }
                 break;
@@ -87,7 +101,7 @@ public class Climber extends SubsystemBase {
             case BACK_PIVOT:
                 nextElevatorCommand = new Elevator(0);
                 nextPivotCommand = new Pivot(00); //FIXME backPivotGreaterThanHorizontal slam against bar to prepare for retraction
-                if (pivotLeft_.getVoltageCompensationNominalVoltage() == 0) { //FIXME check for voltage spike ALSO THIS PROBABLY ISNT THE RIGHT METHOD!
+                if (elevatorLeft_.getVoltageCompensationNominalVoltage() == 0) { //FIXME check for voltage spike ALSO THIS PROBABLY ISNT THE RIGHT METHOD!
                     state_ = ClimberStates.RETRACT;
                 }
                 break;                
@@ -120,7 +134,7 @@ public class Climber extends SubsystemBase {
 
     
     public void setPivotGoal(double goal) {
-        pivotController_.setReference(goal, ControlType.kPosition);
+        elevatorController_.setReference(goal, ControlType.kPosition);
         //FIXME implement
         //including PID logic, isAtGoal logic
     } 

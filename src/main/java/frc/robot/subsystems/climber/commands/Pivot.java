@@ -7,7 +7,7 @@ public class Pivot extends CommandBase {
 
     private double angle_;
     private double goal_;
-    private Climber climber_ = Climber.getInstance();
+    private final Climber climber_ = Climber.getInstance();
 
     public Pivot(double angle) {
         angle_ = angle;

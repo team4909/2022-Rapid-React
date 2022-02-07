@@ -7,7 +7,7 @@ public class Elevator extends CommandBase {
 
     private double inches_;
     private double goal_;
-    private Climber climber_ = Climber.getInstance();
+    private final Climber climber_ = Climber.getInstance();
 
     public Elevator(double inches) {
         inches_ = inches;
