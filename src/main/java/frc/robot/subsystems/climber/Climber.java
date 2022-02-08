@@ -1,5 +1,7 @@
 package frc.robot.subsystems.climber;
 
+import java.util.ArrayList;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
@@ -47,13 +49,18 @@ public class Climber extends SubsystemBase {
     private Climber() {
         //Elevator: NEOs (CANSparkMaxs)
         //Pivot: Falcons (TalonFXs)
-        //TODO Configure these
+
         //#region Motor Config
         elevatorRight_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, null);
         elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, null);
         elevatorLeft_.follow(elevatorRight_, true);
+        elevatorLeft_.clearFaults();
 
         elevatorController_ = elevatorLeft_.getPIDController();
+        elevatorController_.setP(Constants.ELEVATOR_KP);
+        elevatorController_.setD(Constants.ELEVATOR_KI);
+        elevatorController_.setI(Constants.ELEVATOR_KD);
+        elevatorController_.setFF(Constants.ELEVATOR_KF);
 
         pivotRight_ = new TalonFX(Constants.RIGHT_ELEVATOR_MOTOR);
         pivotLeft_ = new TalonFX(Constants.LEFT_ELEVATOR_MOTOR);
@@ -77,45 +84,44 @@ public class Climber extends SubsystemBase {
         CommandBase nextPivotCommand = null;
         CommandBase nextElevatorCommand = null;
 
+        //#region State Machine
         switch (state_) {
             case IDLE:
                 nextPivotCommand = new Pivot(0);
                 nextElevatorCommand = new Elevator(0);
                 break;
             case PIVOT_FORWARD:
-                nextPivotCommand = new Pivot(Constants.BAR_THETA); //FIXME assign value, overshoot a little
+                nextPivotCommand = new Pivot(Constants.BAR_THETA + 10); // The theta is offset by +10 deg so we overshoot the bar
                 nextElevatorCommand = new Elevator(0);
-                if (elevatorLeft_.getEncoder().getPosition() < 00 || elevatorLeft_.getEncoder().getPosition() < 00) { //FIXME Add values, degrees of tolerence
+                if (this.inTolerance(this.getPivotDegrees(), Constants.BAR_THETA + 2, Constants.BAR_THETA + 2)) { // angle tolerance of 2 deg
                     state_ = ClimberStates.EXTEND_HOOK;
                 }
                 break;
             case EXTEND_HOOK:
                 nextPivotCommand = new Pivot(0);
-                nextElevatorCommand = new Elevator(00); //FIXME Find elevator setpoint
-
-                //elevate
-                if (m_isAtElevatorGoal) {
+                nextElevatorCommand = new Elevator(Constants.MAX_ELEVATOR_HEIGHT);
+                if (this.inTolerance(this.getElevatorInches(), Constants.MAX_ELEVATOR_HEIGHT - 0.5, Constants.MAX_ELEVATOR_HEIGHT + 0.5)) { // extension tolerance of 1/2 in
                     state_ = ClimberStates.BACK_PIVOT;
                 }
                 break;
             case BACK_PIVOT:
                 nextElevatorCommand = new Elevator(0);
-                nextPivotCommand = new Pivot(00); //FIXME backPivotGreaterThanHorizontal slam against bar to prepare for retraction
-                if (elevatorLeft_.getVoltageCompensationNominalVoltage() == 0) { //FIXME check for voltage spike ALSO THIS PROBABLY ISNT THE RIGHT METHOD!
+                nextPivotCommand = new Pivot(-Constants.BAR_THETA);
+                
+                if (pivotRight_.getMotorOutputVoltage() > getLastVoltages()) { //THIS PROBABLY ISNT THE RIGHT MAKE IT BETTER PLEASEEE
                     state_ = ClimberStates.RETRACT;
                 }
-                break;                
+                break;
             case RETRACT:
-                nextElevatorCommand = new Elevator(00); //FIXME value to retract all the way
+                nextElevatorCommand = new Elevator(0);
                 nextPivotCommand = new Pivot(0);
-                if (m_isAtElevatorGoal && m_isAtPivotGoal) {
+                if (this.inTolerance(this.getElevatorInches(), -0.5, 0.5) && this.inTolerance(this.getPivotDegrees(), -2, 2)) {
                     state_ = ClimberStates.STABILIZE;
                 }
                 break;
             case STABILIZE:
                 DrivetrainSubsystem d = DrivetrainSubsystem.getInstance();
-                //TODO test these values.
-                if (d.getGyroPitch() < 5 && d.getGyroPitch() > -5) {
+                if (this.inTolerance(d.getGyroPitch(), -3, 3)) {
                     state_ = ClimberStates.IDLE;
                 }
                 break;
@@ -124,23 +130,42 @@ public class Climber extends SubsystemBase {
                 nextElevatorCommand = new Elevator(0);
                 break;
         }
+        //#endregion
 
         SmartDashboard.putString("Current State", state_.toString());
         nextPivotCommand.schedule();
         nextElevatorCommand.schedule();
     }
 
-    //TODO setSpeed, stop, etc...
-
+    //#region Class Methods
+    private double getPivotDegrees() {
+        return elevatorRight_.getEncoder().getPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
+    }
     
+    private double getElevatorInches() {
+        return pivotRight_.getSelectedSensorPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
+    }
+
+    private boolean inTolerance(double value, double min, double max) {
+        return value < max && value > min;
+    }
+
     public void setPivotGoal(double goal) {
-        elevatorController_.setReference(goal, ControlType.kPosition);
-        //FIXME implement
-        //including PID logic, isAtGoal logic
+        pivotRight_.set(ControlMode.Position, goal * Constants.TICKS_PER_PIVOT_DEGREE);
     } 
     public void setElevatorGoal(double goal) {
-        
-        //TODO implement
+        elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
+    }
+
+    public double getLastVoltages() {
+        ArrayList<Double> lastVoltages = new ArrayList<Double>(10);
+        int vI = 0;
+        if (vI >= 10) vI = 0;
+        lastVoltages.set(vI, pivotRight_.getMotorOutputVoltage());
+        double avgVoltage = 0;
+        for(int i = 0; i < lastVoltages.size(); i++)
+            avgVoltage += lastVoltages.get(i);
+        return avgVoltage / lastVoltages.size();
     }
 
     public static Climber getInstance() {
@@ -150,4 +175,5 @@ public class Climber extends SubsystemBase {
 
         return instance_;
     }
+    //#endregion
 }

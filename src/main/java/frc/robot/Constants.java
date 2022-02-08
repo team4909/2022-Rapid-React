@@ -87,20 +87,21 @@ public final class Constants {
     // The Max Velocity for the robot [only in AUTO]
     public static final double MAX_VEL = 6.5;
 
-    //Climber Constants
+    // Climber Constants
     public static final int RIGHT_PIVOT_MOTOR = 15; //CAN SparkMax
     public static final int LEFT_PIVOT_MOTOR = 14; //CAN SparkMax
     public static final int RIGHT_ELEVATOR_MOTOR = 17; //Talon FX
     public static final int LEFT_ELEVATOR_MOTOR = 16; //TalonFX
 
-    public static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
-    public static final double ELEVATOR_NEO_GEAR_RATIO = 5/1;
-    public static final int FALCON_UNITS_PER_REV = 4096;
-    public static final int NEO_UNITS_PER_REV = 42;
-    public static final double ELEVATOR_PULLEY_DIAMETER = 1.128;
+    private static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
+    private static final double ELEVATOR_NEO_GEAR_RATIO = 5/1;
+    private static final int FALCON_UNITS_PER_REV = 4096;
+    private static final int NEO_UNITS_PER_REV = 42;
+    private static final double ELEVATOR_PULLEY_DIAMETER = 1.128;
 
     public static final double TICKS_PER_PIVOT_DEGREE = (FALCON_UNITS_PER_REV * PIVOT_FALCON_GEAR_RATIO) / 360;
     public static final double TICKS_PER_ELEVATOR_INCH = (NEO_UNITS_PER_REV * ELEVATOR_NEO_GEAR_RATIO) / (ELEVATOR_PULLEY_DIAMETER * Math.PI);
+    public static final double MAX_ELEVATOR_HEIGHT = 29.35;
 
     public static final double PIVOT_KP = 1;
     public static final double PIVOT_KI = 0;
@@ -109,7 +110,9 @@ public final class Constants {
     public static final double ELEVATOR_KP = 1;
     public static final double ELEVATOR_KI = 0;
     public static final double ELEVATOR_KD = 0;
+    public static final double ELEVATOR_KF = 0;
 
-    public static final double BAR_THETA = 32.64;
-
+    private static final double BAR_DIST_X = 24;
+    private static final double BAR_DIST_Y = 15.375;
+    public static final double BAR_THETA = 90 - Math.toDegrees(Math.atan(BAR_DIST_Y / BAR_DIST_X));
 }
