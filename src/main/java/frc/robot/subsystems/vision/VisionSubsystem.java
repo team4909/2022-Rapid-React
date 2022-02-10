@@ -8,10 +8,11 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
 public class VisionSubsystem extends SubsystemBase{
-    
+    // Made into privates
     private boolean isAligned_;
     private double lastDistance_;
     
+    // Moved up here to be at the top
     private static VisionSubsystem instance_ = null;
 
     // Network table values
@@ -21,6 +22,7 @@ public class VisionSubsystem extends SubsystemBase{
     NetworkTableEntry ta = table.getEntry("ta");
 
     public VisionSubsystem() {
+        // Default initialization
         isAligned_ = false;
         lastDistance_ = 0.0;
     }

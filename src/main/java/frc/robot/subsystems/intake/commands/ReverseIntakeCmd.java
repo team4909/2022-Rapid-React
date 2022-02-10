@@ -12,6 +12,7 @@ public class ReverseIntakeCmd extends CommandBase {
 
     @Override
     public void initialize() {
+        // just need to set once, and then it'll stay in that state
         intakeFeeder_.reverseIntake();
 
     }

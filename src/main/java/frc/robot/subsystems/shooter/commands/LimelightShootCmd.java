@@ -27,6 +27,8 @@ public class LimelightShootCmd extends CommandBase{
 
     @Override
     public void execute() {
+        // Get goal from limelight, and send to the shooter as the velocity goal
+        // Might want to set a default if the limelight can't calculate a goal due to a blockage or something
         goal_ = vision_.getVelocityGoal();
         shooter_.setVelocityGoal(goal_); 
 
