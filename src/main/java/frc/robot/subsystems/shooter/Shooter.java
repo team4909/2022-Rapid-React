@@ -17,7 +17,7 @@ public class Shooter extends SubsystemBase {
     // Constants
     private final static int kTimeoutMs = 100;
     private static double kFlywheelVelocityConversion = 600.0 / 2048.0; // native units to rpm
-    private final static int kShooterTolerance = 100;
+    private final static int kShooterTolerance = 100; //
 
     // State of the shooter
     private static double goalDemand_ = 0.0;

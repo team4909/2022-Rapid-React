@@ -88,11 +88,17 @@ public final class Constants {
     public static final double MAX_VEL = 6.5;
 
     // Superstructure Constants
+    // TODO Change if needed
     public static final double kIntakeForwardVoltage = 6.0;
     public static final double kIntakeReverseVotlage = -6.0;
     public static final double kFeederFeedingVoltage = 1.0;
     public static final double kFeederShootingVoltage = 12.0;
     public static final double kCenteringWheelForwardVoltage = 4.0;
     public static final double kCenteringWheelReverseVotlage = -4.0;
+
+    // Shooter Velocity Goal Constants
+    public static final double kFenderShotVelocity = 3000;
+    public static final double kTarmacShotVelocity = 5000;
+    public static final double kLongShotVelocity = 6500; 
 
 }
