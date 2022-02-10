@@ -39,10 +39,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("x_I", 0);
     SmartDashboard.putNumber("x_D", 0);
     m_robotContainer = new RobotContainer();
-<<<<<<< HEAD
-    
-=======
->>>>>>> 45f124c51c16ba76cefbe916e6d56645349f2be8
   }
 
   /**

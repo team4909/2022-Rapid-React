@@ -23,6 +23,7 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
 import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.commands.LimelightShootCmd;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 import frc.robot.subsystems.vision.LimeLight;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -92,7 +93,10 @@ public class RobotContainer {
         // Fender shot
         new Button(m_driverController::getAButton).whenPressed(new ShootCmd(Constants.kFenderShotVelocity));
         // Tarmac shot
-        new Button(m_driverController::getAButton).whenPressed(new ShootCmd(Constants.kTarmacShotVelocity));
+        new Button(m_driverController::getBButton).whenPressed(new ShootCmd(Constants.kTarmacShotVelocity));
+        // Limelight shot
+        new Button(m_driverController::getXButton).whenPressed(new LimelightShootCmd());
+
 
 
         // Run intake 
