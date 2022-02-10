@@ -32,7 +32,7 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     // Object instance
-    private static IntakeFeeder instance_;
+    private static IntakeFeeder instance_ = null;
 
     private final Neo550Roller intakeWheels_;
     private final Neo550Roller centeringWheel_;

@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -221,10 +222,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         drive(m_kinematics.toChassisSpeeds(states));
     }
 
-    //Note: to get to max speed multiply by max voltage on the desaturateWheelSpeeds
-    //To control speed of auto multiply by any number, 0 < x < max voltage
+    // Note: to get to max speed multiply by max voltage on the desaturateWheelSpeeds
+    // To control speed of auto multiply by any number, 0 < x < max voltage
+    // This has not been tested, most likely is completely untrue...
+    // Instead use parameter of loadTrajectory()
     public void actuateModulesAuto(SwerveModuleState[] states){
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND * 2); 
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         driveAuto(m_kinematics.toChassisSpeeds(states));
     }
 
@@ -235,8 +238,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(getGyroscopeRotation(), states);
+        SmartDashboard.putNumber("Gyro Rot", m_pigeon.getFusedHeading());
         // System.out.println(getGyroscopeRotation());
-        // System.out.println(getCurrentPose());
+        ////System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);
         // System.out.println("w/o scale:" + m_chassisSpeeds.vxMetersPerSecond);
@@ -271,7 +275,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  The Pose to reset the odometry to
      */
     public void resetOdometry(Pose2d pose){
-        m_odometry.resetPosition(pose, getGyroscopeRotation());
+        m_odometry.resetPosition(pose, pose.getRotation());
     }
 
     public static DrivetrainSubsystem getInstance() {

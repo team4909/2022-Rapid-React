@@ -6,21 +6,7 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -29,15 +15,17 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
+import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
-import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
+
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
 import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.commands.ShootCommand;
+import frc.robot.subsystems.shooter.commands.ShootCmd;
+import frc.robot.subsystems.vision.LimeLight;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 
 /**
@@ -49,13 +37,16 @@ import frc.robot.subsystems.shooter.commands.ShootCommand;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
+    
+    private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
+
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
     
     private final XboxController m_driverController = new XboxController(0);
     private final XboxController m_operatorController = new XboxController(1);
 
-
+ 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
@@ -75,6 +66,13 @@ public class RobotContainer {
 
         // Configure the button bindings
         configureButtonBindings();
+
+
+    }
+
+    public Command getLimelightCommand() {
+        return new AlignWithGoal(m_drivetrainSubsystem, () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
     }
 
     /**
@@ -92,9 +90,9 @@ public class RobotContainer {
         // TODO No idea if this is how we are planning on doing buttons
         // But here are the mappings we can move to another structure later
         // Fender shot
-        new Button(m_driverController::getAButton).whenPressed(new ShootCommand(Constants.kFenderShotVelocity));
+        new Button(m_driverController::getAButton).whenPressed(new ShootCmd(Constants.kFenderShotVelocity));
         // Tarmac shot
-        new Button(m_driverController::getAButton).whenPressed(new ShootCommand(Constants.kTarmacShotVelocity));
+        new Button(m_driverController::getAButton).whenPressed(new ShootCmd(Constants.kTarmacShotVelocity));
 
 
         // Run intake 
@@ -157,4 +155,6 @@ public class RobotContainer {
 
         return value;
     }
+
+    
 }

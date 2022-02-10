@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
 
     // Object instances
-    private static Shooter instance_;
+    private static Shooter instance_ = null;
 
     private final TalonFX leader_;
     private final TalonFX follower_;

@@ -12,7 +12,7 @@ public class ReverseIntakeCmd extends CommandBase {
 
     @Override
     public void initialize() {
-        intakeFeeder_.intake();
+        intakeFeeder_.reverseIntake();
 
     }
 

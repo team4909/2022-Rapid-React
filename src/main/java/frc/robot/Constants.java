@@ -81,12 +81,21 @@ public final class Constants {
     public static final int BACK_LEFT_STEER_ENCODER = 12;
     public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(124.708); // FIXME Measure and set back left steer offset //126.28784179687499
     
-    // The Max Acceleration Value for the robot [only in AUTO]
-    public static final double MAX_ACCEL = 4;
-
     // The Max Velocity for the robot [only in AUTO]
-    public static final double MAX_VEL = 6.5;
+    public static final double T_MAX_VEL = 2.9;
+    // The Max Acceleration Value for the robot [only in AUTO]
+    public static final double T_MAX_ACCEL = 4;
 
+    // The PID Values for the Limelight driven alignment to the goal.
+    public static final double GOAL_ALIGN_KP = 0.05;
+    public static final double GOAL_ALIGN_KD = 0.0009;
+
+    // Shooter Constants 
+
+    public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
+    public static final double limelightHeight = 27.0; // Height of the limelight off the ground in INCHES
+    public static final double limelightAngle = 18.75; // Angle of the limelight in DEGREES
+ 
     // Superstructure Constants
     // TODO Change if needed
     public static final double kIntakeForwardVoltage = 6.0;
@@ -101,4 +110,5 @@ public final class Constants {
     public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 6500; 
 
-}
+
+   }
