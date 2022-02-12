@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
@@ -24,8 +25,8 @@ public class Shooter extends SubsystemBase {
     private static boolean runningOpenLoop_ = false;
 
     private Shooter() {
-        leader_ = new TalonFX(10);
-        follower_ = new TalonFX(11);
+        leader_ = new TalonFX(13);
+        follower_ = new TalonFX(14);
 
         // General Motor Configuration for the TalonFXs
         leader_.clearStickyFaults(kTimeoutMs);
@@ -40,14 +41,15 @@ public class Shooter extends SubsystemBase {
         leader_.enableVoltageCompensation(true);
 
         // Set the follower
-        follower_.set(ControlMode.Follower, 11);
+        follower_.setInverted(true);
+        follower_.follow(leader_);
         // TODO: set inverted 
 
         // Control Loop Configuration
-        leader_.config_kP(0, 0, kTimeoutMs);
+        leader_.config_kP(0, 0.3, kTimeoutMs);
         leader_.config_kI(0, 0, kTimeoutMs);
         leader_.config_kD(0, 0, kTimeoutMs);
-        leader_.config_kF(0, 0, kTimeoutMs);
+        leader_.config_kF(0, 0.2, kTimeoutMs);
         leader_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
         leader_.selectProfileSlot(0, 0);
         leader_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
@@ -94,6 +96,8 @@ public class Shooter extends SubsystemBase {
         } else {
             leader_.set(ControlMode.PercentOutput, goalDemand_);
         }
+        SmartDashboard.putBoolean("Shooter At Speed", spunUp());
+        SmartDashboard.putNumber("Shooter speed", leader_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
     }
 
 

@@ -21,13 +21,13 @@ public class ShootCmd extends CommandBase{
     public void initialize() {
         // Don't know if there's anything needed here yet 
         // Just reset the goal though in case
-        shooter_.setVelocityGoal(goal_); 
         
         
     }
 
     @Override
     public void execute() {
+        shooter_.setVelocityGoal(goal_); 
 
         if (shooter_.spunUp()) {
         // Just make sure that the intake runs for the shot

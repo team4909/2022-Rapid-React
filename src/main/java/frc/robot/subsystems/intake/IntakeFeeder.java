@@ -194,7 +194,7 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kShootBalls:
                 intakeWheels_.set(0.0);
-                centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
+                centeringWheel_.set(0.0);
                 feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 // TODO due to change in sensors. Ignore for now in testing
                 // Don't need to count them right now

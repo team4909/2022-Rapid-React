@@ -41,7 +41,7 @@ public class RobotContainer {
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
 
-    // private final Shooter m_shooterSubsystem = Shooter.getInstance();
+    private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
     
     // private final XboxController m_driverController = new XboxController(0);
@@ -91,7 +91,7 @@ public class RobotContainer {
         // TODO No idea if this is how we are planning on doing buttons
         // But here are the mappings we can move to another structure later
         // Fender shot
-        // new Button(m_driverController::getAButton).whenPressed(new ShootCmd(Constants.kFenderShotVelocity));
+        new Button(m_operatorController::getAButton).whenHeld(new ShootCmd(Constants.kFenderShotVelocity));
         // // Tarmac shot
         // new Button(m_driverController::getBButton).whenPressed(new ShootCmd(Constants.kTarmacShotVelocity));
         // // Limelight shot
