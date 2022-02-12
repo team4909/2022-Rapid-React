@@ -34,6 +34,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     
     private static DrivetrainSubsystem instance = null;
 
+
     /**
      * The scale factor that the speed during Auto trajectories will be affected by.
      * <p>
