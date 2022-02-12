@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
+// import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+// import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+// import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
 
 import frc.robot.utils.Conversion;
 
@@ -44,13 +44,13 @@ public final class Constants {
      * 
      * From L1-L4
      */
-    public static final GearRatio GEAR_RATIO = GearRatio.L2;
+    // public static final GearRatio GEAR_RATIO = GearRatio.L2;
     /**
      * The type of Swerve Module used
      * 
      * From L1-L4
      */
-    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
+    // public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
 
     /**
      * CAN ID of the PigeonIMU
@@ -99,12 +99,14 @@ public final class Constants {
  
     // Superstructure Constants
     // TODO Change if needed
-    public static final double kIntakeForwardVoltage = 6.0;
-    public static final double kIntakeReverseVotlage = -6.0;
-    public static final double kFeederFeedingVoltage = 1.0;
+    public static final double kIntakeForwardVoltage = -6.0;
+    public static final double kIntakeReverseVoltage = 12.0;
+    public static final double kFeederFeedingVoltage = 6.0;
     public static final double kFeederShootingVoltage = 12.0;
-    public static final double kCenteringWheelForwardVoltage = 4.0;
-    public static final double kCenteringWheelReverseVotlage = -4.0;
+    public static final double kFeederReverseVoltage = -6.0;
+    // TODO to invert these properly
+    public static final double kCenteringWheelForwardVoltage = -12.0;
+    public static final double kCenteringWheelReverseVoltage = 12.0;
 
     // Shooter Velocity Goal Constants
     public static final double kFenderShotVelocity = 3000;

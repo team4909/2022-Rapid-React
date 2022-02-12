@@ -4,8 +4,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -41,7 +44,7 @@ public class IntakeFeeder extends SubsystemBase {
     private CANSparkMax centeringWheel_;
     private CANSparkMax feederWheel_;
 
-    private final Solenoid intakeExtension_;
+    private final DoubleSolenoid intakeExtension_;
 
     private final DigitalInput lowSensor_; // One closest to intake
     private final DigitalInput highSensor_; // One closes to shooter
@@ -61,12 +64,12 @@ public class IntakeFeeder extends SubsystemBase {
 
 
     private IntakeFeeder() {
-        intakeWheels_ = new CANSparkMax(16, MotorType.kBrushless);
+        intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
         intakeWheels_.restoreFactoryDefaults();
-        centeringWheel_ = new CANSparkMax(18, MotorType.kBrushless);
+        centeringWheel_ = new CANSparkMax(16, MotorType.kBrushless);
         feederWheel_ = new CANSparkMax(17, MotorType.kBrushless);
 
-        intakeExtension_ = new Solenoid(PneumaticsModuleType.REVPH, 2);
+        intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     
         lowSensor_ = new DigitalInput(0);
         highSensor_ = new DigitalInput(1);
@@ -122,6 +125,8 @@ public class IntakeFeeder extends SubsystemBase {
     // Just want to test that reversing works
     public void reverseIntake() {
         currentState_ = IntakeState.kReverseWrongBall;
+        intakeSolenoidState_ = true; // intake in
+
     }
 
     public boolean getRumble() {
@@ -138,7 +143,7 @@ public class IntakeFeeder extends SubsystemBase {
         // Set the solenoid to be in it's state
         // Because it's a single acting solenoid it needs to be continously set
         // otherwise it reverts to the default state
-        intakeExtension_.set(intakeSolenoidState_);
+        intakeExtension_.set(intakeSolenoidState_ ? Value.kReverse : Value.kForward);
         
         switch (currentState_) {
             case kIdle:
@@ -164,13 +169,13 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
                 feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
-                if (firstBallSeen) {
-                    // Want to keep running the intake, but not the feeder
-                    currentState_ = IntakeState.kIdleFeeder;
-                    ballsHeld_ = BallCount.kOne;
-                    // Not doing this yet, but for the future driver feedback
-                    rumble_ = true;
-                }
+                // if (firstBallSeen) {
+                //     // Want to keep running the intake, but not the feeder
+                //     currentState_ = IntakeState.kIdleFeeder;
+                //     ballsHeld_ = BallCount.kOne;
+                //     // Not doing this yet, but for the future driver feedback
+                //     rumble_ = true;
+                // }
                 break;
             case kIntakeSecond:
                 // Keep running intake, but now know the second ball is at least in the robot
@@ -202,12 +207,14 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kReverseWrongBall:
                 // Reverse the motors
-                intakeWheels_.setVoltage(Constants.kIntakeReverseVotlage);
-                centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVotlage);
+                intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
+                centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVoltage);
+                feederWheel_.setVoltage(Constants.kFeederReverseVoltage);
                 break;
             default:
                 break;
         }
+        SmartDashboard.putString("Intake State", currentState_.name);
 
         // not using this now but probably will want to down the line
         // for knowing what state the robot previously was in
