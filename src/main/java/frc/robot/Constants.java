@@ -50,7 +50,7 @@ public final class Constants {
      * 
      * From L1-L4
      */
-    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
+    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4I_L2; 
 
     /**
      * CAN ID of the PigeonIMU
