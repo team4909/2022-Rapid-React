@@ -58,11 +58,11 @@ public class IntakeFeeder extends SubsystemBase {
 
 
     private IntakeFeeder() {
-        intakeWheels_ = new Neo550Roller(20, false);
-        centeringWheel_ = new Neo550Roller(21, false);
-        feederWheel_ = new Neo550Roller(22, false);
+        intakeWheels_ = new Neo550Roller(16, false);
+        centeringWheel_ = new Neo550Roller(18, false);
+        feederWheel_ = new Neo550Roller(17, false);
 
-        intakeExtension_ = new Solenoid(PneumaticsModuleType.REVPH, 1);
+        intakeExtension_ = new Solenoid(PneumaticsModuleType.REVPH, 2);
     
         lowSensor_ = new DigitalInput(0);
         highSensor_ = new DigitalInput(1);
