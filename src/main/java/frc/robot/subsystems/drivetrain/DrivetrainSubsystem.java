@@ -5,6 +5,7 @@
 package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -78,7 +80,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
      * cause the angle reading to increase until it wraps back over to zero.
      */
-    private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
+    private final Pigeon2 m_pigeon = new Pigeon2(DRIVETRAIN_PIGEON_ID);
 
     // These are our modules. We initialize them in the initializeMotors method.
     private SwerveModule m_frontLeftModule;
@@ -125,6 +127,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRightCanCoder.configSensorDirection(true);
         m_backLeftCanCoder.configSensorDirection(true);
         m_backRightCanCoder.configSensorDirection(true);
+
+        m_pigeon.clearStickyFaults();
     }
 
     public void initializeMotors(){
@@ -185,7 +189,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * 'forwards' direction.
      */
     public void zeroGyroscope() {
-        m_pigeon.setFusedHeading(0.0);
+        // m_pigeon.zeroGyroBiasNow();
+        m_pigeon.setYaw(0.0);
     }
 
     /**
@@ -194,7 +199,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  Degreess from the Pigeon (NOT ROTATION2D)
      */
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+        return Rotation2d.fromDegrees(-m_pigeon.getYaw());
+        
     }
 
     /**
@@ -238,6 +244,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(getGyroscopeRotation(), states);
         // System.out.println(getGyroscopeRotation());
+        SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
         // System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);
@@ -246,10 +253,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println("rad/s" + m_chassisSpeeds.omegaRadiansPerSecond);
         // System.out.println("rad state [0] " + states[0].angle.getRadians());
         // System.out.println(m_chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE);
-        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        m_frontLeftModule.set( states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, -1 * states[0].angle.getRadians());
+        m_frontRightModule.set( states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, -1 * states[1].angle.getRadians());
+        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, -1 * states[2].angle.getRadians());
+        m_backRightModule.set( states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, -1 * states[3].angle.getRadians());
     }
 
     /**
