@@ -37,6 +37,8 @@ public class Climber extends SubsystemBase {
     
     private ClimberStates state_;
 
+    private VoltageChecker vc;
+
     private enum ClimberStates {
         IDLE("IDLE"), 
         PIVOT_FORWARD("PIVOT_FORWARD"), 
@@ -85,8 +87,9 @@ public class Climber extends SubsystemBase {
         pivotLeft_.config_kF(0, Constants.PIVOT_KF);
         pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
         //#endregion
-
         state_ = ClimberStates.IDLE;
+
+
     }
 
     @Override
@@ -117,7 +120,8 @@ public class Climber extends SubsystemBase {
             case BACK_PIVOT:
                 nextElevatorCommand = new Elevator(0);
                 nextPivotCommand = new Pivot(-Constants.BAR_THETA);
-                
+                vc = new VoltageChecker(10); // TOOO MOVE
+                vc.add(pivotRight_.getStatorCurrent());
                 if (pivotRight_.getMotorOutputVoltage() > getLastVoltages()) { //THIS PROBABLY ISNT THE RIGHT MAKE IT BETTER PLEASEEE
                     state_ = ClimberStates.RETRACT;
                 }
@@ -167,16 +171,10 @@ public class Climber extends SubsystemBase {
         elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
 
-    public double getLastVoltages() {
-        ArrayList<Double> lastVoltages = new ArrayList<Double>(10);
-        int vI = 0;
-        if (vI >= 10) vI = 0;
-        lastVoltages.set(vI, pivotRight_.getMotorOutputVoltage());
-        double avgVoltage = 0;
-        for(int i = 0; i < lastVoltages.size(); i++)
-            avgVoltage += lastVoltages.get(i);
-        return avgVoltage / lastVoltages.size();
-    }
+    // public double getLastVoltages() {
+
+
+    // }
 
     public static Climber getInstance() {
         if (instance_ == null) {
@@ -186,4 +184,31 @@ public class Climber extends SubsystemBase {
         return instance_;
     }
     //#endregion
+}
+
+
+class VoltageChecker {
+
+    private int sampleSize;
+    private double total = 0d;
+    private int index = 0;
+    private double samples[];
+
+    public VoltageChecker(int sampleSize) {
+        this.sampleSize = sampleSize;
+        samples = new double[sampleSize];
+        for (int i = 0; i < sampleSize; i++) samples[i] = 0d;
+    }
+
+    public void add(double x) {
+        total -= samples[index];
+        samples[index] = x;
+        total += x;
+        if (++index == sampleSize) index = 0;
+    }
+
+    public double getAverage() {
+        return total / sampleSize;
+    }   
+    
 }
