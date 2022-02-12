@@ -37,13 +37,23 @@ public class Climber extends SubsystemBase {
     
     private ClimberStates state_;
 
-    enum ClimberStates {
-        IDLE, 
-        PIVOT_FORWARD, 
-        EXTEND_HOOK, 
-        BACK_PIVOT, 
-        RETRACT, 
-        STABILIZE;
+    private enum ClimberStates {
+        IDLE("IDLE"), 
+        PIVOT_FORWARD("PIVOT_FORWARD"), 
+        EXTEND_HOOK("EXTEND_HOOK"), 
+        BACK_PIVOT("BACK_PIVOT"), 
+        RETRACT("RETRACT"), 
+        STABILIZE("STABILIZE");
+
+        String state_name;
+
+        private ClimberStates(String name) {
+            this.state_name = name;
+        }
+
+        public String toString() {
+            return this.state_name;
+        }
     }
 
     private Climber() {
