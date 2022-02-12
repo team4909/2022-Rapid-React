@@ -9,6 +9,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 public class Neo550Roller implements Sendable {
 
     private final CANSparkMax roller_;
+    
 
     public Neo550Roller(int canID, boolean inverted) {
         roller_ = new CANSparkMax(canID, MotorType.kBrushless);

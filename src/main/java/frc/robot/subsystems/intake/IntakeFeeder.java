@@ -34,9 +34,9 @@ public class IntakeFeeder extends SubsystemBase {
     // Object instance
     private static IntakeFeeder instance_ = null;
 
-    private final Neo550Roller intakeWheels_;
-    private final Neo550Roller centeringWheel_;
-    private final Neo550Roller feederWheel_;
+    private CANSparkMax intakeWheels_;
+    private CANSparkMax centeringWheel_;
+    private CANSparkMax feederWheel_;
 
     private final Solenoid intakeExtension_;
 
@@ -58,9 +58,10 @@ public class IntakeFeeder extends SubsystemBase {
 
 
     private IntakeFeeder() {
-        intakeWheels_ = new Neo550Roller(16, false);
-        centeringWheel_ = new Neo550Roller(18, false);
-        feederWheel_ = new Neo550Roller(17, false);
+        intakeWheels_ = new CANSparkMax(16, MotorType.kBrushless);
+        intakeWheels_.restoreFactoryDefaults();
+        centeringWheel_ = new CANSparkMax(18, MotorType.kBrushless);
+        feederWheel_ = new CANSparkMax(17, MotorType.kBrushless);
 
         intakeExtension_ = new Solenoid(PneumaticsModuleType.REVPH, 2);
     
@@ -139,17 +140,17 @@ public class IntakeFeeder extends SubsystemBase {
         switch (currentState_) {
             case kIdle:
                 // Everything is idle, nothing runs
-                intakeWheels_.stop();
-                centeringWheel_.stop();
-                feederWheel_.stop();
+                intakeWheels_.set(0.0);
+                centeringWheel_.set(0.0);
+                feederWheel_.set(0.0);
                 break;
             case kIdleFeeder:
                 // Only go to this state between intaking balls one and two. Could be better named
                 // to "IntermediateIntake" or something if that's better
-                feederWheel_.stop();
+                feederWheel_.set(0.0);
                 // Continue running the intaking and centering wheels until there's another ball seen
-                intakeWheels_.run(Constants.kIntakeForwardVoltage);
-                centeringWheel_.run(Constants.kCenteringWheelForwardVoltage);
+                intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
+                centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
                 if (incomingSeen) {
                     // Set state to get the next ball
                     currentState_ = IntakeState.kIntakeSecond;
@@ -157,9 +158,9 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kIntakeFirst:
                 // Run everything to get first ball into position
-                intakeWheels_.run(Constants.kIntakeForwardVoltage);
-                centeringWheel_.run(Constants.kCenteringWheelForwardVoltage);
-                feederWheel_.run(Constants.kFeederFeedingVoltage);
+                intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
+                centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
+                feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
                 if (firstBallSeen) {
                     // Want to keep running the intake, but not the feeder
                     currentState_ = IntakeState.kIdleFeeder;
@@ -170,10 +171,10 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kIntakeSecond:
                 // Keep running intake, but now know the second ball is at least in the robot
-                intakeWheels_.run(Constants.kIntakeForwardVoltage);
-                centeringWheel_.run(Constants.kCenteringWheelForwardVoltage);
+                intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
+                centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
                 // Have already checked to make sure that the fender wheel should be running                
-                feederWheel_.run(Constants.kFeederFeedingVoltage);
+                feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
                 // Stop feeder if either two balls reach the position
                 // Might need more complex logic, depends on the geometry but should be fine for testing
                 if (firstBallSeen || feederBallSeen ) {
@@ -184,9 +185,9 @@ public class IntakeFeeder extends SubsystemBase {
                 }
                 break;
             case kShootBalls:
-                intakeWheels_.stop();
-                centeringWheel_.run(Constants.kCenteringWheelForwardVoltage);
-                feederWheel_.run(Constants.kFeederShootingVoltage);
+                intakeWheels_.set(0.0);
+                centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
+                feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 // TODO due to change in sensors. Ignore for now in testing
                 // Don't need to count them right now
                 // if(countFalling(firstBallSeen) >= 2) {
@@ -198,8 +199,8 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kReverseWrongBall:
                 // Reverse the motors
-                intakeWheels_.run(Constants.kIntakeReverseVotlage);
-                centeringWheel_.run(Constants.kCenteringWheelReverseVotlage);
+                intakeWheels_.setVoltage(Constants.kIntakeReverseVotlage);
+                centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVotlage);
                 break;
             default:
                 break;
