@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-// import com.swervedrivespecialties.swervelib.ModuleConfiguration;
-// import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-// import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
+import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
 
 import frc.robot.utils.Conversion;
 
@@ -44,13 +44,13 @@ public final class Constants {
      * 
      * From L1-L4
      */
-    // public static final GearRatio GEAR_RATIO = GearRatio.L2;
+    public static final GearRatio GEAR_RATIO = GearRatio.L2;
     /**
      * The type of Swerve Module used
      * 
      * From L1-L4
      */
-    // public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
+    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
 
     /**
      * CAN ID of the PigeonIMU

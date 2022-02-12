@@ -8,8 +8,8 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-// import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
-// import com.swervedrivespecialties.swervelib.SwerveModule;
+import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,9 +54,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * <p>
      * This is a measure of how fast the robot should be able to drive in a straight line.
      */
-    // public static final double MAX_VELOCITY_METERS_PER_SECOND = Constants.FALCON_500_FREE_SPEED / 60.0 *
-    //         MODULE_CONFIGURATION.getDriveReduction() *
-    //         MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = Constants.FALCON_500_FREE_SPEED / 60.0 *
+            MODULE_CONFIGURATION.getDriveReduction() *
+            MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
     /**
      * The maximum angular velocity of the robot in radians per second.
      * <p>
@@ -87,7 +87,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // private SwerveModule m_frontLeftModule;
     // private SwerveModule m_frontRightModule;
     // private SwerveModule m_backLeftModule;
-    // private SwerveModule m_backRightModule;
+    private SwerveModule m_backRightModule;
 
     // Absolute Cancoders (1 per module)
     private CANCoder m_frontLeftCanCoder;
@@ -132,7 +132,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.clearStickyFaults();
     }
 
-    // public void initializeMotors(){
+    public void initializeMotors(){
     //     m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
     //         // Allows you to see the current state of the module on the dashboard.
     //         m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
@@ -173,17 +173,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
     //     );
         
 
-    //     m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
-    //         m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
-    //                 .withSize(1, 4)
-    //                 .withPosition(6, 0),
-    //         GEAR_RATIO,
-    //         BACK_RIGHT_DRIVE_MOTOR,
-    //         BACK_RIGHT_STEER_MOTOR,
-    //         BACK_RIGHT_STEER_ENCODER,
-    //         BACK_RIGHT_STEER_OFFSET
-    //     );
-    // }
+        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
+            m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
+                    .withSize(1, 4)
+                    .withPosition(6, 0),
+            GEAR_RATIO,
+            BACK_RIGHT_DRIVE_MOTOR,
+            BACK_RIGHT_STEER_MOTOR,
+            BACK_RIGHT_STEER_ENCODER,
+            BACK_RIGHT_STEER_OFFSET
+        );
+    }
 
     /**
      * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
