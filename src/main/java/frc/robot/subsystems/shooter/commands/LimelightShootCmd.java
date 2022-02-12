@@ -30,7 +30,7 @@ public class LimelightShootCmd extends CommandBase{
         // Get goal from limelight, and send to the shooter as the velocity goal
         // Might want to set a default if the limelight can't calculate a goal due to a blockage or something
         goal_ = vision_.getVelocityGoal();
-        shooter_.setVelocityGoal(goal_); 
+        shooter_.setVelocityGoal(goal_, false); 
 
         if (shooter_.spunUp()) {
         // Just make sure that the intake runs for the shot

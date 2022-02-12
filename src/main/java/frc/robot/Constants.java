@@ -100,18 +100,23 @@ public final class Constants {
     // Superstructure Constants
     // TODO Change if needed
     public static final double kIntakeForwardVoltage = -6.0;
-    public static final double kIntakeReverseVoltage = 12.0;
-    public static final double kFeederFeedingVoltage = 6.0;
+    public static final double kIntakeReverseVoltage = 6.0;
+    public static final double kFeederFeedingVoltage = 8.0;
     public static final double kFeederShootingVoltage = 12.0;
     public static final double kFeederReverseVoltage = -6.0;
     // TODO to invert these properly
     public static final double kCenteringWheelForwardVoltage = -12.0;
-    public static final double kCenteringWheelReverseVoltage = 12.0;
+    public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 3000;
-    public static final double kTarmacShotVelocity = 5000;
-    public static final double kLongShotVelocity = 6500; 
+    public static final double kFenderShotVelocity = 4300;
+    // public static final double kTarmacShotVelocity = 5000;
+    // public static final double kLongShotVelocity = 6500; 
+
+    public static final double kShooterP = 0.1;
+    public static final double kShooterI = 0;
+    public static final double kShooterD = 0;
+    public static final double kShooterFF = 0.04;
 
 
    }

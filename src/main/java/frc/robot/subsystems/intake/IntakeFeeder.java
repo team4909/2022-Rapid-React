@@ -1,12 +1,12 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -65,15 +65,16 @@ public class IntakeFeeder extends SubsystemBase {
 
     private IntakeFeeder() {
         intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
-        intakeWheels_.restoreFactoryDefaults();
         centeringWheel_ = new CANSparkMax(16, MotorType.kBrushless);
         feederWheel_ = new CANSparkMax(17, MotorType.kBrushless);
 
+        feederWheel_.setIdleMode(IdleMode.kBrake);
+
         intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
     
-        lowSensor_ = new DigitalInput(0);
-        highSensor_ = new DigitalInput(1);
         incomingSensor_ = new DigitalInput(2);
+        lowSensor_ = new DigitalInput(1);
+        highSensor_ = new DigitalInput(0);
 
         currentState_ = IntakeState.kIdle;
         lastState_ = IntakeState.kIdle;
@@ -92,7 +93,7 @@ public class IntakeFeeder extends SubsystemBase {
         intakeSolenoidState_ = true;
         switch (ballsHeld_) {
             case kZero:
-                currentState_ = IntakeState.kIntakeFirst;
+                currentState_ = IntakeState.kIntakeFirst; // Change back to intake first
                 break;
             case kOne:
                 currentState_ = IntakeState.kIdleFeeder;
@@ -137,9 +138,13 @@ public class IntakeFeeder extends SubsystemBase {
     public void periodic() {
 
         // Get all the readings from the sensors each tick so we know what's changed
-        boolean firstBallSeen = lowSensor_.get();
-        boolean feederBallSeen = highSensor_.get();
-        boolean incomingSeen = incomingSensor_.get();
+        boolean firstBallSeen = !lowSensor_.get();
+        boolean feederBallSeen = !highSensor_.get();
+        boolean incomingSeen = !incomingSensor_.get();
+        //Smart Dashboard outputs
+        SmartDashboard.putBoolean("First Ball Seen", firstBallSeen);
+        SmartDashboard.putBoolean("Feeder Ball Seen", feederBallSeen);
+        SmartDashboard.putBoolean("Incoming Seen", incomingSeen);
         // Set the solenoid to be in it's state
         // Because it's a single acting solenoid it needs to be continously set
         // otherwise it reverts to the default state
@@ -159,7 +164,7 @@ public class IntakeFeeder extends SubsystemBase {
                 // Continue running the intaking and centering wheels until there's another ball seen
                 intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
-                if (incomingSeen) {
+                if (incomingSeen && (ballsHeld_ != BallCount.kTwo)) {
                     // Set state to get the next ball
                     currentState_ = IntakeState.kIntakeSecond;
                 }
@@ -169,13 +174,13 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
                 feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
-                // if (firstBallSeen) {
-                //     // Want to keep running the intake, but not the feeder
-                //     currentState_ = IntakeState.kIdleFeeder;
-                //     ballsHeld_ = BallCount.kOne;
-                //     // Not doing this yet, but for the future driver feedback
-                //     rumble_ = true;
-                // }
+                if (firstBallSeen) {
+                    // Want to keep running the intake, but not the feeder
+                    currentState_ = IntakeState.kIdleFeeder;
+                    ballsHeld_ = BallCount.kOne;
+                    // Not doing this yet, but for the future driver feedback
+                    rumble_ = true;
+                }
                 break;
             case kIntakeSecond:
                 // Keep running intake, but now know the second ball is at least in the robot
@@ -185,7 +190,7 @@ public class IntakeFeeder extends SubsystemBase {
                 feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
                 // Stop feeder if either two balls reach the position
                 // Might need more complex logic, depends on the geometry but should be fine for testing
-                if (firstBallSeen || feederBallSeen ) {
+                if (feederBallSeen ) {
                     currentState_ = IntakeState.kIdleFeeder;
                     ballsHeld_ = BallCount.kTwo;
                     // Not doing this yet, but for the future driver feedback
@@ -200,13 +205,15 @@ public class IntakeFeeder extends SubsystemBase {
                 // Don't need to count them right now
                 // if(countFalling(firstBallSeen) >= 2) {
                 //     fallingEdges = 0;
-                //     ballsHeld_ = BallCount.kZero;
+                // TODO fix this logic later
+                ballsHeld_ = BallCount.kZero;
                 //     currentState_ = IntakeState.kIdle;
                 // }
                 
                 break;
             case kReverseWrongBall:
                 // Reverse the motors
+                ballsHeld_ = BallCount.kZero; // TODO fix with actually counting balls with sensors
                 intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVoltage);
                 feederWheel_.setVoltage(Constants.kFeederReverseVoltage);

@@ -111,7 +111,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
         initilizeEncoders();
-        // initializeMotors();       
+        initializeMotors();       
     }
 
     public void initilizeEncoders(){

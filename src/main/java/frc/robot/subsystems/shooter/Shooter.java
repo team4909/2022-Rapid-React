@@ -4,8 +4,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class Shooter extends SubsystemBase {
 
@@ -14,19 +17,22 @@ public class Shooter extends SubsystemBase {
 
     private final TalonFX leader_;
     private final TalonFX follower_;
+    private final Solenoid hoodSolenoid_;
 
     // Constants
     private final static int kTimeoutMs = 100;
     private static double kFlywheelVelocityConversion = 600.0 / 2048.0; // native units to rpm
-    private final static int kShooterTolerance = 100; //
+    private final static int kShooterTolerance = 75; //
 
     // State of the shooter
     private static double goalDemand_ = 0.0;
     private static boolean runningOpenLoop_ = false;
+    private static boolean hoodUp_ = false;
 
     private Shooter() {
         leader_ = new TalonFX(13);
         follower_ = new TalonFX(14);
+        hoodSolenoid_ = new Solenoid(PneumaticsModuleType.REVPH, 2);
 
         // General Motor Configuration for the TalonFXs
         leader_.clearStickyFaults(kTimeoutMs);
@@ -46,10 +52,10 @@ public class Shooter extends SubsystemBase {
         // TODO: set inverted 
 
         // Control Loop Configuration
-        leader_.config_kP(0, 0.3, kTimeoutMs);
-        leader_.config_kI(0, 0, kTimeoutMs);
-        leader_.config_kD(0, 0, kTimeoutMs);
-        leader_.config_kF(0, 0.2, kTimeoutMs);
+        leader_.config_kP(0, Constants.kShooterP, kTimeoutMs);
+        leader_.config_kI(0, Constants.kShooterI, kTimeoutMs);
+        leader_.config_kD(0, Constants.kShooterD, kTimeoutMs);
+        leader_.config_kF(0, Constants.kShooterFF, kTimeoutMs);
         leader_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
         leader_.selectProfileSlot(0, 0);
         leader_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
@@ -76,9 +82,10 @@ public class Shooter extends SubsystemBase {
         runningOpenLoop_ = true;
     }
 
-    public void setVelocityGoal(double goal) {
+    public void setVelocityGoal(double goal, boolean hoodUp) {
         goalDemand_ = goal;
         runningOpenLoop_ = false;
+        hoodUp_ = hoodUp;
     }
 
     public boolean spunUp() {
@@ -91,6 +98,7 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        hoodSolenoid_.set(hoodUp_);
         if (!runningOpenLoop_) {
             leader_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
         } else {
