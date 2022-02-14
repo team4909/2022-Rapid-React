@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.commands.ClimberOut;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
@@ -41,7 +43,7 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    
+    private final Climber climber_ = Climber.getInstance();
     private final XboxController m_controller = new XboxController(0);
 
   /**
@@ -74,9 +76,11 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
-        new Button(m_controller::getBackButton)
-                // No requirements because we don't need to interrupt anything
-                .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
+        new Button(m_controller::getAButton).whenPressed(climber_::start);
+        new Button(m_controller::getBButton).whenPressed(new ClimberOut());
+        
+        
     }
 
   /**
@@ -86,7 +90,7 @@ public class RobotContainer {
  * @throws IOException
    */
     public Command getAutonomousCommand() {
-
+        //TODO Implement sendable chooser
         return new FourBallTest();
     }
 

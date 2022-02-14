@@ -35,9 +35,11 @@ public class Climber extends SubsystemBase {
     public boolean m_isAtPivotGoal;
     public boolean m_isAtElevatorGoal;
     
+    private boolean start_ = false;
+
     private ClimberStates state_;
 
-    private VoltageChecker vc;
+    private VoltageTracker vc;
 
     private enum ClimberStates {
         IDLE("IDLE"), 
@@ -97,6 +99,7 @@ public class Climber extends SubsystemBase {
         CommandBase nextPivotCommand = null;
         CommandBase nextElevatorCommand = null;
 
+        if (start_ = true) {
         //#region State Machine
         switch (state_) {
             case IDLE:
@@ -120,11 +123,15 @@ public class Climber extends SubsystemBase {
             case BACK_PIVOT:
                 nextElevatorCommand = new Elevator(0);
                 nextPivotCommand = new Pivot(-Constants.BAR_THETA);
-                vc = new VoltageChecker(10); // TOOO MOVE
-                vc.add(pivotRight_.getStatorCurrent());
-                if (pivotRight_.getMotorOutputVoltage() > getLastVoltages()) { //THIS PROBABLY ISNT THE RIGHT MAKE IT BETTER PLEASEEE
-                    state_ = ClimberStates.RETRACT;
+                if (vc == null) new VoltageTracker(10);
+                vc.add(pivotRight_.getMotorOutputVoltage());
+                if (vc.sampleFull == true) {
+                    if (pivotRight_.getMotorOutputVoltage() > (vc.getAverage() * 2)) { //If the current voltage is equal to double the average before it
+                        vc = null; //Get rid of current Voltage Tracker instance
+                        state_ = ClimberStates.RETRACT;
+                    }
                 }
+
                 break;
             case RETRACT:
                 nextElevatorCommand = new Elevator(0);
@@ -144,11 +151,14 @@ public class Climber extends SubsystemBase {
                 nextElevatorCommand = new Elevator(0);
                 break;
         }
+    
         //#endregion
 
         SmartDashboard.putString("Current State", state_.toString());
         nextPivotCommand.schedule();
         nextElevatorCommand.schedule();
+        }
+        start_ = false;
     }
 
     //#region Class Methods
@@ -171,10 +181,29 @@ public class Climber extends SubsystemBase {
         elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
 
+    public void climberDeploy() {
+        pivotRight_.set(ControlMode.PercentOutput, 0.3); //Deploy at 30%
+        if (vc == null) new VoltageTracker(10);
+        vc.add(pivotRight_.getMotorOutputVoltage());
+        if (vc.sampleFull == true) {
+            if (pivotRight_.getMotorOutputVoltage() > (vc.getAverage() * 2)) { //If the current voltage is equal to double the average before it
+                vc = null; //Get rid of current Voltage Tracker instance
+            }
+        }
+
+    }
+
     // public double getLastVoltages() {
 
 
     // }
+
+    public void setState(ClimberStates state) {
+        state_ = state;
+    }
+    public void start() {
+        start_ = true;
+    }
 
     public static Climber getInstance() {
         if (instance_ == null) {
@@ -187,14 +216,16 @@ public class Climber extends SubsystemBase {
 }
 
 
-class VoltageChecker {
+class VoltageTracker {
 
     private int sampleSize;
     private double total = 0d;
     private int index = 0;
     private double samples[];
 
-    public VoltageChecker(int sampleSize) {
+    public boolean sampleFull = false;
+
+    public VoltageTracker(int sampleSize) {
         this.sampleSize = sampleSize;
         samples = new double[sampleSize];
         for (int i = 0; i < sampleSize; i++) samples[i] = 0d;
@@ -204,11 +235,15 @@ class VoltageChecker {
         total -= samples[index];
         samples[index] = x;
         total += x;
-        if (++index == sampleSize) index = 0;
+        if (++index == sampleSize) {
+            index = 0;
+            sampleFull = true;
+        }
     }
 
     public double getAverage() {
         return total / sampleSize;
     }   
+
     
 }
