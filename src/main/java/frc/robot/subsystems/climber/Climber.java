@@ -213,37 +213,38 @@ public class Climber extends SubsystemBase {
         return instance_;
     }
     //#endregion
-}
 
+    class VoltageTracker {
 
-class VoltageTracker {
-
-    private int sampleSize;
-    private double total = 0d;
-    private int index = 0;
-    private double samples[];
-
-    public boolean sampleFull = false;
-
-    public VoltageTracker(int sampleSize) {
-        this.sampleSize = sampleSize;
-        samples = new double[sampleSize];
-        for (int i = 0; i < sampleSize; i++) samples[i] = 0d;
-    }
-
-    public void add(double x) {
-        total -= samples[index];
-        samples[index] = x;
-        total += x;
-        if (++index == sampleSize) {
-            index = 0;
-            sampleFull = true;
-        }
-    }
-
-    public double getAverage() {
-        return total / sampleSize;
-    }   
-
+        private int sampleSize;
+        private double total = 0d;
+        private int index = 0;
+        private double samples[];
     
+        public boolean sampleFull = false;
+    
+        public VoltageTracker(int sampleSize) {
+            this.sampleSize = sampleSize;
+            samples = new double[sampleSize];
+            for (int i = 0; i < sampleSize; i++) samples[i] = 0d;
+        }
+    
+        public void add(double x) {
+            total -= samples[index];
+            samples[index] = x;
+            total += x;
+            if (++index == sampleSize) {
+                index = 0;
+                sampleFull = true;
+            }
+        }
+    
+        public double getAverage() {
+            return total / sampleSize;
+        }   
+    
+        
+    }
 }
+
+
