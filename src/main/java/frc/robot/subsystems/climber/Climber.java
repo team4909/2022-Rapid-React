@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
@@ -9,8 +10,12 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.climber.commands.Elevator;
@@ -32,14 +37,17 @@ public class Climber extends SubsystemBase {
     private SparkMaxPIDController elevatorController_;
 
     //isDone flags
-    public boolean m_isAtPivotGoal;
+    private boolean climberDeployed_ = false;
     public boolean m_isAtElevatorGoal;
     
     private boolean start_ = false;
 
     private ClimberStates state_;
 
-    private VoltageTracker vc;
+    private VoltageTracker voltageTracker_;
+
+    private BooleanSupplier isPivoted;
+
 
     private enum ClimberStates {
         IDLE("IDLE"), 
@@ -89,6 +97,8 @@ public class Climber extends SubsystemBase {
         pivotLeft_.config_kF(0, Constants.PIVOT_KF);
         pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
         //#endregion
+
+        voltageTracker_ = new VoltageTracker(10);
         state_ = ClimberStates.IDLE;
 
 
@@ -123,13 +133,10 @@ public class Climber extends SubsystemBase {
             case BACK_PIVOT:
                 nextElevatorCommand = new Elevator(0);
                 nextPivotCommand = new Pivot(-Constants.BAR_THETA);
-                if (vc == null) new VoltageTracker(10);
-                vc.add(pivotRight_.getMotorOutputVoltage());
-                if (vc.sampleFull == true) {
-                    if (pivotRight_.getMotorOutputVoltage() > (vc.getAverage() * 2)) { //If the current voltage is equal to double the average before it
-                        vc = null; //Get rid of current Voltage Tracker instance
+                double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
+                if (pivotRight_.getMotorOutputVoltage() > (avgV * 2)) { //If the current voltage is equal to double the average before it
+                        voltageTracker_.reset();
                         state_ = ClimberStates.RETRACT;
-                    }
                 }
 
                 break;
@@ -181,29 +188,25 @@ public class Climber extends SubsystemBase {
         elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
 
-    public void climberDeploy() {
-        pivotRight_.set(ControlMode.PercentOutput, 0.3); //Deploy at 30%
-        if (vc == null) new VoltageTracker(10);
-        vc.add(pivotRight_.getMotorOutputVoltage());
-        if (vc.sampleFull == true) {
-            if (pivotRight_.getMotorOutputVoltage() > (vc.getAverage() * 2)) { //If the current voltage is equal to double the average before it
-                vc = null; //Get rid of current Voltage Tracker instance
-            }
-        }
-
-    }
-
-    // public double getLastVoltages() {
-
-
-    // }
-
     public void setState(ClimberStates state) {
         state_ = state;
     }
+    
     public void start() {
         start_ = true;
     }
+
+    private void climberDeploy(boolean out) {
+        pivotRight_.set(ControlMode.PercentOutput, out ? 0.3 : -0.3);
+        //Deploy at 30%
+        double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
+        isPivoted = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
+        if (isPivoted.getAsBoolean()) {
+            voltageTracker_.reset();
+        }
+        
+    }
+
 
     public static Climber getInstance() {
         if (instance_ == null) {
@@ -214,36 +217,31 @@ public class Climber extends SubsystemBase {
     }
     //#endregion
 
+    
+    public CommandGroupBase ExtendClimber() {
+        return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isPivoted);
+    }
+
+    public CommandGroupBase RetractClimber() {
+        return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isPivoted);
+    }
+
+    //Wrapper class for a WPILib Median Filter
     class VoltageTracker {
 
-        private int sampleSize;
-        private double total = 0d;
-        private int index = 0;
-        private double samples[];
-    
-        public boolean sampleFull = false;
+        private MedianFilter medianFilter_;
     
         public VoltageTracker(int sampleSize) {
-            this.sampleSize = sampleSize;
-            samples = new double[sampleSize];
-            for (int i = 0; i < sampleSize; i++) samples[i] = 0d;
+            medianFilter_ = new MedianFilter(sampleSize);
         }
-    
-        public void add(double x) {
-            total -= samples[index];
-            samples[index] = x;
-            total += x;
-            if (++index == sampleSize) {
-                index = 0;
-                sampleFull = true;
-            }
-        }
-    
-        public double getAverage() {
-            return total / sampleSize;
-        }   
-    
         
+        public double calculate(double next) {
+            return this.medianFilter_.calculate(next);
+        }
+
+        public void reset() {
+            this.medianFilter_.reset();
+        }
     }
 }
 

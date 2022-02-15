@@ -77,9 +77,8 @@ public class RobotContainer {
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
         new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
-        new Button(m_controller::getAButton).whenPressed(climber_::start);
-        new Button(m_controller::getBButton).whenPressed(new ClimberOut());
-        
+        new Button(m_controller::getAButton).whenPressed(climber_::ExtendClimber);
+        new Button(m_controller::getBButton).whenPressed(climber_::RetractClimber);
         
     }
 
