@@ -79,7 +79,8 @@ public class RobotContainer {
         new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         new Button(m_controller::getAButton).whenPressed(climber_::ExtendClimber);
         new Button(m_controller::getBButton).whenPressed(climber_::RetractClimber);
-        
+        new Button(m_controller::getXButton).whenPressed(climber_::StartRoutine);
+        new Button(m_controller::getYButton).whenPressed(climber_::StopRoutine);
     }
 
   /**

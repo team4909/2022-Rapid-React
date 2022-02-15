@@ -14,6 +14,7 @@ import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -39,14 +40,13 @@ public class Climber extends SubsystemBase {
     //isDone flags
     private boolean climberDeployed_ = false;
     public boolean m_isAtElevatorGoal;
-    
-    private boolean start_ = false;
 
     private ClimberStates state_;
 
     private VoltageTracker voltageTracker_;
 
-    private BooleanSupplier isPivoted;
+    private BooleanSupplier isPivoted_;    
+    private BooleanSupplier shouldRun_;
 
 
     private enum ClimberStates {
@@ -98,6 +98,9 @@ public class Climber extends SubsystemBase {
         pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
         //#endregion
 
+        isPivoted_ = () -> false;
+        shouldRun_ = () -> true;
+
         voltageTracker_ = new VoltageTracker(10);
         state_ = ClimberStates.IDLE;
 
@@ -106,10 +109,49 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
+        
+        
+    }
+
+    //#region Class Methods
+    private double getPivotDegrees() {
+        return elevatorRight_.getEncoder().getPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
+    }
+    
+    private double getElevatorInches() {
+        return pivotRight_.getSelectedSensorPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
+    }
+
+    private boolean inTolerance(double value, double min, double max) {
+        return value < max && value > min;
+    }
+
+    public void setPivotGoal(double goal) {
+        pivotRight_.set(ControlMode.Position, goal * Constants.TICKS_PER_PIVOT_DEGREE);
+    } 
+    public void setElevatorGoal(double goal) {
+        elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
+    }
+
+    public void setState(ClimberStates state) {
+        state_ = state;
+    }
+
+
+    private void climberDeploy(boolean out) {
+        pivotRight_.set(ControlMode.PercentOutput, out ? 0.3 : -0.3); //Deploy at 30%
+        double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
+        isPivoted_ = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
+        if (isPivoted_.getAsBoolean()) {
+            voltageTracker_.reset();
+        }
+        
+    }
+
+    private void runRoutine() {
         CommandBase nextPivotCommand = null;
         CommandBase nextElevatorCommand = null;
-
-        if (start_ = true) {
+        
         //#region State Machine
         switch (state_) {
             case IDLE:
@@ -138,7 +180,6 @@ public class Climber extends SubsystemBase {
                         voltageTracker_.reset();
                         state_ = ClimberStates.RETRACT;
                 }
-
                 break;
             case RETRACT:
                 nextElevatorCommand = new Elevator(0);
@@ -158,55 +199,17 @@ public class Climber extends SubsystemBase {
                 nextElevatorCommand = new Elevator(0);
                 break;
         }
-    
+        nextPivotCommand.schedule();
+        nextElevatorCommand.schedule();
         //#endregion
 
         SmartDashboard.putString("Current State", state_.toString());
-        nextPivotCommand.schedule();
-        nextElevatorCommand.schedule();
-        }
-        start_ = false;
+
     }
 
-    //#region Class Methods
-    private double getPivotDegrees() {
-        return elevatorRight_.getEncoder().getPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
+    private void stopRoutine() {
+        shouldRun_ = () -> false;
     }
-    
-    private double getElevatorInches() {
-        return pivotRight_.getSelectedSensorPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
-    }
-
-    private boolean inTolerance(double value, double min, double max) {
-        return value < max && value > min;
-    }
-
-    public void setPivotGoal(double goal) {
-        pivotRight_.set(ControlMode.Position, goal * Constants.TICKS_PER_PIVOT_DEGREE);
-    } 
-    public void setElevatorGoal(double goal) {
-        elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
-    }
-
-    public void setState(ClimberStates state) {
-        state_ = state;
-    }
-    
-    public void start() {
-        start_ = true;
-    }
-
-    private void climberDeploy(boolean out) {
-        pivotRight_.set(ControlMode.PercentOutput, out ? 0.3 : -0.3);
-        //Deploy at 30%
-        double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
-        isPivoted = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
-        if (isPivoted.getAsBoolean()) {
-            voltageTracker_.reset();
-        }
-        
-    }
-
 
     public static Climber getInstance() {
         if (instance_ == null) {
@@ -217,14 +220,25 @@ public class Climber extends SubsystemBase {
     }
     //#endregion
 
-    
+    //#region Commands
     public CommandGroupBase ExtendClimber() {
-        return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isPivoted);
+        return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isPivoted_);
     }
 
     public CommandGroupBase RetractClimber() {
-        return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isPivoted);
+        return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isPivoted_);
     }
+
+    public CommandGroupBase StartRoutine() {
+        return new RunCommand(this::runRoutine, this).withInterrupt(shouldRun_);
+    }
+
+    public CommandBase StopRoutine() {
+        return new InstantCommand(this::stopRoutine, this);
+    }
+
+
+    //#endregion
 
     //Wrapper class for a WPILib Median Filter
     class VoltageTracker {
