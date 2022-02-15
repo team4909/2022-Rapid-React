@@ -36,14 +36,14 @@ public class ShootCmd extends CommandBase{
     public void execute() {
         shooter_.setVelocityGoal(goal_, hoodUp_); 
 
-        // if (shooter_.spunUp() && timer_.get() == 0) {
-            // timer_.start();
+        if (shooter_.spunUp() && timer_.get() == 0) {
+            timer_.start();
         // Just make sure that the intake runs for the shot
-        // }    
-        // if (timer_.get() > 1.5) {
+        }    
+        if (timer_.get() > 1.5) {
             if (shooter_.spunUp())
                 intakeFeeder_.shoot();
-        // }
+        }
 
         SmartDashboard.putNumber("Timer time", timer_.get());
         
