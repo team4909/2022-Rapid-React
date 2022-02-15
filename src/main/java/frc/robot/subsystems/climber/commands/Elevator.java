@@ -22,9 +22,4 @@ public class Elevator extends CommandBase {
         climber_.setPivotGoal(goal_);
     }
 
-    @Override
-    public boolean isFinished() {
-        return climber_.m_isAtElevatorGoal;
-    }
-
 }

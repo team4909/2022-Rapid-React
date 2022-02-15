@@ -1,6 +1,5 @@
 package frc.robot.subsystems.climber;
 
-import java.util.ArrayList;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -11,11 +10,12 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,6 +25,7 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class Climber extends SubsystemBase {
 
+    //#region Member Variables
     private static Climber instance_ = null;
     private static final int kTimeoutMs = 100;
     private static final double kVelocityConversion = 600 / 2048d;
@@ -37,8 +38,6 @@ public class Climber extends SubsystemBase {
 
     private SparkMaxPIDController elevatorController_;
 
-    //isDone flags
-    private boolean climberDeployed_ = false;
     public boolean m_isAtElevatorGoal;
 
     private ClimberStates state_;
@@ -48,6 +47,8 @@ public class Climber extends SubsystemBase {
     private BooleanSupplier isPivoted_;    
     private BooleanSupplier shouldRun_;
 
+    private ShuffleboardTab tab = Shuffleboard.getTab("Driver");
+    //#endregion
 
     private enum ClimberStates {
         IDLE("IDLE"), 
@@ -107,7 +108,6 @@ public class Climber extends SubsystemBase {
 
     }
 
-    @Override
     public void periodic() {
         
         
@@ -210,14 +210,6 @@ public class Climber extends SubsystemBase {
     private void stopRoutine() {
         shouldRun_ = () -> false;
     }
-
-    public static Climber getInstance() {
-        if (instance_ == null) {
-            instance_ = new Climber();
-        }
-
-        return instance_;
-    }
     //#endregion
 
     //#region Commands
@@ -240,6 +232,14 @@ public class Climber extends SubsystemBase {
 
     //#endregion
 
+    public static Climber getInstance() {
+        if (instance_ == null) {
+            instance_ = new Climber();
+        }
+
+        return instance_;
+    }
+
     //Wrapper class for a WPILib Median Filter
     class VoltageTracker {
 
@@ -258,5 +258,3 @@ public class Climber extends SubsystemBase {
         }
     }
 }
-
-

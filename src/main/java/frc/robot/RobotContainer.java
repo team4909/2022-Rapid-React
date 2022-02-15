@@ -22,11 +22,13 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.commands.ClimberOut;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
@@ -46,12 +48,15 @@ public class RobotContainer {
     private final Climber climber_ = Climber.getInstance();
     private final XboxController m_controller = new XboxController(0);
 
+
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
     
+    // Create the driver tab
+    Shuffleboard.getTab("Driver");
+
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
@@ -76,12 +81,15 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
-        new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
-        new Button(m_controller::getAButton).whenPressed(climber_::ExtendClimber);
-        new Button(m_controller::getBButton).whenPressed(climber_::RetractClimber);
+        new POVButton(m_controller, 90);
+        // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
+        //All these will be on the operator controller
+        new Button(m_controller::getBackButton).whenPressed(climber_::ExtendClimber);
+        new Button(m_controller::getStartButton).whenPressed(climber_::RetractClimber);
         new Button(m_controller::getXButton).whenPressed(climber_::StartRoutine);
-        new Button(m_controller::getYButton).whenPressed(climber_::StopRoutine);
+        new Button(m_controller::getYButton).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
     }
+    
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
