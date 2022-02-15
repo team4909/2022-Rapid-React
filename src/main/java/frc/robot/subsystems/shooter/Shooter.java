@@ -98,7 +98,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        hoodSolenoid_.set(hoodUp_);
+        // hoodSolenoid_.set(hoodUp_);
+        hoodSolenoid_.set(true);
         if (!runningOpenLoop_) {
             leader_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
         } else {

@@ -37,14 +37,14 @@ import frc.robot.subsystems.vision.VisionSubsystem;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    // private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
+    private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
     
-    // private final XboxController m_driverController = new XboxController(0);
+    private final XboxController m_driverController = new XboxController(0);
     private final XboxController m_operatorController = new XboxController(1);
 
  
@@ -58,12 +58,12 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-    //         m_drivetrainSubsystem,
-    //         () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //         () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    // ));
+    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+            m_drivetrainSubsystem,
+            () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+    ));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -84,9 +84,9 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
-        // new Button(m_driverController::getBackButton)
-        //         // No requirements because we don't need to interrupt anything
-        //         .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        new Button(m_driverController::getBackButton)
+                // No requirements because we don't need to interrupt anything
+                .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
         
         // TODO No idea if this is how we are planning on doing buttons
         // But here are the mappings we can move to another structure later
