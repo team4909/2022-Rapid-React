@@ -1,9 +1,12 @@
 package frc.robot.subsystems.shooter;
 
+import javax.print.attribute.standard.Media;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,6 +31,10 @@ public class Shooter extends SubsystemBase {
     private static double goalDemand_ = 0.0;
     private static boolean runningOpenLoop_ = false;
     private static boolean hoodUp_ = false;
+
+    private MedianFilter movingFilter_;
+    private static double movingAverage_;
+
 
     private Shooter() {
         leader_ = new TalonFX(13);
@@ -64,6 +71,9 @@ public class Shooter extends SubsystemBase {
 
         leader_.set(ControlMode.PercentOutput, 0);
 
+        movingFilter_ = new MedianFilter(20);
+        movingAverage_ = 0;
+
     }
 
     public static Shooter getInstance() {
@@ -89,7 +99,7 @@ public class Shooter extends SubsystemBase {
     }
 
     public boolean spunUp() {
-        double currentVelocity = leader_.getSelectedSensorVelocity() * kFlywheelVelocityConversion;
+        double currentVelocity = movingAverage_ * kFlywheelVelocityConversion;
         if (goalDemand_ > 0) {
             return Math.abs(goalDemand_ - currentVelocity) < kShooterTolerance;
         }
@@ -99,6 +109,7 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         hoodSolenoid_.set(hoodUp_);
+        movingAverage_ = movingFilter_.calculate(leader_.getSelectedSensorVelocity());
         if (!runningOpenLoop_) {
             leader_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
         } else {
