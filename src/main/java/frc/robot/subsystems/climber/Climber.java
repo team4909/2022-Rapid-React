@@ -50,7 +50,6 @@ public class Climber extends SubsystemBase {
     private BooleanSupplier isClimberOut_;    
     private BooleanSupplier shouldRun_;
 
-    private ShuffleboardTab tab = Shuffleboard.getTab("Driver");
     private ShuffleboardLayout climberLayout;
     private NetworkTableEntry stateEntry;
     private NetworkTableEntry pivotPos;
