@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -83,27 +84,36 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        ///////////////////////////////
+        ///      Driver Buttons     ///
+        ///////////////////////////////
+
         // Back button zeros the gyroscope
         new Button(m_driverController::getBackButton)
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
         
-        // TODO No idea if this is how we are planning on doing buttons
-        // But here are the mappings we can move to another structure later
+        // Shoot the shot
+        new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
+                    .whenActive(() -> { m_intakeSubsystem.shoot(); } )
+                    .whenInactive(() -> { m_intakeSubsystem.stopIntake(); m_shooterSubsystem.stop(); } );
+
+
+        /////////////////////////////////
+        ///      Operator Buttons     ///
+        /////////////////////////////////           
         // Fender shot
-        new Button(m_operatorController::getAButton).whenHeld(new ShootCmd(Constants.kFenderShotVelocity, true));
-        // // Tarmac shot
-        // new Button(m_driverController::getBButton).whenPressed(new ShootCmd(Constants.kTarmacShotVelocity));
-        // // Limelight shot
-        // new Button(m_driverController::getXButton).whenPressed(new LimelightShootCmd());
+        new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, true);});
+        // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
+        new Button(m_operatorController::getXButton).whenPressed(new LimelightShootCmd());
+        // Cancel a spin up
+        new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
 
+        // Run intake: Operator right trigger
+        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7)).whenActive(new RunIntakeCmd());
 
-
-        // Run intake 
-        new Button(m_operatorController::getRightBumper).whenHeld(new RunIntakeCmd());
-
-        // Reverse intake
-        new Button(m_operatorController::getLeftBumper).whenHeld(new ReverseIntakeCmd());
+        // Reverse intake: Operator left trigger
+        new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7)).whenActive(new ReverseIntakeCmd());
 
     }
 
@@ -160,6 +170,7 @@ public class RobotContainer {
 
         return value;
     }
+
 
     
 }
