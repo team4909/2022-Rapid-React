@@ -114,5 +114,5 @@ public final class Constants {
 
     private static final double BAR_DIST_X = 24;
     private static final double BAR_DIST_Y = 15.375;
-    public static final double BAR_THETA = 90 - Math.toDegrees(Math.atan(BAR_DIST_Y / BAR_DIST_X));
+    public static final double BAR_THETA = 90 - Math.toDegrees(Math.atan(BAR_DIST_Y / BAR_DIST_X)); //We may not need this because of a mechanical hardstop but we have it
 }
