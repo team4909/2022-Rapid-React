@@ -81,13 +81,15 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
-        new POVButton(m_controller, 90);
         // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         //All these will be on the operator controller
-        new Button(m_controller::getBackButton).whenPressed(climber_::ExtendClimber);
-        new Button(m_controller::getStartButton).whenPressed(climber_::RetractClimber);
-        new Button(m_controller::getXButton).whenPressed(climber_::StartRoutine);
-        new Button(m_controller::getYButton).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
+        new Button(m_controller::getBackButton).whenPressed(climber_::RaiseClimber);
+        new Button(m_controller::getStartButton).whenPressed(climber_::LowerClimber);
+        new Button(m_controller::getLeftBumper).whenPressed(climber_::StartRoutine);
+        new Button(m_controller::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
+        //driver controller
+        new Button(m_controller::getLeftBumper).whileActiveContinuous(climber_::ExtendClimber);
+        new Button(m_controller::getRightBumper).whileActiveContinuous(climber_::RetractClimber);
     }
     
 

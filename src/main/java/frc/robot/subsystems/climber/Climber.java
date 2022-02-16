@@ -1,5 +1,6 @@
 package frc.robot.subsystems.climber;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -11,7 +12,9 @@ import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -48,9 +51,11 @@ public class Climber extends SubsystemBase {
     private BooleanSupplier shouldRun_;
 
     private ShuffleboardTab tab = Shuffleboard.getTab("Driver");
+    private ShuffleboardLayout climberLayout;
     private NetworkTableEntry stateEntry;
     private NetworkTableEntry pivotPos;
     private NetworkTableEntry elevatorPos;
+
     //#endregion
 
     private enum ClimberStates {
@@ -105,9 +110,15 @@ public class Climber extends SubsystemBase {
         //#endregion
 
         //#region Shuffleboard Shennaigans
-        stateEntry = tab.addPersistent("Climber State", "State Not Found").getEntry();
-        pivotPos = tab.addPersistent("Pivot Position", "Position Not Found").getEntry();
-        elevatorPos = tab.addPersistent("Elevator Position", "Position Not Found").getEntry();
+        climberLayout = Shuffleboard.getTab("Driver")
+        .getLayout("Climber", BuiltInLayouts.kList)
+        .withSize(2, 2)
+        .withProperties(Map.of("Label position", "TOP"))
+        .withPosition(1,1);
+
+        stateEntry = climberLayout.addPersistent("Climber State", "State Not Found").getEntry();
+        pivotPos = climberLayout.addPersistent("Pivot Position", "Position Not Found").getEntry();
+        elevatorPos = climberLayout.addPersistent("Elevator Position", "Position Not Found").getEntry();
         //#endregion
 
         isClimberOut_ = () -> false;
@@ -226,13 +237,21 @@ public class Climber extends SubsystemBase {
     //#endregion
 
     //#region Commands
-    public CommandGroupBase ExtendClimber() {
+    public CommandGroupBase RaiseClimber() {
         return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isClimberOut_);
     }
 
-    public CommandGroupBase RetractClimber() {
+    public CommandGroupBase LowerClimber() {
         return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isClimberOut_);
     }
+
+    public CommandBase ExtendClimber() {
+        return new InstantCommand(() -> setElevatorGoal(Constants.MAX_ELEVATOR_HEIGHT));
+     }
+
+     public CommandBase RetractClimber() {
+        return new InstantCommand(() -> setElevatorGoal(-Constants.MAX_ELEVATOR_HEIGHT));
+     }
 
     public CommandGroupBase StartRoutine() {
         return new RunCommand(this::runRoutine, this).withInterrupt(shouldRun_);
