@@ -10,6 +10,7 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +23,6 @@ import frc.robot.Constants;
 import frc.robot.subsystems.climber.commands.Elevator;
 import frc.robot.subsystems.climber.commands.Pivot;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
-
 public class Climber extends SubsystemBase {
 
     //#region Member Variables
@@ -44,10 +44,13 @@ public class Climber extends SubsystemBase {
 
     private VoltageTracker voltageTracker_;
 
-    private BooleanSupplier isPivoted_;    
+    private BooleanSupplier isClimberOut_;    
     private BooleanSupplier shouldRun_;
 
     private ShuffleboardTab tab = Shuffleboard.getTab("Driver");
+    private NetworkTableEntry stateEntry;
+    private NetworkTableEntry pivotPos;
+    private NetworkTableEntry elevatorPos;
     //#endregion
 
     private enum ClimberStates {
@@ -78,12 +81,14 @@ public class Climber extends SubsystemBase {
         elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, null);
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
+        elevatorRight_.getEncoder().setPosition(0);
 
         elevatorController_ = elevatorLeft_.getPIDController();
         elevatorController_.setP(Constants.ELEVATOR_KP);
         elevatorController_.setD(Constants.ELEVATOR_KI);
         elevatorController_.setI(Constants.ELEVATOR_KD);
         elevatorController_.setFF(Constants.ELEVATOR_KF);
+        
 
         pivotRight_ = new TalonFX(Constants.RIGHT_ELEVATOR_MOTOR);
         pivotLeft_ = new TalonFX(Constants.LEFT_ELEVATOR_MOTOR);
@@ -99,18 +104,24 @@ public class Climber extends SubsystemBase {
         pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
         //#endregion
 
-        isPivoted_ = () -> false;
+        //#region Shuffleboard Shennaigans
+        stateEntry = tab.addPersistent("Climber State", "State Not Found").getEntry();
+        pivotPos = tab.addPersistent("Pivot Position", "Position Not Found").getEntry();
+        elevatorPos = tab.addPersistent("Elevator Position", "Position Not Found").getEntry();
+        //#endregion
+
+        isClimberOut_ = () -> false;
         shouldRun_ = () -> true;
 
         voltageTracker_ = new VoltageTracker(10);
         state_ = ClimberStates.IDLE;
 
-
     }
 
     public void periodic() {
-        
-        
+        stateEntry.setString(state_.toString());
+        pivotPos.setDouble(pivotRight_.getSelectedSensorPosition());
+        elevatorPos.setDouble(elevatorRight_.getEncoder().getPosition());
     }
 
     //#region Class Methods
@@ -128,7 +139,8 @@ public class Climber extends SubsystemBase {
 
     public void setPivotGoal(double goal) {
         pivotRight_.set(ControlMode.Position, goal * Constants.TICKS_PER_PIVOT_DEGREE);
-    } 
+    }
+
     public void setElevatorGoal(double goal) {
         elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
@@ -137,13 +149,16 @@ public class Climber extends SubsystemBase {
         state_ = state;
     }
 
-
+    /**
+     * @param out true will extend outwards (up), false will extend inwards (down)
+     */
     private void climberDeploy(boolean out) {
         pivotRight_.set(ControlMode.PercentOutput, out ? 0.3 : -0.3); //Deploy at 30%
         double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
-        isPivoted_ = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
-        if (isPivoted_.getAsBoolean()) {
+        isClimberOut_ = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
+        if (isClimberOut_.getAsBoolean()) {
             voltageTracker_.reset();
+            pivotRight_.setSelectedSensorPosition(0); // Zero the pivot motors
         }
         
     }
@@ -203,8 +218,6 @@ public class Climber extends SubsystemBase {
         nextElevatorCommand.schedule();
         //#endregion
 
-        SmartDashboard.putString("Current State", state_.toString());
-
     }
 
     private void stopRoutine() {
@@ -214,11 +227,11 @@ public class Climber extends SubsystemBase {
 
     //#region Commands
     public CommandGroupBase ExtendClimber() {
-        return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isPivoted_);
+        return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isClimberOut_);
     }
 
     public CommandGroupBase RetractClimber() {
-        return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isPivoted_);
+        return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isClimberOut_);
     }
 
     public CommandGroupBase StartRoutine() {
@@ -228,8 +241,6 @@ public class Climber extends SubsystemBase {
     public CommandBase StopRoutine() {
         return new InstantCommand(this::stopRoutine, this);
     }
-
-
     //#endregion
 
     public static Climber getInstance() {
