@@ -87,4 +87,36 @@ public final class Constants {
     // The Max Acceleration Value for the robot [only in AUTO]
     public static final double T_MAX_ACCEL = 4;
 
-}
+    // The PID Values for the Limelight driven alignment to the goal.
+    public static final double GOAL_ALIGN_KP = 0.05;
+    public static final double GOAL_ALIGN_KD = 0.0009;
+
+    // Shooter Constants 
+
+    public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
+    public static final double limelightHeight = 27.0; // Height of the limelight off the ground in INCHES
+    public static final double limelightAngle = 18.75; // Angle of the limelight in DEGREES
+ 
+    // Superstructure Constants
+    // TODO Change if needed
+    public static final double kIntakeForwardVoltage = -6.0;
+    public static final double kIntakeReverseVoltage = 6.0;
+    public static final double kFeederFeedingVoltage = 8.0;
+    public static final double kFeederShootingVoltage = 12.0;
+    public static final double kFeederReverseVoltage = -6.0;
+    // TODO to invert these properly
+    public static final double kCenteringWheelForwardVoltage = -12.0;
+    public static final double kCenteringWheelReverseVoltage = 6.0;
+
+    // Shooter Velocity Goal Constants
+    public static final double kFenderShotVelocity = 6000; //4300
+    // public static final double kTarmacShotVelocity = 5000;
+    // public static final double kLongShotVelocity = 6500; 
+
+    public static final double kShooterP = 0.6; //0.1
+    public static final double kShooterI = 0;
+    public static final double kShooterD = 0;
+    public static final double kShooterFF = 0.04;
+
+
+   }

@@ -35,6 +35,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     
     private static DrivetrainSubsystem instance = null;
 
+
     /**
      * The scale factor that the speed during Auto trajectories will be affected by.
      * <p>
@@ -224,7 +225,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  SwerveModuleState array, Order: FL, FR, BL, BR
      */
     public void actuateModules(SwerveModuleState[] states){
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
         drive(m_kinematics.toChassisSpeeds(states));
     }
 
@@ -233,7 +234,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // This has not been tested, most likely is completely untrue...
     // Instead use parameter of loadTrajectory()
     public void actuateModulesAuto(SwerveModuleState[] states){
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
+        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         driveAuto(m_kinematics.toChassisSpeeds(states));
     }
 

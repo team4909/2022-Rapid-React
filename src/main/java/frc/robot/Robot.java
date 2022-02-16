@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
@@ -16,10 +19,13 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-
+  
+  private final DrivetrainSubsystem drivetrainSubsystem_ = DrivetrainSubsystem.getInstance();
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
+  private Compressor m_compressor;
 
+  // private Command llCommand;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -30,10 +36,14 @@ public class Robot extends TimedRobot {
      * Instantiate our RobotContainer.  This will perform all our button bindings, and put our
      * autonomous chooser on the dashboard.
      */
-    
+
+    SmartDashboard.putBoolean("Align", false);
+    SmartDashboard.putNumber("x_P", 1);
+    SmartDashboard.putNumber("x_I", 0);
+    SmartDashboard.putNumber("x_D", 0);
     m_robotContainer = new RobotContainer();
-    DrivetrainSubsystem.getInstance();
-    
+
+    m_compressor = new Compressor(PneumaticsModuleType.REVPH);
   }
 
   /**
@@ -52,6 +62,11 @@ public class Robot extends TimedRobot {
      * block in order for anything in the Command-based framework to work.
      */
     CommandScheduler.getInstance().run();
+
+
+    // if (smartdashboard_button == true) {
+    // new AlignWithGoal();
+    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -64,6 +79,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
+    System.out.println("Auto Starting");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // Schedule the autonomous command
@@ -89,12 +105,30 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    CommandScheduler.getInstance().cancel(m_autonomousCommand);
+
+    // llCommand = m_robotContainer.getLimelightCommand();
+
   }
+
+  
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    // if (SmartDashboard.getBoolean("Align", false) == true) {
+    //   if (!llCommand.isScheduled()) {
+    //     System.out.println("ll scheudlaed");
+    //     llCommand.schedule();
+    //   }
+
+    // } else {
+    //   if (llCommand.isScheduled()) {
+    //     llCommand.cancel();
+    //   }
+    // }
+
+    m_compressor.enableAnalog(90, 120);
+
 
   }
 

@@ -6,30 +6,27 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.function.Supplier;
 
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryUtil;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
+import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
-import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
+
+// import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
+import frc.robot.subsystems.intake.IntakeFeeder;
+import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
+import frc.robot.subsystems.intake.commands.RunIntakeCmd;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.commands.LimelightShootCmd;
+import frc.robot.subsystems.shooter.commands.ShootCmd;
+import frc.robot.subsystems.vision.LimeLight;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 
 /**
@@ -42,13 +39,19 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     
-    private final XboxController m_controller = new XboxController(0);
+    private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
 
+    private final Shooter m_shooterSubsystem = Shooter.getInstance();
+    private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
+    
+    private final XboxController m_driverController = new XboxController(0);
+    private final XboxController m_operatorController = new XboxController(1);
+
+ 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
     
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
@@ -57,14 +60,21 @@ public class RobotContainer {
     // Right stick X axis -> rotation
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
-            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
     ));
 
         // Configure the button bindings
         configureButtonBindings();
+
+
     }
+
+    // public Command getLimelightCommand() {
+    //     return new AlignWithGoal(m_drivetrainSubsystem, () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    //     () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+    // }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
@@ -74,9 +84,27 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         // Back button zeros the gyroscope
-        new Button(m_controller::getBackButton)
+        new Button(m_driverController::getBackButton)
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        
+        // TODO No idea if this is how we are planning on doing buttons
+        // But here are the mappings we can move to another structure later
+        // Fender shot
+        new Button(m_operatorController::getAButton).whenHeld(new ShootCmd(Constants.kFenderShotVelocity, true));
+        // // Tarmac shot
+        // new Button(m_driverController::getBButton).whenPressed(new ShootCmd(Constants.kTarmacShotVelocity));
+        // // Limelight shot
+        // new Button(m_driverController::getXButton).whenPressed(new LimelightShootCmd());
+
+
+
+        // Run intake 
+        new Button(m_operatorController::getRightBumper).whenHeld(new RunIntakeCmd());
+
+        // Reverse intake
+        new Button(m_operatorController::getLeftBumper).whenHeld(new ReverseIntakeCmd());
+
     }
 
   /**
@@ -87,7 +115,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
-        return new FourBallTest();
+        return null; //new FourBallTest();
     }
 
     // public PathPlannerTrajectory getTrajectory(){
@@ -132,4 +160,6 @@ public class RobotContainer {
 
         return value;
     }
+
+    
 }
