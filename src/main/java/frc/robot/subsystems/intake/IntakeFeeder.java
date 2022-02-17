@@ -126,7 +126,7 @@ public class IntakeFeeder extends SubsystemBase {
     // Just want to test that reversing works
     public void reverseIntake() {
         currentState_ = IntakeState.kReverseWrongBall;
-        intakeSolenoidState_ = true; // intake in
+        intakeSolenoidState_ = !intakeSolenoidState_; // intake in
 
     }
 
@@ -145,6 +145,8 @@ public class IntakeFeeder extends SubsystemBase {
         SmartDashboard.putBoolean("First Ball Seen", firstBallSeen);
         SmartDashboard.putBoolean("Feeder Ball Seen", feederBallSeen);
         SmartDashboard.putBoolean("Incoming Seen", incomingSeen);
+
+        SmartDashboard.putString("State", currentState_.toString());
         // Set the solenoid to be in it's state
         // Because it's a single acting solenoid it needs to be continously set
         // otherwise it reverts to the default state

@@ -108,12 +108,20 @@ public class RobotContainer {
         new Button(m_operatorController::getXButton).whenPressed(new LimelightShootCmd());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
+        new Button(m_operatorController::getLeftBumper).whenPressed(m_intakeSubsystem::toggleIntakeExtension);
+
+
+        // new Trigger().whenActive(new RunIntakeCmd())
 
         // Run intake: Operator right trigger
-        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7)).whenActive(new RunIntakeCmd());
+        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
+        .whenActive(m_intakeSubsystem::intake)
+        .whenInactive(m_intakeSubsystem::stopIntake);
 
         // Reverse intake: Operator left trigger
-        new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7)).whenActive(new ReverseIntakeCmd());
+        new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
+        .whenActive(m_intakeSubsystem::reverseIntake)
+        .whenInactive(m_intakeSubsystem::stopIntake);
 
     }
 
