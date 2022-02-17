@@ -21,6 +21,7 @@ import edu.wpi.first.math.trajectory.TrajectoryUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -47,7 +48,7 @@ public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final Climber climber_ = Climber.getInstance();
     private final XboxController m_controller = new XboxController(0);
-
+    private final XboxController m_operator = new XboxController(1);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -83,10 +84,10 @@ public class RobotContainer {
         // Back button zeros the gyroscope
         // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         //All these will be on the operator controller
-        new Button(m_controller::getBackButton).whenPressed(climber_::RaiseClimber);
-        new Button(m_controller::getStartButton).whenPressed(climber_::LowerClimber);
-        new Button(m_controller::getLeftBumper).whenPressed(climber_::StartRoutine);
-        new Button(m_controller::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
+        new Button(m_operator::getBackButton).whenPressed(climber_::RaiseClimber);
+        new Button(m_operator::getStartButton).whenPressed(climber_::LowerClimber);
+        new Button(m_operator::getLeftBumper).whenPressed(climber_::StartRoutine);
+        new Button(m_operator::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
         new Button(m_controller::getLeftBumper).whileActiveContinuous(climber_::ExtendClimber);
         new Button(m_controller::getRightBumper).whileActiveContinuous(climber_::RetractClimber);
