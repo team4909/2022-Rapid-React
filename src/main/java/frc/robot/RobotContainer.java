@@ -108,8 +108,6 @@ public class RobotContainer {
         new Button(m_operatorController::getXButton).whenPressed(new LimelightShootCmd());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
-        new Button(m_operatorController::getLeftBumper).whenPressed(m_intakeSubsystem::toggleIntakeExtension);
-
 
         // new Trigger().whenActive(new RunIntakeCmd())
 
