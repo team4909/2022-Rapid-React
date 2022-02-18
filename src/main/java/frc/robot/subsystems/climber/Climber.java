@@ -54,6 +54,7 @@ public class Climber extends SubsystemBase {
     private NetworkTableEntry stateEntry;
     private NetworkTableEntry pivotPos;
     private NetworkTableEntry elevatorPos;
+    private NetworkTableEntry pivotVoltage;
 
     //#endregion
 
@@ -118,6 +119,7 @@ public class Climber extends SubsystemBase {
         stateEntry = climberLayout.addPersistent("Climber State", "State Not Found").getEntry();
         pivotPos = climberLayout.addPersistent("Pivot Position", "Position Not Found").getEntry();
         elevatorPos = climberLayout.addPersistent("Elevator Position", "Position Not Found").getEntry();
+        pivotVoltage = climberLayout.addPersistent("Pivot Voltage", "Voltage Not Found").getEntry();
         //#endregion
 
         isClimberOut_ = () -> false;
@@ -132,6 +134,7 @@ public class Climber extends SubsystemBase {
         stateEntry.setString(state_.toString());
         pivotPos.setDouble(pivotRight_.getSelectedSensorPosition());
         elevatorPos.setDouble(elevatorRight_.getEncoder().getPosition());
+        pivotVoltage.setDouble(pivotRight_.getMotorOutputVoltage());
     }
 
     //#region Class Methods

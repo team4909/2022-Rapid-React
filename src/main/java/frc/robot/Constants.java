@@ -55,7 +55,7 @@ public final class Constants {
     /**
      * CAN ID of the PigeonIMU
      */
-    public static final int DRIVETRAIN_PIGEON_ID = 13;
+    public static final int DRIVETRAIN_PIGEON_ID = 15;
     
     // FRONT LEFT : Florida
     public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
@@ -88,10 +88,10 @@ public final class Constants {
     public static final double MAX_VEL = 6.5;
 
     // Climber Constants
-    public static final int RIGHT_PIVOT_MOTOR = 15; //CAN SparkMax
-    public static final int LEFT_PIVOT_MOTOR = 14; //CAN SparkMax
-    public static final int RIGHT_ELEVATOR_MOTOR = 17; //Talon FX
-    public static final int LEFT_ELEVATOR_MOTOR = 16; //TalonFX
+    public static final int RIGHT_PIVOT_MOTOR = 20; //CAN SparkMax
+    public static final int LEFT_PIVOT_MOTOR = 21; //CAN SparkMax
+    public static final int RIGHT_ELEVATOR_MOTOR = 19; //Talon FX
+    public static final int LEFT_ELEVATOR_MOTOR = 18; //TalonFX
 
     private static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
     private static final double ELEVATOR_NEO_GEAR_RATIO = 5/1;
