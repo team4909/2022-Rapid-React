@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.vision.LimeLight;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utils.BionicController;
 
 
 /**
@@ -45,7 +47,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
-    private final XboxController m_controller = new XboxController(0);
+    private final BionicController m_controller = new BionicController(0);
 
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -58,12 +60,15 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
-    m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-            m_drivetrainSubsystem,
-            () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
-    ));
+
+    // UNCOMMENT 63-68 IF YOU NEED TO DRIVE ROBOT
+    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+    //         m_drivetrainSubsystem,
+    //         () -> -modifyAxis(m_controller.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    //         () -> -modifyAxis(m_controller.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+    //         () -> -modifyAxis(m_controller.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+    // ));
+
 
         // Configure the button bindings
         configureButtonBindings();
@@ -87,11 +92,23 @@ public class RobotContainer {
         new Button(m_controller::getBackButton)
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+
+    new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
+    // Switch Pipelines
+    new Button(m_controller::getXButton).whenPressed(m_VisionSubsystem::setPipeline);
+    // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
+    // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
+    new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
+    new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
+    //.whenHeld(getLimelightCommand()
+    //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
     }
+
+    // new Button(m_operatorController::getXButton).whenPressed(m_VisionSubsystem::setPipelineOne);
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
+   *%%
    * @return the command to run in autonomous
  * @throws IOException
    */
