@@ -49,7 +49,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
      * Calculate by: Motor fre speed RPM / 60 * Drive Reduction * Wheel Diameter Meters * pi
      */
-    public static final double MAX_VOLTAGE = 12; //Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
+    public static final double MAX_VOLTAGE = 8; //Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
     /**
      * The maximum velocity of the robot in meters per second.
      * <p>

@@ -31,7 +31,7 @@ public class Shooter extends SubsystemBase {
     // State of the shooter
     private static double goalDemand_ = 0.0;
     private static boolean runningOpenLoop_ = false;
-    private static boolean hoodUp_ = false;
+    private static boolean hoodUp_ = true;
 
     private MedianFilter movingFilter_;
     private static double movingAverage_;

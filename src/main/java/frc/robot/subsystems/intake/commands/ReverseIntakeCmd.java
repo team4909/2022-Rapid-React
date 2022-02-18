@@ -6,7 +6,8 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 public class ReverseIntakeCmd extends CommandBase {
     private final IntakeFeeder intakeFeeder_;
 
-    public ReverseIntakeCmd() {
+    public 
+    ReverseIntakeCmd() {
         intakeFeeder_ = IntakeFeeder.getInstance();
     }
 
