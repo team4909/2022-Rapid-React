@@ -6,7 +6,7 @@ package frc.robot;
 
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 
 import frc.robot.utils.Conversion;
 
@@ -50,7 +50,7 @@ public final class Constants {
      * 
      * From L1-L4
      */
-    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
+    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4I_L2; 
 
     /**
      * CAN ID of the PigeonIMU
@@ -90,7 +90,7 @@ public final class Constants {
     // Climber Constants
     public static final int RIGHT_PIVOT_MOTOR = 20; //CAN SparkMax
     public static final int LEFT_PIVOT_MOTOR = 21; //CAN SparkMax
-    public static final int RIGHT_ELEVATOR_MOTOR = 19; //Talon FX
+    public static final int RIGHT_ELEVATOR_MOTOR = 25; //Talon FX
     public static final int LEFT_ELEVATOR_MOTOR = 18; //TalonFX
 
     private static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
@@ -103,7 +103,7 @@ public final class Constants {
     public static final double TICKS_PER_ELEVATOR_INCH = (NEO_UNITS_PER_REV * ELEVATOR_NEO_GEAR_RATIO) / (ELEVATOR_PULLEY_DIAMETER * Math.PI);
     public static final double MAX_ELEVATOR_HEIGHT = 29.35;
 
-    public static final double PIVOT_KP = 1;
+    public static final double PIVOT_KP = 0.001;
     public static final double PIVOT_KI = 0;
     public static final double PIVOT_KD = 0;
     public static final double PIVOT_KF = 0;

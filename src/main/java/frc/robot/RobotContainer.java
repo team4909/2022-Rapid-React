@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -54,6 +55,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+      
     
     // Create the driver tab
     Shuffleboard.getTab("Driver");
@@ -89,8 +91,8 @@ public class RobotContainer {
         new Button(m_operator::getLeftBumper).whenPressed(climber_::StartRoutine);
         new Button(m_operator::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_controller::getLeftBumper).whileActiveContinuous(climber_::ExtendClimber);
-        new Button(m_controller::getRightBumper).whileActiveContinuous(climber_::RetractClimber);
+        new Button(m_controller::getLeftBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(26)));
+        new Button(m_controller::getRightBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(0.76)));
     }
     
 

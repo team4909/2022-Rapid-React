@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -82,31 +83,31 @@ public class Climber extends SubsystemBase {
         //Pivot: Falcons (TalonFXs)
 
         //#region Motor Config
-        elevatorRight_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, null);
-        elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, null);
+        elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, MotorType.kBrushless);
+        elevatorRight_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, MotorType.kBrushless);
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
         elevatorRight_.getEncoder().setPosition(0);
 
-        elevatorController_ = elevatorLeft_.getPIDController();
+        elevatorController_ = elevatorRight_.getPIDController();
         elevatorController_.setP(Constants.ELEVATOR_KP);
-        elevatorController_.setD(Constants.ELEVATOR_KI);
-        elevatorController_.setI(Constants.ELEVATOR_KD);
+        elevatorController_.setD(Constants.ELEVATOR_KD);
+        elevatorController_.setI(Constants.ELEVATOR_KI);
         elevatorController_.setFF(Constants.ELEVATOR_KF);
         
 
-        pivotRight_ = new TalonFX(Constants.RIGHT_ELEVATOR_MOTOR);
-        pivotLeft_ = new TalonFX(Constants.LEFT_ELEVATOR_MOTOR);
+        pivotRight_ = new TalonFX(Constants.RIGHT_PIVOT_MOTOR);
+        pivotLeft_ = new TalonFX(Constants.LEFT_PIVOT_MOTOR);
 
         pivotRight_.clearStickyFaults(kTimeoutMs);
-        pivotLeft_.set(ControlMode.Follower, Constants.RIGHT_PIVOT_MOTOR);
+        pivotLeft_.follow(pivotRight_);
         pivotLeft_.setInverted(InvertType.OpposeMaster);
 
-        pivotLeft_.config_kP(0, Constants.PIVOT_KP);
-        pivotLeft_.config_kI(0, Constants.PIVOT_KI);
-        pivotLeft_.config_kD(0, Constants.PIVOT_KD);
-        pivotLeft_.config_kF(0, Constants.PIVOT_KF);
-        pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
+        pivotRight_.config_kP(0, Constants.PIVOT_KP);
+        pivotRight_.config_kI(0, Constants.PIVOT_KI);
+        pivotRight_.config_kD(0, Constants.PIVOT_KD);
+        pivotRight_.config_kF(0, Constants.PIVOT_KF);
+        pivotRight_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
         //#endregion
 
         //#region Shuffleboard Shennaigans
@@ -128,9 +129,15 @@ public class Climber extends SubsystemBase {
         voltageTracker_ = new VoltageTracker(10);
         state_ = ClimberStates.IDLE;
 
+
+        //0.76
+
     }
 
     public void periodic() {
+        // elevatorRight_.set(0.3);
+        SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
+        // System.out.println(pivotRight_.getSelectedSensorPosition());
         stateEntry.setString(state_.toString());
         pivotPos.setDouble(pivotRight_.getSelectedSensorPosition());
         elevatorPos.setDouble(elevatorRight_.getEncoder().getPosition());
@@ -155,7 +162,9 @@ public class Climber extends SubsystemBase {
     }
 
     public void setElevatorGoal(double goal) {
-        elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
+        System.out.println("Runnign");
+        elevatorController_.setReference(goal, ControlType.kPosition);
+        // elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
 
     public void setState(ClimberStates state) {
@@ -166,7 +175,7 @@ public class Climber extends SubsystemBase {
      * @param out true will extend outwards (up), false will extend inwards (down)
      */
     private void climberDeploy(boolean out) {
-        pivotRight_.set(ControlMode.PercentOutput, out ? 0.3 : -0.3); //Deploy at 30%
+        pivotRight_.set(ControlMode.PercentOutput, out ? 0.1 : -0.1); //Deploy at 30%
         double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
         isClimberOut_ = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
         if (isClimberOut_.getAsBoolean()) {
@@ -248,11 +257,13 @@ public class Climber extends SubsystemBase {
     }
 
     public CommandBase ExtendClimber() {
-        return new InstantCommand(() -> setElevatorGoal(Constants.MAX_ELEVATOR_HEIGHT));
+        System.out.println("EXtendeing");
+        return new InstantCommand(() -> setElevatorGoal(26), this);
+ 
      }
 
      public CommandBase RetractClimber() {
-        return new InstantCommand(() -> setElevatorGoal(-Constants.MAX_ELEVATOR_HEIGHT));
+        return new InstantCommand(() -> setElevatorGoal(0.76));
      }
 
     public CommandGroupBase StartRoutine() {

@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -128,7 +129,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void initializeMotors(){
-        m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
             m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
@@ -145,7 +146,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_LEFT_STEER_OFFSET
         );
 
-        m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(2, 0),
@@ -156,7 +157,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_RIGHT_STEER_OFFSET
         );
 
-        m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(4, 0),
@@ -168,7 +169,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
         
 
-        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(6, 0),
