@@ -55,7 +55,7 @@ public class RobotContainer {
     private final Climber climber_ = Climber.getInstance();
     
     // private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
-    // private final BionicController m_controller = new BionicController(2);
+    private final BionicController m_controller = new BionicController(2);
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
