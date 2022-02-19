@@ -134,6 +134,10 @@ public class IntakeFeeder extends SubsystemBase {
         return rumble_;
     }
 
+    public void compressBalls() {
+        feederWheel_.set(-0.2);
+    }
+
     @Override
     public void periodic() {
 

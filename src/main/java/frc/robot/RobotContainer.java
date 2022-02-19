@@ -6,6 +6,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.time.Instant;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -18,12 +19,10 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
+import frc.robot.subsystems.drivetrain.Taxi;
 import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
-import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
-
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
@@ -31,7 +30,6 @@ import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShootCmd;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
-import frc.robot.subsystems.vision.LimeLight;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.BionicController;
 
@@ -46,8 +44,8 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     
-    private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
-    private final BionicController m_controller = new BionicController(2);
+    // private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
+    // private final BionicController m_controller = new BionicController(2);
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
@@ -101,13 +99,13 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
 
-    new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
+    // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
-    new Button(m_controller::getXButton).whenPressed(m_VisionSubsystem::setPipeline);
+    // new Button(m_controller::getXButton).whenPressed(m_VisionSubsystem::setPipeline);
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
-    new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
-    new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
+    // new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
+    // new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
     //.whenHeld(getLimelightCommand()
     //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
         // Shoot the shot
@@ -127,6 +125,7 @@ public class RobotContainer {
         new Button(m_operatorController::getXButton).whenPressed(new LimelightShootCmd());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
+        new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));
 
         // new Trigger().whenActive(new RunIntakeCmd())
 
@@ -151,7 +150,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
-        return null; //new FourBallTest();
+        return new Taxi(m_drivetrainSubsystem).withTimeout(6);
     }
 
     // public PathPlannerTrajectory getTrajectory(){
@@ -188,7 +187,7 @@ public class RobotContainer {
      */
     private static double modifyAxis(double value) {
         // Deadband
-        value = deadband(value, 0.025);
+        value = deadband(value, 0.1);
 
         // Square the axis
         value = Math.copySign(value * value, value);

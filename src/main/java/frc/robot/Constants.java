@@ -61,25 +61,25 @@ public final class Constants {
     public static final int FRONT_LEFT_DRIVE_MOTOR = 8;
     public static final int FRONT_LEFT_STEER_MOTOR = 7;
     public static final int FRONT_LEFT_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(337.67); //195 // FIXME Measure and set front left steer offset //192.205810546875
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(326.51-360); //195 // FIXME Measure and set front left steer offset //192.205810546875
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 2;
     public static final int FRONT_RIGHT_STEER_MOTOR = 1;
     public static final int FRONT_RIGHT_STEER_ENCODER = 9;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(38.4); //97 // FIXME Measure and set back left steer offset //9.3109130859375
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(38.14); //97 // FIXME Measure and set back left steer offset //9.3109130859375
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
     public static final int BACK_RIGHT_STEER_MOTOR = 3;
     public static final int BACK_RIGHT_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(106.52); //181 // FIXME Measure and set back right steer offset //305.419921875
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(106.611328125); //181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_STEER_MOTOR = 5;
     public static final int BACK_LEFT_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(134.55); //272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(126.385546875); //272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -101,22 +101,23 @@ public final class Constants {
     // TODO Change if needed
     public static final double kIntakeForwardVoltage = -6.0;
     public static final double kIntakeReverseVoltage = 6.0;
-    public static final double kFeederFeedingVoltage = 8.0;
-    public static final double kFeederShootingVoltage = 3.0;
+    public static final double kFeederFeedingVoltage = 3.0;
+    public static final double kFeederShootingVoltage = 12.0;
     public static final double kFeederReverseVoltage = -6.0;
     // TODO to invert these properly
     public static final double kCenteringWheelForwardVoltage = -12.0;
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 2400; //4300
+    public static final double kFenderShotVelocity = 2600; //4300
     // public static final double kTarmacShotVelocity = 5000;
     // public static final double kLongShotVelocity = 6500; 
 
-    public static final double kShooterP = 0.2; //0.1
+    public static final double kShooterP = 0.275; //0.1
     public static final double kShooterI = 0;
     public static final double kShooterD = 0;
     public static final double kShooterFF = 0.01;
+    
 
 
 }

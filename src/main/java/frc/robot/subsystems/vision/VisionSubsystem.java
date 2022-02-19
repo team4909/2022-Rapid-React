@@ -25,10 +25,12 @@ public class VisionSubsystem extends SubsystemBase{
     boolean toggle = true;
 
 private VisionSubsystem() {
+    isAligned_ = false;
+    lastDistance_ = 0.0;
 
 }
 
-public static VisionSubsystem instance = null;
+public static VisionSubsystem instance_ = null;
 
 
     // Network table values
@@ -37,11 +39,6 @@ public static VisionSubsystem instance = null;
     NetworkTableEntry ty = table.getEntry("ty");
     NetworkTableEntry ta = table.getEntry("ta");
 
-    public VisionSubsystem() {
-        // Default initialization
-        isAligned_ = false;
-        lastDistance_ = 0.0;
-    }
 
     public static VisionSubsystem getInstance() {
         if (instance_ == null) {

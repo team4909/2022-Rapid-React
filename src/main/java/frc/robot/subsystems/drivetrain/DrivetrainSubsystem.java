@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -120,6 +121,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_STEER_ENCODER);
         m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_STEER_ENCODER);
 
+        m_frontLeftCanCoder.configFactoryDefault();
+        m_frontRightCanCoder.configFactoryDefault();
+        m_backLeftCanCoder.configFactoryDefault();
+        m_backRightCanCoder.configFactoryDefault();
+
         m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
         m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
         m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
@@ -129,6 +135,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRightCanCoder.configSensorDirection(true);
         m_backLeftCanCoder.configSensorDirection(true);
         m_backRightCanCoder.configSensorDirection(true);
+
+        m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
         m_pigeon.clearStickyFaults();
     }
@@ -201,7 +212,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  Degreess from the Pigeon (NOT ROTATION2D)
      */
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(-m_pigeon.getYaw());
+        return Rotation2d.fromDegrees(m_pigeon.getYaw());
         
     }
 
