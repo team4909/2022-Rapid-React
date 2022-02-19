@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -19,6 +20,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
+import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
@@ -29,6 +33,7 @@ import frc.robot.subsystems.shooter.commands.LimelightShootCmd;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 import frc.robot.subsystems.vision.LimeLight;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utils.BionicController;
 
 
 /**
@@ -42,6 +47,7 @@ public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
+    private final BionicController m_controller = new BionicController(2);
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
@@ -60,6 +66,7 @@ public class RobotContainer {
     // Left stick Y axis -> forward and backwards movement
     // Left stick X axis -> left and right movement
     // Right stick X axis -> rotation
+
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -93,7 +100,16 @@ public class RobotContainer {
         new Button(m_driverController::getBackButton)
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-        
+
+    new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
+    // Switch Pipelines
+    new Button(m_controller::getXButton).whenPressed(m_VisionSubsystem::setPipeline);
+    // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
+    // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
+    new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
+    new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
+    //.whenHeld(getLimelightCommand()
+    //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
         // Shoot the shot
         new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
                     .whenActive(() -> { m_intakeSubsystem.shoot(); } )
@@ -123,12 +139,13 @@ public class RobotContainer {
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
         .whenActive(m_intakeSubsystem::reverseIntake)
         .whenInactive(m_intakeSubsystem::stopIntake);
-
     }
+
+    // new Button(m_operatorController::getXButton).whenPressed(m_VisionSubsystem::setPipelineOne);
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
+   *%%
    * @return the command to run in autonomous
  * @throws IOException
    */

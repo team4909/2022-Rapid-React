@@ -1,8 +1,16 @@
 package frc.robot.subsystems.vision;
 
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.BionicController;
+
+import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
+import com.fasterxml.jackson.annotation.JacksonInject.Value;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -12,8 +20,16 @@ public class VisionSubsystem extends SubsystemBase{
     private boolean isAligned_;
     private double lastDistance_;
     
-    // Moved up here to be at the top
-    private static VisionSubsystem instance_ = null;
+
+    public boolean isAligned;
+    boolean toggle = true;
+
+private VisionSubsystem() {
+
+}
+
+public static VisionSubsystem instance = null;
+
 
     // Network table values
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -76,6 +92,46 @@ public class VisionSubsystem extends SubsystemBase{
         return isAligned_;
     }
 
+    public void setPipeline() {
+        if(toggle == true){
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(0);
+            toggle = false;
+        }
+        else{
+            NetworkTableInstance.getDefault().getTable("limelight").getEntry("pipeline").setNumber(1);
+            toggle = true;
+        }
+    }
+
+    public void checkRumble(BionicController controller){
+        NetworkTableEntry tv = table.getEntry("tv");
+        double check = tv.getDouble(0.0);
+        if(check == 0.0){
+            controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+            controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+            SmartDashboard.putString("rumble", "none");
+        }
+        else 
+        {
+            if(Math.abs(getXDegrees()) < 2){            
+                controller.setRumble(GenericHID.RumbleType.kLeftRumble, 1.0);
+                controller.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);
+                SmartDashboard.putString("rumble", "strong");
+            }
+            else if(Math.abs(getXDegrees()) > 2){
+                controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+                controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.5);
+                SmartDashboard.putString("rumble", "light");
+            }
+        }
+    }
+
+    public void endRumble(BionicController controller){
+        controller.setRumble(GenericHID.RumbleType.kLeftRumble, 0.0);
+        controller.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);
+        SmartDashboard.putString("rumble", "ended");
+    }
+
     public void periodic() {
         // Update the last values
         lastDistance_ = (Constants.tapeHeight-Constants.limelightHeight) / Math.tan(Math.toRadians(Constants.limelightAngle+ty.getDouble(0.0)));;
@@ -90,5 +146,7 @@ public class VisionSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Distance", lastDistance_);
 
     }
+
+    
 
 }
