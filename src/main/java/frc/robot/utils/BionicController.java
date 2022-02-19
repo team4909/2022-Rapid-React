@@ -15,3 +15,15 @@ public class BionicController extends XboxController{
     // }
 
 }
+
+public class BionicController extends XboxController {
+
+    public BionicController(int port) {
+        super(port);
+    }
+
+    
+
+    
+
+}

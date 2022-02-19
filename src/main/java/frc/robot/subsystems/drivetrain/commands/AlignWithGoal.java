@@ -1,12 +1,10 @@
 package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 
 import java.util.function.DoubleSupplier;
@@ -61,7 +59,7 @@ public class AlignWithGoal extends CommandBase {
         angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - lastError) * Constants.GOAL_ALIGN_KD) * 2; //TODO make this a constant pls
 
 
-        if (m_visionSubsystem.isAligned == true) {
+        if (m_visionSubsystem.isAligned() == true) {
             angularVelocity = 0;
         } else {
             if (m_visionSubsystem.getXDegrees() <= 0)

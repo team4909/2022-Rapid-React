@@ -6,7 +6,7 @@ package frc.robot;
 
 import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper.GearRatio;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 
 import frc.robot.utils.Conversion;
 
@@ -24,14 +24,14 @@ public final class Constants {
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Conversion.inchesToMeters(22.181999);
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = Conversion.inchesToMeters(20.768);
 
     /**
      * The front-to-back distance between the drivetrain wheels.
      *
      * Should be measured from center to center.
      */
-    public static final double DRIVETRAIN_WHEELBASE_METERS = Conversion.inchesToMeters(22.181999);
+    public static final double DRIVETRAIN_WHEELBASE_METERS = Conversion.inchesToMeters(20.768);
 
     /**
      * The free speed of a Falcon 500 Motor
@@ -50,36 +50,36 @@ public final class Constants {
      * 
      * From L1-L4
      */
-    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4_L2; 
+    public static final ModuleConfiguration MODULE_CONFIGURATION = SdsModuleConfigurations.MK4I_L2; 
 
     /**
      * CAN ID of the PigeonIMU
      */
-    public static final int DRIVETRAIN_PIGEON_ID = 13;
+    public static final int DRIVETRAIN_PIGEON_ID = 15;
     
     // FRONT LEFT : Florida
-    public static final int FRONT_LEFT_DRIVE_MOTOR = 1;
-    public static final int FRONT_LEFT_STEER_MOTOR = 2;
-    public static final int FRONT_LEFT_STEER_ENCODER = 9;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(194.238); // FIXME Measure and set front left steer offset //192.205810546875
+    public static final int FRONT_LEFT_DRIVE_MOTOR = 8;
+    public static final int FRONT_LEFT_STEER_MOTOR = 7;
+    public static final int FRONT_LEFT_STEER_ENCODER = 12;
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(337.67); //195 // FIXME Measure and set front left steer offset //192.205810546875
 
     // FRONT RIGHT : France
-    public static final int FRONT_RIGHT_DRIVE_MOTOR = 3;
-    public static final int FRONT_RIGHT_STEER_MOTOR = 4;
-    public static final int FRONT_RIGHT_STEER_ENCODER = 10;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(10.272); // FIXME Measure and set back left steer offset //9.3109130859375
+    public static final int FRONT_RIGHT_DRIVE_MOTOR = 2;
+    public static final int FRONT_RIGHT_STEER_MOTOR = 1;
+    public static final int FRONT_RIGHT_STEER_ENCODER = 9;
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(38.4); //97 // FIXME Measure and set back left steer offset //9.3109130859375
 
     // BACK RIGHT : Railroad
-    public static final int BACK_RIGHT_DRIVE_MOTOR = 5;
-    public static final int BACK_RIGHT_STEER_MOTOR = 6;
-    public static final int BACK_RIGHT_STEER_ENCODER = 11;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(302.783); // FIXME Measure and set back right steer offset //305.419921875
+    public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
+    public static final int BACK_RIGHT_STEER_MOTOR = 3;
+    public static final int BACK_RIGHT_STEER_ENCODER = 10;
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(106.52); //181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
-    public static final int BACK_LEFT_DRIVE_MOTOR = 7;
-    public static final int BACK_LEFT_STEER_MOTOR = 8;
-    public static final int BACK_LEFT_STEER_ENCODER = 12;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(124.708); // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final int BACK_LEFT_DRIVE_MOTOR = 6;
+    public static final int BACK_LEFT_STEER_MOTOR = 5;
+    public static final int BACK_LEFT_STEER_ENCODER = 11;
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(134.55); //272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -96,4 +96,27 @@ public final class Constants {
     public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
     public static final double limelightHeight = 27.0; // Height of the limelight off the ground in INCHES
     public static final double limelightAngle = 18.75; // Angle of the limelight in DEGREES
+ 
+    // Superstructure Constants
+    // TODO Change if needed
+    public static final double kIntakeForwardVoltage = -6.0;
+    public static final double kIntakeReverseVoltage = 6.0;
+    public static final double kFeederFeedingVoltage = 8.0;
+    public static final double kFeederShootingVoltage = 3.0;
+    public static final double kFeederReverseVoltage = -6.0;
+    // TODO to invert these properly
+    public static final double kCenteringWheelForwardVoltage = -12.0;
+    public static final double kCenteringWheelReverseVoltage = 6.0;
+
+    // Shooter Velocity Goal Constants
+    public static final double kFenderShotVelocity = 2400; //4300
+    // public static final double kTarmacShotVelocity = 5000;
+    // public static final double kLongShotVelocity = 6500; 
+
+    public static final double kShooterP = 0.2; //0.1
+    public static final double kShooterI = 0;
+    public static final double kShooterD = 0;
+    public static final double kShooterFF = 0.01;
+
+
 }

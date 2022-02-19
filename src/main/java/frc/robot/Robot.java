@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -24,8 +26,9 @@ public class Robot extends TimedRobot {
   private final DrivetrainSubsystem drivetrainSubsystem_ = DrivetrainSubsystem.getInstance();
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
+  private Compressor m_compressor;
 
-  private Command llCommand;
+  // private Command llCommand;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -42,6 +45,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("x_I", 0);
     SmartDashboard.putNumber("x_D", 0);
     m_robotContainer = new RobotContainer();
+
+    m_compressor = new Compressor(PneumaticsModuleType.REVPH);
   }
 
   /**
@@ -60,6 +65,7 @@ public class Robot extends TimedRobot {
      * block in order for anything in the Command-based framework to work.
      */
     CommandScheduler.getInstance().run();
+
 
     // if (smartdashboard_button == true) {
     // new AlignWithGoal();
@@ -103,7 +109,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    llCommand = m_robotContainer.getLimelightCommand();
+    // llCommand = m_robotContainer.getLimelightCommand();
 
   }
 
@@ -112,17 +118,21 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    if (SmartDashboard.getBoolean("Align", false) == true) {
-      if (!llCommand.isScheduled()) {
-        System.out.println("ll scheudlaed");
-        llCommand.schedule();
-      }
+    // if (SmartDashboard.getBoolean("Align", false) == true) {
+    //   if (!llCommand.isScheduled()) {
+    //     System.out.println("ll scheudlaed");
+    //     llCommand.schedule();
+    //   }
 
-    } else {
-      if (llCommand.isScheduled()) {
-        llCommand.cancel();
-      }
-    }
+    // } else {
+    //   if (llCommand.isScheduled()) {
+    //     llCommand.cancel();
+    //   }
+    // }
+
+    // m_compressor.enableAnalog(90, 120);
+  
+
 
   }
 

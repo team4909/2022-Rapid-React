@@ -5,9 +5,11 @@
 package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4SwerveModuleHelper;
+import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -33,6 +35,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     
     private static DrivetrainSubsystem instance = null;
 
+
     /**
      * The scale factor that the speed during Auto trajectories will be affected by.
      * <p>
@@ -46,7 +49,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * This can be reduced to cap the robot's maximum speed. Typically, this is useful during initial testing of the robot.
      * Calculate by: Motor fre speed RPM / 60 * Drive Reduction * Wheel Diameter Meters * pi
      */
-    public static final double MAX_VOLTAGE = 12; //Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
+    public static final double MAX_VOLTAGE = 8; //Constants.FALCON_500_FREE_SPEED / 60.0 / MODULE_CONFIGURATION.getDriveReduction() * MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
     /**
      * The maximum velocity of the robot in meters per second.
      * <p>
@@ -79,7 +82,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
      * cause the angle reading to increase until it wraps back over to zero.
      */
-    private final PigeonIMU m_pigeon = new PigeonIMU(DRIVETRAIN_PIGEON_ID);
+    private final Pigeon2 m_pigeon = new Pigeon2(DRIVETRAIN_PIGEON_ID);
 
     // These are our modules. We initialize them in the initializeMotors method.
     private SwerveModule m_frontLeftModule;
@@ -126,10 +129,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRightCanCoder.configSensorDirection(true);
         m_backLeftCanCoder.configSensorDirection(true);
         m_backRightCanCoder.configSensorDirection(true);
+
+        m_pigeon.clearStickyFaults();
     }
 
     public void initializeMotors(){
-        m_frontLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
             m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
@@ -146,7 +151,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_LEFT_STEER_OFFSET
         );
 
-        m_frontRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(2, 0),
@@ -157,7 +162,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_RIGHT_STEER_OFFSET
         );
 
-        m_backLeftModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(4, 0),
@@ -169,7 +174,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         );
         
 
-        m_backRightModule = Mk4SwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(6, 0),
@@ -186,7 +191,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * 'forwards' direction.
      */
     public void zeroGyroscope() {
-        m_pigeon.setFusedHeading(0.0);
+        // m_pigeon.zeroGyroBiasNow();
+        m_pigeon.setYaw(0.0);
     }
 
     /**
@@ -195,7 +201,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  Degreess from the Pigeon (NOT ROTATION2D)
      */
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+        return Rotation2d.fromDegrees(-m_pigeon.getYaw());
+        
     }
 
     /**
@@ -218,7 +225,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  SwerveModuleState array, Order: FL, FR, BL, BR
      */
     public void actuateModules(SwerveModuleState[] states){
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
+        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
         drive(m_kinematics.toChassisSpeeds(states));
     }
 
@@ -227,7 +234,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // This has not been tested, most likely is completely untrue...
     // Instead use parameter of loadTrajectory()
     public void actuateModulesAuto(SwerveModuleState[] states){
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
+        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         driveAuto(m_kinematics.toChassisSpeeds(states));
     }
 
@@ -238,9 +245,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void periodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(getGyroscopeRotation(), states);
-        SmartDashboard.putNumber("Gyro Rot", m_pigeon.getFusedHeading());
         // System.out.println(getGyroscopeRotation());
-        ////System.out.println(getCurrentPose());
+        SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
+        // System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);
         // System.out.println("w/o scale:" + m_chassisSpeeds.vxMetersPerSecond);
@@ -248,10 +255,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println("rad/s" + m_chassisSpeeds.omegaRadiansPerSecond);
         // System.out.println("rad state [0] " + states[0].angle.getRadians());
         // System.out.println(m_chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE);
-        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
+        m_frontLeftModule.set( states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,states[0].angle.getRadians());
+        m_frontRightModule.set( states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
         m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        m_backRightModule.set( states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,states[3].angle.getRadians());
     }
 
     /**
