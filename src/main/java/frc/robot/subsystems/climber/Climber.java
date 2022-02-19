@@ -257,7 +257,6 @@ public class Climber extends SubsystemBase {
     }
 
     public CommandBase ExtendClimber() {
-        System.out.println("EXtendeing");
         return new InstantCommand(() -> setElevatorGoal(26), this);
  
      }
