@@ -173,7 +173,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
-        return new Taxi(m_drivetrainSubsystem).withTimeout(6);
+        return new FenderShot();
     }
 
     // public PathPlannerTrajectory getTrajectory(){

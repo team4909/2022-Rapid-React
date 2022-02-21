@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -61,6 +62,7 @@ public class IntakeFeeder extends SubsystemBase {
     private static boolean lastEdgeHigh = false;
     private static boolean rumble_ = false;
 
+    private static Timer shot_timer_;
 
 
     private IntakeFeeder() {
@@ -80,6 +82,9 @@ public class IntakeFeeder extends SubsystemBase {
         lastState_ = IntakeState.kIdle;
 
         ballsHeld_ = BallCount.kZero;
+
+        shot_timer_ = new Timer();
+        shot_timer_.reset();
     }
 
     public static IntakeFeeder getInstance() {
@@ -115,6 +120,8 @@ public class IntakeFeeder extends SubsystemBase {
     // Tell the feeder system to run all the motors to shoot
     public void shoot() {
         currentState_ = IntakeState.kShootBalls;
+        shot_timer_.reset();
+        shot_timer_.start();
     }
 
     // Manually toggle the intake moving in and out (might not be needed, but nice to have)
@@ -162,6 +169,8 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
                 feederWheel_.set(0.0);
+                shot_timer_.stop();
+                
                 break;
             case kIdleFeeder:
                 // Only go to this state between intaking balls one and two. Could be better named
@@ -206,7 +215,11 @@ public class IntakeFeeder extends SubsystemBase {
             case kShootBalls:
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
-                feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
+                if (shot_timer_.get() < 0.1 || shot_timer_.get() > 0.8) {
+                    feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
+                } else {
+                    feederWheel_.setVoltage(0.0);
+                }
                 // TODO due to change in sensors. Ignore for now in testing
                 // Don't need to count them right now
                 // if(countFalling(firstBallSeen) >= 2) {
