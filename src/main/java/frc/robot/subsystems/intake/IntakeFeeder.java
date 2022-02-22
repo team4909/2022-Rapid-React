@@ -163,6 +163,10 @@ public class IntakeFeeder extends SubsystemBase {
         // otherwise it reverts to the default state
         intakeExtension_.set(intakeSolenoidState_ ? Value.kReverse : Value.kForward);
         
+        if (ballShot(feederBallSeen)) {
+            ballsHeld_ = (ballsHeld_ == BallCount.kTwo) ? BallCount.kOne : BallCount.kZero;
+        }
+        
         switch (currentState_) {
             case kIdle:
                 // Everything is idle, nothing runs
@@ -220,14 +224,9 @@ public class IntakeFeeder extends SubsystemBase {
                 } else {
                     feederWheel_.setVoltage(0.0);
                 }
-                // TODO due to change in sensors. Ignore for now in testing
-                // Don't need to count them right now
-                // if(countFalling(firstBallSeen) >= 2) {
-                //     fallingEdges = 0;
-                // TODO fix this logic later
+
                 ballsHeld_ = BallCount.kZero;
-                //     currentState_ = IntakeState.kIdle;
-                // }
+                
                 
                 break;
             case kReverseWrongBall:
@@ -241,20 +240,16 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
         }
         SmartDashboard.putString("Intake State", currentState_.name);
+        SmartDashboard.putString("Balls Held", ballsHeld_.toString());
 
         // not using this now but probably will want to down the line
         // for knowing what state the robot previously was in
         lastState_ = currentState_;
+        lastEdgeHigh = feederBallSeen;
     }
 
-    // TODO change because of the new sensors
-    private int countFalling(boolean seen) {
-        if (lastEdgeHigh && lastEdgeHigh != seen) {
-            fallingEdges++;
-            lastEdgeHigh = false;
-        }
-
-        return fallingEdges;
+    private boolean ballShot(boolean seen) {
+        return lastEdgeHigh && !seen;
     }
 
 }
