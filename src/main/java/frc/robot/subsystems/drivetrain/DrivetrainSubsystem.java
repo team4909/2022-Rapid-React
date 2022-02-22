@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -101,12 +102,22 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveDriveOdometry m_odometry;
 
     private ShuffleboardTab m_tab;
+    private ShuffleboardTab m_driverTab;
+
+    private NetworkTableEntry odometryEntry;
 
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds;
 
     private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
+        m_driverTab = Shuffleboard.getTab("Driver");
+        m_driverTab
+        .getLayout("Drivetrain Info", BuiltInLayouts.kList)
+        .withSize(2, 2)
+        .withProperties(Map.of("Label position", "TOP"))
+        .withPosition(4, 1);
+        odometryEntry = m_driverTab.add("Odometry", "not found").getEntry();
 
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
@@ -258,6 +269,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
+        odometryEntry.setString(getCurrentPose().toString());
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(getGyroscopeRotation(), states);
         // System.out.println(getGyroscopeRotation());

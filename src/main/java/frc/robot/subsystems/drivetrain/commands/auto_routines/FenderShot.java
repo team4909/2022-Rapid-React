@@ -12,8 +12,8 @@ public class FenderShot extends SequentialCommandGroup{
         super(            
             // new WaitCommand(2),  // fender_aim - return a speed in hood state
             // new Shoot().withTimeout(2),
-            new PathResetOdometry("FenderTaxi"),
-            new TrajectoryFollow("FenderTaxi"));
+            new PathResetOdometry("simple"),
+            new TrajectoryFollow("simple"));
     }
    
 }

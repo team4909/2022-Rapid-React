@@ -117,10 +117,10 @@ public class Climber extends SubsystemBase {
         .withProperties(Map.of("Label position", "TOP"))
         .withPosition(1,1);
 
-        stateEntry = climberLayout.addPersistent("Climber State", "State Not Found").getEntry();
-        pivotPos = climberLayout.addPersistent("Pivot Position", "Position Not Found").getEntry();
-        elevatorPos = climberLayout.addPersistent("Elevator Position", "Position Not Found").getEntry();
-        pivotVoltage = climberLayout.addPersistent("Pivot Voltage", "Voltage Not Found").getEntry();
+        stateEntry = climberLayout.add("Climber State", "State Not Found").getEntry();
+        pivotPos = climberLayout.add("Pivot Position", "Position Not Found").getEntry();
+        elevatorPos = climberLayout.add("Elevator Position", "Position Not Found").getEntry();
+        pivotVoltage = climberLayout.add("Pivot Voltage", "Voltage Not Found").getEntry();
         //#endregion
 
         isClimberOut_ = () -> false;
