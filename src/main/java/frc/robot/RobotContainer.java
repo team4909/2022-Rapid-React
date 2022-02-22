@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -33,6 +34,7 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.Taxi;
 import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
+import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
@@ -56,7 +58,7 @@ public class RobotContainer {
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     // private final Climber climber_ = Climber.getInstance();
     
-    // private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
+    private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
 
     // private final PowerDistribution PDH = new PowerDistribution(0, ModuleType.kRev);
@@ -84,9 +86,9 @@ public class RobotContainer {
 
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
-            () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-            () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND
+            () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
+            () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
+            () -> (-modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND + m_VisionSubsystem.getLimelightOffset()) * m_drivetrainSubsystem.getPreciseModeScale()
     ));
 
         // Configure the button bindings
@@ -127,7 +129,14 @@ public class RobotContainer {
 
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
-    // new Button(m_controller::getXButton).whenPressed(m_VisionSubsystem::setPipeline);
+    new Button(m_driverController::getXButton)
+    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
+    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
+    new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
+    new Button(m_driverController::getYButton).whenHeld(new RunCommand(m_VisionSubsystem::setLimelightOffset))
+    .whenReleased(() -> m_VisionSubsystem.setLimelightOffset(0));
+
+    new Trigger(() -> (m_driverController.getPOV()  == 90)).whenActive(new SnapToAngle(90d, m_drivetrainSubsystem).withTimeout(2));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
     // new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
@@ -146,7 +155,9 @@ public class RobotContainer {
         // Fender shot
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
-        new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, true);});
+        new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);});
+        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
+
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
         new Button(m_operatorController::getXButton).whenPressed(new LimelightShootCmd());
         // Cancel a spin up

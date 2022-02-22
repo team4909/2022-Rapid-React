@@ -21,12 +21,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 
 import static frc.robot.Constants.*;
 
@@ -103,6 +105,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private ShuffleboardTab m_tab;
     private ShuffleboardTab m_driverTab;
+
+    private double preciseModeScale = 1;
 
     private NetworkTableEntry odometryEntry;
 
@@ -225,6 +229,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public Rotation2d getGyroscopeRotation() {
         return Rotation2d.fromDegrees(m_pigeon.getYaw());
         
+        
     }
 
     public double getGyroPitch() {
@@ -311,6 +316,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public void resetOdometry(Pose2d pose){
         m_odometry.resetPosition(pose, pose.getRotation());
+    }
+
+    public void setPreciseMode(boolean on) {
+        preciseModeScale = on ? 0.3 : 1;
+    }
+
+    public double getPreciseModeScale() {
+        return preciseModeScale;
     }
 
     public static DrivetrainSubsystem getInstance() {

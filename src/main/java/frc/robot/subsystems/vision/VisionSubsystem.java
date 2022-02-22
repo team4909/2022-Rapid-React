@@ -19,7 +19,9 @@ public class VisionSubsystem extends SubsystemBase{
     // Made into privates
     private boolean isAligned_;
     private double lastDistance_;
-    
+
+    private double limelightOffset;
+    private double firstError;
 
     public boolean isAligned;
     boolean toggle = true;
@@ -27,6 +29,7 @@ public class VisionSubsystem extends SubsystemBase{
 private VisionSubsystem() {
     isAligned_ = false;
     lastDistance_ = 0.0;
+    firstError = this.getXDegrees();
 
 }
 
@@ -85,6 +88,33 @@ public static VisionSubsystem instance_ = null;
         return x;
     }
 
+    public void setLimelightOffset() {
+
+        double offset = -this.getXDegrees();
+        double angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * Constants.GOAL_ALIGN_KD) * 2; //TODO make this a constant pls
+
+        if (this.isAligned() == true) {
+            limelightOffset = 0;
+        } else {
+            if (this.getXDegrees() <= 0)
+                limelightOffset = angularSpeed;
+
+            if (this.getXDegrees() >= 0) 
+                limelightOffset = angularSpeed;
+        }
+    }
+
+    public void setLimelightOffset(double value) {
+        limelightOffset = value;
+    }
+
+    /**
+     * @return chasis speed, not angle in measure
+     */
+    public double getLimelightOffset() {
+        return this.limelightOffset;
+    }
+
     public boolean isAligned() {
         return isAligned_;
     }
@@ -141,6 +171,7 @@ public static VisionSubsystem instance_ = null;
         }
         SmartDashboard.putBoolean("isAligned", isAligned_);
         SmartDashboard.putNumber("Distance", lastDistance_);
+        SmartDashboard.putNumber("ofset speed", limelightOffset);
 
     }
 

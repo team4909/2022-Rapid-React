@@ -1,6 +1,7 @@
 package frc.robot.subsystems.drivetrain.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
@@ -42,7 +43,7 @@ public class DefaultDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        
+        SmartDashboard.putNumber("rotation suppl", m_rotationSupplier.getAsDouble());
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
         m_drivetrainSubsystem.drive(
                 // fromFielRelativeSpeeds, provides Field Relative drive

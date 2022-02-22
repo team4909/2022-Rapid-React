@@ -5,11 +5,13 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -88,6 +90,8 @@ public class Climber extends SubsystemBase {
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
         elevatorRight_.getEncoder().setPosition(0);
+        elevatorLeft_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
+        elevatorRight_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
 
         elevatorController_ = elevatorRight_.getPIDController();
         elevatorController_.setP(Constants.ELEVATOR_KP);
@@ -98,6 +102,8 @@ public class Climber extends SubsystemBase {
 
         pivotRight_ = new TalonFX(Constants.RIGHT_PIVOT_MOTOR);
         pivotLeft_ = new TalonFX(Constants.LEFT_PIVOT_MOTOR);
+        pivotRight_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
+        pivotLeft_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
 
         pivotRight_.clearStickyFaults(kTimeoutMs);
         pivotLeft_.follow(pivotRight_);

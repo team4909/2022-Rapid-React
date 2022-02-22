@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -69,6 +70,10 @@ public class IntakeFeeder extends SubsystemBase {
         intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
         centeringWheel_ = new CANSparkMax(16, MotorType.kBrushless);
         feederWheel_ = new CANSparkMax(17, MotorType.kBrushless);
+
+        intakeWheels_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
+        centeringWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
+        feederWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
 
         feederWheel_.setIdleMode(IdleMode.kBrake);
 
@@ -225,7 +230,7 @@ public class IntakeFeeder extends SubsystemBase {
                     feederWheel_.setVoltage(0.0);
                 }
 
-                ballsHeld_ = BallCount.kZero;
+                // ballsHeld_ = BallCount.kZero;
                 
                 
                 break;
