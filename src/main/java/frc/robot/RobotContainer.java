@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.time.Instant;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -52,10 +54,12 @@ import frc.robot.utils.BionicController;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    private final Climber climber_ = Climber.getInstance();
+    // private final Climber climber_ = Climber.getInstance();
     
     // private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
-    private final BionicController m_controller = new BionicController(2);
+    // private final BionicController m_controller = new BionicController(2);
+
+    // private final PowerDistribution PDH = new PowerDistribution(0, ModuleType.kRev);
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
@@ -68,7 +72,7 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-    
+    // PDH.clearStickyFaults();
     // Create the driver tab
     Shuffleboard.getTab("Driver");
 
@@ -115,8 +119,8 @@ public class RobotContainer {
 //         new Button(m_operator::getLeftBumper).whenPressed(climber_::StartRoutine);
 //         new Button(m_operator::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_controller::getLeftBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(26)));
-        new Button(m_controller::getRightBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(0.76)));
+        // new Button(m_driverController::getLeftBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(26)));
+        // new Button(m_driverController::getRightBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(0.76)));
         new Button(m_driverController::getBackButton)
                 // No requirements because we don't need to interrupt anything
                 .whenPressed(m_drivetrainSubsystem::zeroGyroscope);

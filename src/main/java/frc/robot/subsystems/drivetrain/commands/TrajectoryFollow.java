@@ -40,7 +40,7 @@ public class TrajectoryFollow extends CommandBase {
 
         if (m_trajectory == null) {
             try {
-                m_trajectory = PathPlanner.loadPath(m_pathName,6.5, 6.5); //2.9, 3
+                m_trajectory = PathPlanner.loadPath(m_pathName, 4.9, 5); //2.9, 3
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -54,8 +54,8 @@ public class TrajectoryFollow extends CommandBase {
         new PPSwerveControllerCommand(m_trajectory,
                 DrivetrainSubsystem.getInstance()::getCurrentPose,
                 DrivetrainSubsystem.getInstance().getKinematics(),
-                new PIDController(0, 0, 0),
-                new PIDController(0, 0, 0),
+                new PIDController(4, 0, 0),
+                new PIDController(4, 0, 0),
                 thetaController,
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,
                 DrivetrainSubsystem.getInstance())
