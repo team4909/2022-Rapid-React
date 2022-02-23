@@ -1,15 +1,10 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
-
-import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
-import com.fasterxml.jackson.annotation.JacksonInject.Value;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;

@@ -129,11 +129,11 @@ public class RobotContainer {
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
     new Button(m_driverController::getRightBumper)
-    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
-    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
+                .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
+                .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
     new Button(m_driverController::getLeftBumper)
-    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
-    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
+                .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
+                .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
     new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
     // new Button(m_driverController::getYButton).whenHeld(new RunCommand(m_VisionSubsystem::setLimelightOffset))
 
@@ -145,13 +145,14 @@ public class RobotContainer {
     // new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
     //.whenHeld(getLimelightCommand()
     //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
-        // Shoot the shot
-        new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
-                    .whenActive(() -> { m_intakeSubsystem.shoot(); } )
-                    .whenInactive(() -> { m_intakeSubsystem.stopIntake(); m_shooterSubsystem.stop(); } );
-        new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis()) > 0.7))
-                    .whenActive(new RunCommand(m_VisionSubsystem::setLimelightOffset))
-                    .whenInactive(new RunCommand(() -> m_VisionSubsystem.setLimelightOffset(0)));
+
+    // Shoot the shot
+    new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
+                .whenActive(() -> { m_intakeSubsystem.shoot(); } )
+                .whenInactive(() -> { m_intakeSubsystem.stopIntake(); m_shooterSubsystem.stop(); } );
+    new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis()) > 0.7))
+                .whenActive(new RunCommand(m_VisionSubsystem::setLimelightOffset))
+                .whenInactive(new RunCommand(() -> m_VisionSubsystem.setLimelightOffset(0)));
 
         /////////////////////////////////
         ///      Operator Buttons     ///
@@ -168,17 +169,16 @@ public class RobotContainer {
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
         new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));
 
-        // new Trigger().whenActive(new RunIntakeCmd())
 
         // Run intake: Operator right trigger
         new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
-        .whenActive(m_intakeSubsystem::intake)
-        .whenInactive(m_intakeSubsystem::stopIntake);
+                    .whenActive(m_intakeSubsystem::intake)
+                    .whenInactive(m_intakeSubsystem::stopIntake);
 
         // Reverse intake: Operator left trigger
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
-        .whenActive(m_intakeSubsystem::reverseIntake)
-        .whenInactive(m_intakeSubsystem::stopIntake);
+                    .whenActive(m_intakeSubsystem::reverseIntake)
+                    .whenInactive(m_intakeSubsystem::stopIntake);
     }
     
 

@@ -2,9 +2,6 @@ package frc.robot.subsystems.drivetrain;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
-
-import java.util.function.DoubleSupplier;
 
 public class Taxi extends CommandBase {
     // DrivetrainSubsystem requirment, gets passed in

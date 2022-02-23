@@ -4,16 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,7 +18,6 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
  */
 public class Robot extends TimedRobot {
   
-  private final DrivetrainSubsystem drivetrainSubsystem_ = DrivetrainSubsystem.getInstance();
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
   private Compressor m_compressor;
@@ -40,10 +34,6 @@ public class Robot extends TimedRobot {
      * autonomous chooser on the dashboard.
      */
 
-    SmartDashboard.putBoolean("Align", false);
-    SmartDashboard.putNumber("x_P", 1);
-    SmartDashboard.putNumber("x_I", 0);
-    SmartDashboard.putNumber("x_D", 0);
     m_robotContainer = new RobotContainer();
 
     m_compressor = new Compressor(PneumaticsModuleType.REVPH);
@@ -69,9 +59,6 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
 
 
-    // if (smartdashboard_button == true) {
-    // new AlignWithGoal();
-    // }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -96,7 +83,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    //System.out.println(RobotContainer.trajectory.);
   }
 
   @Override
@@ -111,8 +97,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    // llCommand = m_robotContainer.getLimelightCommand();
-
   }
 
   
@@ -120,17 +104,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    // if (SmartDashboard.getBoolean("Align", false) == true) {
-    //   if (!llCommand.isScheduled()) {
-    //     System.out.println("ll scheudlaed");
-    //     llCommand.schedule();
-    //   }
 
-    // } else {
-    //    if (llCommand.isScheduled()) {
-    //     llCommand.cancel();
-    //   }
-    // }
 
     m_compressor.enableAnalog(90, 120);
   
