@@ -28,7 +28,7 @@ public class ThreeBallBottomTarmac extends SequentialCommandGroup {
         addCommands( 
 
         new PathResetOdometry("Tarmac-A"), (
-            new TrajectoryFollow("Tarmac-A").withTimeout(1.5)
+            new TrajectoryFollow("Tarmac-A").withTimeout(2)
             .raceWith(new RunCommand(intake_::intake, intake_))
         )
         .andThen(new InstantCommand(intake_::stopIntake)),
@@ -41,7 +41,7 @@ public class ThreeBallBottomTarmac extends SequentialCommandGroup {
             .perpetually()
             .withInterrupt(() -> shooter_.spunUp()
         ),
-        new RunCommand(intake_::shoot).withTimeout(2)
+        new RunCommand(intake_::shoot).withTimeout(3)
         .andThen(new InstantCommand(intake_::stopIntake))
         .andThen(new InstantCommand(shooter_::stop)),
         
