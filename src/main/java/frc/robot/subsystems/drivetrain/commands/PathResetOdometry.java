@@ -12,7 +12,7 @@ public class PathResetOdometry extends CommandBase {
 
     public PathResetOdometry(String pathName) {
         try {
-            trajectory = PathPlanner.loadPath(pathName, 1, 4);
+            trajectory = PathPlanner.loadPath(pathName, 8, 5);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
@@ -38,6 +39,8 @@ import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.ThreeBallBottomTarmac;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
@@ -71,6 +74,7 @@ public class RobotContainer {
     private final XboxController m_driverController = new XboxController(0);
     private final XboxController m_operatorController = new XboxController(1);
 
+    private final SendableChooser<Command> m_chooser = new SendableChooser<>();
  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -98,11 +102,6 @@ public class RobotContainer {
 
 
     }
-
-    // public Command getLimelightCommand() {
-    //     return new AlignWithGoal(m_drivetrainSubsystem, () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-    //     () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, () -> -modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
-    // }
 
     /**
      * Use this method to define your button->command mappings. Buttons can be created by
@@ -196,7 +195,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
-        return new FenderShot();
+        return new ThreeBallBottomTarmac();
     }
 
     // public PathPlannerTrajectory getTrajectory(){

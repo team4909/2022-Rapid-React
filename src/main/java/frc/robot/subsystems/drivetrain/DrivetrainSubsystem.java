@@ -208,6 +208,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_STEER_ENCODER,
             BACK_RIGHT_STEER_OFFSET
         );
+
+        m_frontLeftModule.set(0, 0);
+        m_frontRightModule.set(0, 0);
+        m_backLeftModule.set(0, 0);
+        m_backRightModule.set(0, 0);
     }
 
     /**
@@ -248,22 +253,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         
     }
 
-    /**
-     * Sets module states of all the modules
-     * @param states
-     *  SwerveModuleState array, Order: FL, FR, BL, BR
-     */
-    public void actuateModules(SwerveModuleState[] states){
-        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND);
-        drive(m_kinematics.toChassisSpeeds(states));
-    }
-
     // Note: to get to max speed multiply by max voltage on the desaturateWheelSpeeds
     // To control speed of auto multiply by any number, 0 < x < max voltage
     // This has not been tested, most likely is completely untrue...
     // Instead use parameter of loadTrajectory()
     public void actuateModulesAuto(SwerveModuleState[] states){
-        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         driveAuto(m_kinematics.toChassisSpeeds(states));
     }
 
@@ -274,7 +268,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void periodic() {
         odometryEntry.setString(getCurrentPose().toString());
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-        m_odometry.update(getGyroscopeRotation(), states);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
+        
+
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
         // System.out.println(getCurrentPose());
@@ -297,6 +293,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_backLeftModule.set(0, 45);
             m_backRightModule.set(0, -315);
         }
+        
+
+        states[0].speedMetersPerSecond = Math.abs(m_frontLeftModule.getDriveVelocity());
+       states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
+       states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
+       states[3].speedMetersPerSecond = Math.abs(m_backRightModule.getDriveVelocity());
+       m_odometry.update(getGyroscopeRotation(), states);
     }
 
     /**
