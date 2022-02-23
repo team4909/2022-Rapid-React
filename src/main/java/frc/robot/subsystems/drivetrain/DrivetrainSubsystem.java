@@ -113,6 +113,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds;
 
+    private boolean lockInPlace_ = false;
+
     private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
         m_driverTab = Shuffleboard.getTab("Driver");
@@ -288,10 +290,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println("rad state [0] " + states[0].angle.getRadians());
         // System.out.println(m_chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE);
         
-        m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        m_backRightModule.set( states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,states[3].angle.getRadians());
+        if (!lockInPlace_) {
+            m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
+            m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
+            m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
+            m_backRightModule.set( states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,states[3].angle.getRadians());
+        } else {
+            m_frontLeftModule.set(0, -45);
+            m_frontRightModule.set(0, 315);
+            m_backLeftModule.set(0, 45);
+            m_backRightModule.set(0, -315);
+        }
     }
 
     /**
@@ -319,7 +328,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setPreciseMode(boolean on) {
-        preciseModeScale = on ? 0.3 : 1;
+        preciseModeScale = on ? Constants.PRECISE_MODE_SCALE : 1;
+    }
+
+    public void setLockInPlace(boolean lock) {
+        lockInPlace_ = lock ? true : false;
     }
 
     public double getPreciseModeScale() {

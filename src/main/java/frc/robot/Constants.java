@@ -62,25 +62,25 @@ public final class Constants {
     public static final int FRONT_LEFT_DRIVE_MOTOR = 8;
     public static final int FRONT_LEFT_STEER_MOTOR = 7;
     public static final int FRONT_LEFT_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(326.51-360); //195 // FIXME Measure and set front left steer offset //192.205810546875
+    public static final double FRONT_LEFT_STEER_OFFSET = -Math.toRadians(313.1542); //195 // FIXME Measure and set front left steer offset //192.205810546875
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_DRIVE_MOTOR = 2;
     public static final int FRONT_RIGHT_STEER_MOTOR = 1;
     public static final int FRONT_RIGHT_STEER_ENCODER = 9;
-    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(38.14); //97 // FIXME Measure and set back left steer offset //9.3109130859375
+    public static final double FRONT_RIGHT_STEER_OFFSET = -Math.toRadians(30.498); //97 // FIXME Measure and set back left steer offset //9.3109130859375
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
     public static final int BACK_RIGHT_STEER_MOTOR = 3;
     public static final int BACK_RIGHT_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(106.611328125); //181 // FIXME Measure and set back right steer offset //305.419921875
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(73.828125); //181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_STEER_MOTOR = 5;
     public static final int BACK_LEFT_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(126.385546875); //272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_STEER_OFFSET = -Math.toRadians(114.2531); //272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -88,7 +88,8 @@ public final class Constants {
     // The Max Acceleration Value for the robot [only in AUTO]
     public static final double T_MAX_ACCEL = 4;
 
-  
+    public static final double PRECISE_MODE_SCALE = 0.3;
+
     // The Max Velocity for the robot [only in AUTO]
     public static final double MAX_VEL = 6.5;
 
@@ -123,11 +124,10 @@ public final class Constants {
 
 
     // The PID Values for the Limelight driven alignment to the goal.
-    public static final double GOAL_ALIGN_KP = 0.05;
-    public static final double GOAL_ALIGN_KD = 0.0009;
+    public static final double GOAL_ALIGN_KP = 0.02;
+    public static final double GOAL_ALIGN_KD = 0.0;
 
     // Shooter Constants 
-
     public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
     public static final double limelightHeight = 27.0; // Height of the limelight off the ground in INCHES
     public static final double limelightAngle = 18.75; // Angle of the limelight in DEGREES
@@ -152,7 +152,6 @@ public final class Constants {
     public static final double kShooterI = 0;
     public static final double kShooterD = 0;
     public static final double kShooterFF = 0.05;
-    
 
 
 }

@@ -16,7 +16,9 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -123,20 +125,20 @@ public class RobotContainer {
         //driver controller
         // new Button(m_driverController::getLeftBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(26)));
         // new Button(m_driverController::getRightBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(0.76)));
-        new Button(m_driverController::getBackButton)
-                // No requirements because we don't need to interrupt anything
-                .whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-
+    new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
-    new Button(m_driverController::getXButton)
+    new Button(m_driverController::getRightBumper)
     .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
     .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
+    new Button(m_driverController::getLeftBumper)
+    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
+    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
     new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
-    new Button(m_driverController::getYButton).whenHeld(new RunCommand(m_VisionSubsystem::setLimelightOffset))
-    .whenReleased(() -> m_VisionSubsystem.setLimelightOffset(0));
+    // new Button(m_driverController::getYButton).whenHeld(new RunCommand(m_VisionSubsystem::setLimelightOffset))
 
-    new Trigger(() -> (m_driverController.getPOV()  == 90)).whenActive(new SnapToAngle(90d, m_drivetrainSubsystem).withTimeout(2));
+    new Button(() -> (m_driverController.getPOV()  != -1)).whenPressed(new SnapToAngle(m_driverController, m_drivetrainSubsystem), false); //
+    // new Trigger(() -> (m_driverController.getPOV()  == 90)).whenActive(new SnapToAngle(270d, m_drivetrainSubsystem).withTimeout(2));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
     // new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
@@ -147,7 +149,9 @@ public class RobotContainer {
         new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
                     .whenActive(() -> { m_intakeSubsystem.shoot(); } )
                     .whenInactive(() -> { m_intakeSubsystem.stopIntake(); m_shooterSubsystem.stop(); } );
-
+        new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis()) > 0.7))
+                    .whenActive(new RunCommand(m_VisionSubsystem::setLimelightOffset))
+                    .whenInactive(new RunCommand(() -> m_VisionSubsystem.setLimelightOffset(0)));
 
         /////////////////////////////////
         ///      Operator Buttons     ///
@@ -177,6 +181,10 @@ public class RobotContainer {
         .whenInactive(m_intakeSubsystem::stopIntake);
     }
     
+
+    public void temp() {
+        SmartDashboard.putNumber("POV", m_driverController.getPOV());
+    }
 
     // new Button(m_operatorController::getXButton).whenPressed(m_VisionSubsystem::setPipelineOne);
 
