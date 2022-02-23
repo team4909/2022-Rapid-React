@@ -47,7 +47,7 @@ public class TrajectoryFollow extends CommandBase {
             }
         }
 
-        ProfiledPIDController thetaController = new ProfiledPIDController(4, 0, 0,
+        ProfiledPIDController thetaController = new ProfiledPIDController(5, 0, 0,
                 new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
                         Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2)));
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
@@ -56,7 +56,7 @@ public class TrajectoryFollow extends CommandBase {
                 DrivetrainSubsystem.getInstance()::getCurrentPose,
                 DrivetrainSubsystem.getInstance().getKinematics(),
                 new PIDController(4, 0, 0),
-                new PIDController(4, 0, 0),
+                new PIDController(5, 0, 0),
                 thetaController,
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,
                 DrivetrainSubsystem.getInstance())
