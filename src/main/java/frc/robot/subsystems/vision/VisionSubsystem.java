@@ -1,11 +1,20 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
 
+import org.opencv.video.Video;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoSink;
+import edu.wpi.first.cscore.VideoSource;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -21,7 +30,28 @@ public class VisionSubsystem extends SubsystemBase{
     public boolean isAligned;
     boolean toggle = true;
 
+    private UsbCamera frontCamera_;
+    private VideoSink server_;
+    private Thread cameraThread;
+
 private VisionSubsystem() {
+
+    // cameraThread = new Thread (
+    //     () -> {
+    //       UsbCamera camera = CameraServer.startAutomaticCapture();
+    //       camera.setResolution(640, 480);
+    //       camera.setFPS(15);
+    //       CvSink cvSink = CameraServer.getVideo();
+    //       CvSource outputStream = CameraServer.putVideo("Intake Camera", 640, 480);
+    //     }
+    // );
+    // cameraThread.setDaemon(true);
+    // cameraThread.start();
+
+    CameraServer.startAutomaticCapture();
+    // Video
+    // CvSink a = CameraServer.getServer();
+    // Shuffleboard.getTab("Driver").getLayout("Vision").add
     isAligned_ = false;
     lastDistance_ = 0.0;
     firstError = this.getXDegrees();

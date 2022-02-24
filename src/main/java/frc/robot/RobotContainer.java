@@ -46,7 +46,7 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
 import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.commands.LimelightShootCmd;
+import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.BionicController;
@@ -61,7 +61,7 @@ import frc.robot.utils.BionicController;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    // private final Climber climber_ = Climber.getInstance();
+    private final Climber climber_ = Climber.getInstance();
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
@@ -97,10 +97,17 @@ public class RobotContainer {
             () -> (-modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND + m_VisionSubsystem.getLimelightOffset()) * m_drivetrainSubsystem.getPreciseModeScale()
     ));
 
-        // Configure the button bindings
         configureButtonBindings();
+        configureSendableChooser();
 
+    }
 
+    private void configureSendableChooser() {
+        m_chooser.setDefaultOption("Three Ball from Bottom of Tarmac", new ThreeBallBottomTarmac());
+        m_chooser.addOption("Fender Shot", new FenderShot());
+        m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
+        
+        SmartDashboard.putData(m_chooser);
     }
 
     /**
@@ -117,13 +124,13 @@ public class RobotContainer {
         // Back button zeros the gyroscope
         // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         //All these will be on the operator controller
-//         new Button(m_operator::getBackButton).whenPressed(climber_::RaiseClimber);
-//         new Button(m_operator::getStartButton).whenPressed(climber_::LowerClimber);
-//         new Button(m_operator::getLeftBumper).whenPressed(climber_::StartRoutine);
-//         new Button(m_operator::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
+        new Button(m_driverController::getBackButton).whenPressed(climber_::RaiseClimber);
+        new Button(m_driverController::getStartButton).whenPressed(climber_::LowerClimber);
+        // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
+        // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        // new Button(m_driverController::getLeftBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(26)));
-        // new Button(m_driverController::getRightBumper).whenPressed(new InstantCommand(() -> climber_.setElevatorGoal(0.76)));
+        new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+        new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
     new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
@@ -168,7 +175,7 @@ public class RobotContainer {
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
-        new Button(m_operatorController::getXButton).whenPressed(new LimelightShootCmd());
+        new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
         new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));
@@ -200,7 +207,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
-        return new ThreeBallBottomTarmac();
+        return m_chooser.getSelected();
     }
 
     // public PathPlannerTrajectory getTrajectory(){
@@ -229,6 +236,7 @@ public class RobotContainer {
     }
 
     /**
+     * 
      * Modifies the value passed in, deadbanded, and squared
      * @param value
      *    The raw value to be modified

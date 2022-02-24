@@ -28,6 +28,7 @@ public class SnapToAngle extends CommandBase {
     }
 
     public SnapToAngle(XboxController controller, double angle, DrivetrainSubsystem requirements) {
+        currentInput_ = controller;
         thetaController_ = new PIDController(kP, kI, kD);
         angle_ = angle;
         addRequirements(requirements);
@@ -57,9 +58,9 @@ public class SnapToAngle extends CommandBase {
         //While snapping to angle, you can drive in its simplest state but without any  of the 
         //extra functionality that the arguements of DefaultDriveCommand provide.
         dt_.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-            currentInput_.getLeftY(),
-            currentInput_.getLeftX(), 
-            thetaController_.calculate(gyroAngle, -angle_), 
+            -currentInput_.getLeftY() * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+            -currentInput_.getLeftX() * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND, 
+            -currentInput_.getRightX() * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND + thetaController_.calculate(gyroAngle, -angle_), 
             dt_.getGyroscopeRotation() 
         ));
     }
