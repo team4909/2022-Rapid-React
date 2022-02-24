@@ -9,23 +9,25 @@ import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class SnapToAngle extends CommandBase {
 
-    private double angle_= 0;
+    private double angle_= 0d;
     private DrivetrainSubsystem dt_;
     private PIDController thetaController_;
-    private XboxController controller_;
-    
+    private XboxController currentInput_;
+    private boolean fenderAngle_ = false;
+
     private final double kP = 0.12;
     private final double kI = 0.0;
     private final double kD = 0.0012;
 
     public SnapToAngle(XboxController controller, DrivetrainSubsystem requirements) {
-        controller_ = controller;
+        currentInput_ = controller;
         thetaController_ = new PIDController(kP, kI, kD);
         addRequirements(requirements);
         dt_ = requirements;
+        fenderAngle_ = true;
     }
 
-    public SnapToAngle(double angle, DrivetrainSubsystem requirements) {
+    public SnapToAngle(XboxController controller, double angle, DrivetrainSubsystem requirements) {
         thetaController_ = new PIDController(kP, kI, kD);
         angle_ = angle;
         addRequirements(requirements);
@@ -41,8 +43,8 @@ public class SnapToAngle extends CommandBase {
 
     @Override
     public void execute() {
-        if (controller_ != null) {
-            if (controller_.getPOV() != -1) {
+        if (fenderAngle_) {
+            if (currentInput_.getPOV() != -1) {
                 if (angle_ > 180) angle_ -= 360;   
             }
         } else {
@@ -52,7 +54,14 @@ public class SnapToAngle extends CommandBase {
         SmartDashboard.putNumber("turnError", thetaController_.getPositionError());
         double gyroAngle = dt_.getGyroscopeRotation().getDegrees() % 360;
         if (gyroAngle > 180) gyroAngle = 360 - gyroAngle;
-        dt_.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0d, 0d, thetaController_.calculate(gyroAngle, -angle_), dt_.getGyroscopeRotation()));
+        //While snapping to angle, you can drive in its simplest state but without any  of the 
+        //extra functionality that the arguements of DefaultDriveCommand provide.
+        dt_.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+            currentInput_.getLeftY(),
+            currentInput_.getLeftX(), 
+            thetaController_.calculate(gyroAngle, -angle_), 
+            dt_.getGyroscopeRotation() 
+        ));
     }
     @Override
     public boolean isFinished() {
