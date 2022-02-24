@@ -25,19 +25,30 @@ public class SnapToAngle extends CommandBase {
         dt_ = requirements;
     }
 
+    public SnapToAngle(double angle, DrivetrainSubsystem requirements) {
+        thetaController_ = new PIDController(kP, kI, kD);
+        angle_ = angle;
+        addRequirements(requirements);
+        dt_ = requirements;
+    }
+
     @Override
     public void initialize() {
 
-        thetaController_.setTolerance(2.5); //if 2.5 degrees off thats ok
+        thetaController_.setTolerance(4); //if 2.5 degrees off thats ok
         SmartDashboard.putNumber("goalAng", angle_);
     }
 
     @Override
     public void execute() {
-        if (controller_.getPOV() != -1) {
-            angle_ = controller_.getPOV();
+        if (controller_ != null) {
+            if (controller_.getPOV() != -1) {
+                if (angle_ > 180) angle_ -= 360;   
+            }
+        } else {
             if (angle_ > 180) angle_ -= 360;
         }
+
         SmartDashboard.putNumber("turnError", thetaController_.getPositionError());
         double gyroAngle = dt_.getGyroscopeRotation().getDegrees() % 360;
         if (gyroAngle > 180) gyroAngle = 360 - gyroAngle;

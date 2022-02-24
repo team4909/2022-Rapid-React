@@ -135,7 +135,13 @@ public class RobotContainer {
                 .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
     new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
     // new Button(m_driverController::getYButton).whenHeld(new RunCommand(m_VisionSubsystem::setLimelightOffset))
-
+    
+    //Fender Shot Angles!
+    new Button(m_driverController::getAButton).whenPressed(new SnapToAngle(201, m_drivetrainSubsystem));
+    new Button(m_driverController::getBButton).whenPressed(new SnapToAngle(111, m_drivetrainSubsystem));
+    new Button(m_driverController::getXButton).whenPressed(new SnapToAngle(291, m_drivetrainSubsystem));
+    new Button(m_driverController::getYButton).whenPressed(new SnapToAngle(21, m_drivetrainSubsystem));
+    
     new Button(() -> (m_driverController.getPOV()  != -1)).whenPressed(new SnapToAngle(m_driverController, m_drivetrainSubsystem), false); //
     // new Trigger(() -> (m_driverController.getPOV()  == 90)).whenActive(new SnapToAngle(270d, m_drivetrainSubsystem).withTimeout(2));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
