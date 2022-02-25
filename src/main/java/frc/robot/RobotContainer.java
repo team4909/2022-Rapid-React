@@ -120,18 +120,22 @@ public class RobotContainer {
         ///////////////////////////////
         ///      Driver Buttons     ///
         ///////////////////////////////
+        
 
         // Back button zeros the gyroscope
         // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         //All these will be on the operator controller
-        new Button(m_driverController::getBackButton).whenPressed(climber_::RaiseClimber);
-        new Button(m_driverController::getStartButton).whenPressed(climber_::LowerClimber);
+        new Button(m_operatorController::getBackButton).whenPressed(climber_.LowerClimber());
+        new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber().withInterrupt(climber_.isClimberOut_)
+        .andThen(climber_.HoldClimber().withInterrupt(() -> climber_.holdingPivot_)));
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
         new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
         new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
-    new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        // new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setElevatorGains(1, 0, 0, 0)); //up
+        // new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.sete//down
+        new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
     new Button(m_driverController::getRightBumper)
@@ -141,9 +145,9 @@ public class RobotContainer {
                 .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
                 .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
     new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
-    // new Button(m_driverController::getYButton).whenHeld(new RunCommand(m_VisionSubsystem::setLimelightOffset))
     
-    //Fender Shot Angles!
+
+    //Fender Shot Angles
     new Button(m_driverController::getAButton).whenPressed(new SnapToAngle(m_driverController, 201, m_drivetrainSubsystem));
     new Button(m_driverController::getBButton).whenPressed(new SnapToAngle(m_driverController, 111, m_drivetrainSubsystem));
     new Button(m_driverController::getXButton).whenPressed(new SnapToAngle(m_driverController, 291, m_drivetrainSubsystem));

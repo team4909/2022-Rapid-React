@@ -6,6 +6,7 @@ import java.util.function.BooleanSupplier;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
@@ -44,13 +45,13 @@ public class Climber extends SubsystemBase {
 
     private SparkMaxPIDController elevatorController_;
 
-    public boolean m_isAtElevatorGoal;
+    public boolean holdingPivot_;
 
     private ClimberStates state_;
 
     private VoltageTracker voltageTracker_;
 
-    private BooleanSupplier isClimberOut_;    
+    public BooleanSupplier isClimberOut_;    
     private BooleanSupplier shouldRun_;
 
     private ShuffleboardLayout climberLayout;
@@ -58,6 +59,9 @@ public class Climber extends SubsystemBase {
     private NetworkTableEntry pivotPos;
     private NetworkTableEntry elevatorPos;
     private NetworkTableEntry pivotVoltage;
+
+    DrivetrainSubsystem d = DrivetrainSubsystem.getInstance();
+
 
     //#endregion
 
@@ -81,6 +85,7 @@ public class Climber extends SubsystemBase {
     }
 
     private Climber() {
+
         //Elevator: NEOs (CANSparkMaxs)
         //Pivot: Falcons (TalonFXs)
 
@@ -143,6 +148,10 @@ public class Climber extends SubsystemBase {
     public void periodic() {
         // elevatorRight_.set(0.3);
         SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
+        SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
+        SmartDashboard.putNumber("piv pos", pivotRight_.getSelectedSensorPosition());
+        SmartDashboard.putBoolean("is climber out", isClimberOut_.getAsBoolean());
+        
         // System.out.println(pivotRight_.getSelectedSensorPosition());
         stateEntry.setString(state_.toString());
         pivotPos.setDouble(pivotRight_.getSelectedSensorPosition());
@@ -183,8 +192,9 @@ public class Climber extends SubsystemBase {
     private void climberDeploy(boolean out) {
         pivotRight_.set(ControlMode.PercentOutput, out ? 0.1 : -0.1); //Deploy at 30%
         double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
-        isClimberOut_ = () -> pivotRight_.getMotorOutputVoltage() > (avgV * 2);
+        isClimberOut_ = () -> Math.abs(pivotRight_.getMotorOutputVoltage()) > (Math.abs(avgV) * 10);
         if (isClimberOut_.getAsBoolean()) {
+            System.out.println(pivotRight_.getSelectedSensorPosition());
             voltageTracker_.reset();
             pivotRight_.setSelectedSensorPosition(0); // Zero the pivot motors
         }
@@ -210,8 +220,8 @@ public class Climber extends SubsystemBase {
                 break;
             case EXTEND_HOOK:
                 nextPivotCommand = new Pivot(0);
-                nextElevatorCommand = new Elevator(Constants.MAX_ELEVATOR_HEIGHT);
-                if (this.inTolerance(this.getElevatorInches(), Constants.MAX_ELEVATOR_HEIGHT - 0.5, Constants.MAX_ELEVATOR_HEIGHT + 0.5)) { // extension tolerance of 1/2 in
+                nextElevatorCommand = new Elevator(26.5);
+                if (this.inTolerance(this.getElevatorInches(), 26, 27)) { // extension tolerance of 1/2 in
                     state_ = ClimberStates.BACK_PIVOT;
                 }
                 break;
@@ -232,7 +242,6 @@ public class Climber extends SubsystemBase {
                 }
                 break;
             case STABILIZE:
-                DrivetrainSubsystem d = DrivetrainSubsystem.getInstance();
                 if (this.inTolerance(d.getGyroPitch(), -3, 3)) {
                     state_ = ClimberStates.IDLE;
                 }
@@ -248,6 +257,10 @@ public class Climber extends SubsystemBase {
 
     }
 
+    // public void holdPivot() {
+    //     pivotRight_.set(TalonFXControlMode.Position, 0);
+    // }
+
     private void stopRoutine() {
         shouldRun_ = () -> false;
     }
@@ -255,15 +268,23 @@ public class Climber extends SubsystemBase {
 
     //#region Commands
     public CommandGroupBase RaiseClimber() {
+        holdingPivot_ = true;
         return new RunCommand(() -> climberDeploy(true), this).withInterrupt(isClimberOut_);
     }
 
     public CommandGroupBase LowerClimber() {
+        isClimberOut_ = () -> false;
+        holdingPivot_ = false;
         return new RunCommand(() -> climberDeploy(false), this).withInterrupt(isClimberOut_);
     }
 
+    public RunCommand HoldClimber() {
+        System.out.println("setting to 0");
+        return new RunCommand(() -> pivotRight_.set(TalonFXControlMode.Position, 0));
+    }
+
     public CommandBase ExtendClimber() {
-        return new InstantCommand(() -> setElevatorGoal(30));
+        return new InstantCommand(() -> setElevatorGoal(36.5));
  
      }
 
@@ -272,6 +293,7 @@ public class Climber extends SubsystemBase {
      }
 
     public CommandGroupBase StartRoutine() {
+        holdingPivot_ = false;
         return new RunCommand(this::runRoutine, this).withInterrupt(shouldRun_);
     }
 

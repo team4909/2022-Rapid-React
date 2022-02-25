@@ -48,7 +48,7 @@ private VisionSubsystem() {
     // cameraThread.setDaemon(true);
     // cameraThread.start();
 
-    CameraServer.startAutomaticCapture();
+    // CameraServer.startAutomaticCapture();
     // Video
     // CvSink a = CameraServer.getServer();
     // Shuffleboard.getTab("Driver").getLayout("Vision").add
