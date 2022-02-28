@@ -1,17 +1,21 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
 
+import java.util.Map;
+
 import org.opencv.video.Video;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoSink;
 import edu.wpi.first.cscore.VideoSource;
@@ -36,26 +40,18 @@ public class VisionSubsystem extends SubsystemBase{
 
 private VisionSubsystem() {
 
-    // cameraThread = new Thread (
-    //     () -> {
-    //       UsbCamera camera = CameraServer.startAutomaticCapture();
-    //       camera.setResolution(640, 480);
-    //       camera.setFPS(15);
-    //       CvSink cvSink = CameraServer.getVideo();
-    //       CvSource outputStream = CameraServer.putVideo("Intake Camera", 640, 480);
-    //     }
-    // );
-    // cameraThread.setDaemon(true);
-    // cameraThread.start();
 
-    // CameraServer.startAutomaticCapture();
-    // Video
-    // CvSink a = CameraServer.getServer();
-    // Shuffleboard.getTab("Driver").getLayout("Vision").add
+    UsbCamera camera = CameraServer.startAutomaticCapture();
+    camera.setResolution(240, 128);
+    camera.setFPS(30);
+    Shuffleboard.getTab("Driver").add(camera)
+        .withPosition(8, 0)
+        .withSize(5, 4)
+        .withWidget("Camera Stream")
+        .withProperties(Map.of("Rotation", "HALF", "Show controls", true));
     isAligned_ = false;
     lastDistance_ = 0.0;
     firstError = this.getXDegrees();
-
 }
 
 public static VisionSubsystem instance_ = null;

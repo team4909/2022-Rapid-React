@@ -117,7 +117,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_driverTab
         .getLayout("Drivetrain Info", BuiltInLayouts.kList)
         .withSize(2, 2)
-        .withProperties(Map.of("Label position", "TOP"))
+        .withProperties(Map.of("Label position", "BOTTOM"))
         .withPosition(4, 1);
         odometryEntry = m_driverTab.add("Odometry", "not found").getEntry();
 

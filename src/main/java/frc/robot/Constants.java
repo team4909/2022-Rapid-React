@@ -146,7 +146,7 @@ public final class Constants {
     // Shooter Velocity Goal Constants
     public static final double kFenderShotVelocity = 2300; //4300
     // public static final double kTarmacShotVelocity = 5000;
-    public static final double kLongShotVelocity = 5800; 
+    public static final double kLongShotVelocity = 4000; 
 
     public static final double kShooterP = 0.06; //0.1
     public static final double kShooterI = 0;
