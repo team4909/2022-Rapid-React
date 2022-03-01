@@ -67,7 +67,7 @@ public class RobotContainer {
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
 
-    // private final PowerDistribution PDH = new PowerDistribution(0, ModuleType.kRev);
+    private final PowerDistribution PDH;
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
@@ -84,7 +84,8 @@ public class RobotContainer {
     // PDH.clearStickyFaults();
     // Create the driver tab
     Shuffleboard.getTab("Driver");
-
+    PDH = new PowerDistribution(1, ModuleType.kRev);
+    PDH.clearStickyFaults();
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
