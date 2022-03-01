@@ -109,15 +109,20 @@ public final class Constants {
     public static final double TICKS_PER_ELEVATOR_INCH = (NEO_UNITS_PER_REV * ELEVATOR_NEO_GEAR_RATIO) / (ELEVATOR_PULLEY_DIAMETER * Math.PI);
     public static final double MAX_ELEVATOR_HEIGHT = 29.35;
 
-    public static final double PIVOT_KP = 0.001;
+    public static final double PIVOT_KP = 0.1;
     public static final double PIVOT_KI = 0;
     public static final double PIVOT_KD = 0;
-    public static final double PIVOT_KF = 0;
+    public static final double PIVOT_KF = 0.05;
+
     public static final double ELEVATOR_KP = 1;
     public static final double ELEVATOR_KI = 0;
     public static final double ELEVATOR_KD = 0;
     public static final double ELEVATOR_KF = 0;
-
+    public static final double DOWN_ELEVATOR_KP = 2;
+    public static final double DOWN_ELEVATOR_KI = 0;
+    public static final double DOWN_ELEVATOR_KD = 0;
+    public static final double DOWN_ELEVATOR_KF = 0;
+    
     private static final double BAR_DIST_X = 24;
     private static final double BAR_DIST_Y = 15.375;
     public static final double BAR_THETA = 90 - Math.toDegrees(Math.atan(BAR_DIST_Y / BAR_DIST_X)); //We may not need this because of a mechanical hardstop but we have it

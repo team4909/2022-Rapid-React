@@ -48,6 +48,7 @@ import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
+import frc.robot.subsystems.vision.EnableClimberCamera;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.BionicController;
 
@@ -126,8 +127,7 @@ public class RobotContainer {
         // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         //All these will be on the operator controller
         new Button(m_operatorController::getBackButton).whenPressed(climber_.LowerClimber());
-        new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber().withInterrupt(climber_.isClimberOut_)
-        .andThen(climber_.HoldClimber().withInterrupt(() -> climber_.holdingPivot_)));
+        new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber());
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
@@ -136,9 +136,14 @@ public class RobotContainer {
         // new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setElevatorGains(1, 0, 0, 0)); //up
         // new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.sete//down
         new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        new Button(m_driverController::getStartButton)
+        .toggleWhenPressed(new InstantCommand(() -> m_VisionSubsystem.switchCamera("Climber Camera"))
+        .andThen(new InstantCommand(() -> m_VisionSubsystem.switchCamera("Front Camera"))));
+    
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
     new Button(m_driverController::getRightBumper)
+
                 .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
                 .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
     new Button(m_driverController::getLeftBumper)
