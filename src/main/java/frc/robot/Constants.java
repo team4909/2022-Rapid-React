@@ -114,14 +114,14 @@ public final class Constants {
     public static final double PIVOT_KD = 0;
     public static final double PIVOT_KF = 0.05;
 
-    public static final double ELEVATOR_KP = 1;
+    public static final double ELEVATOR_KP = 0.1;
     public static final double ELEVATOR_KI = 0;
     public static final double ELEVATOR_KD = 0;
-    public static final double ELEVATOR_KF = 0;
-    public static final double DOWN_ELEVATOR_KP = 2;
+    public static final double ELEVATOR_KF = 0.0;
+    public static final double DOWN_ELEVATOR_KP = 10;
     public static final double DOWN_ELEVATOR_KI = 0;
     public static final double DOWN_ELEVATOR_KD = 0;
-    public static final double DOWN_ELEVATOR_KF = 0;
+    public static final double DOWN_ELEVATOR_KF = 0.075;
     
     private static final double BAR_DIST_X = 24;
     private static final double BAR_DIST_Y = 15.375;

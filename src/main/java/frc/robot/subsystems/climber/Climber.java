@@ -99,6 +99,7 @@ public class Climber extends SubsystemBase {
         //TODO CHANGE
         elevatorLeft_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, MotorType.kBrushless);
         elevatorRight_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, MotorType.kBrushless);
+        elevatorRight_.setInverted(true);
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
         elevatorRight_.clearFaults();
@@ -107,11 +108,15 @@ public class Climber extends SubsystemBase {
         elevatorRight_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
 
         elevatorController_ = elevatorRight_.getPIDController();
-        elevatorController_.setP(Constants.ELEVATOR_KP);
-        elevatorController_.setD(Constants.ELEVATOR_KD);
-        elevatorController_.setI(Constants.ELEVATOR_KI);
-        elevatorController_.setFF(Constants.ELEVATOR_KF);
-        
+        elevatorController_.setP(Constants.ELEVATOR_KP, 0);
+        elevatorController_.setD(Constants.ELEVATOR_KD, 0);
+        elevatorController_.setI(Constants.ELEVATOR_KI, 0);
+        elevatorController_.setFF(Constants.ELEVATOR_KF, 0);
+    
+        elevatorController_.setP(Constants.DOWN_ELEVATOR_KP, 1);
+        elevatorController_.setD(Constants.DOWN_ELEVATOR_KD, 1);
+        elevatorController_.setI(Constants.DOWN_ELEVATOR_KI, 1);
+        elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF, 1);
 
         pivotRight_ = new TalonFX(Constants.RIGHT_PIVOT_MOTOR);
         pivotLeft_ = new TalonFX(Constants.LEFT_PIVOT_MOTOR);
@@ -167,7 +172,7 @@ public class Climber extends SubsystemBase {
 
     public void periodic() {
 
-        elevatorController_.setReference(10, ControlType.kPosition);
+        // elevatorController_.setReference(10, ControlType.kPosition);
         // elevatorRight_.set(0.3);
         SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
         SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
@@ -199,9 +204,9 @@ public class Climber extends SubsystemBase {
         pivotRight_.set(ControlMode.Position, goal * Constants.TICKS_PER_PIVOT_DEGREE);
     }
 
-    public void setElevatorGoal(double goal) {
+    public void setElevatorGoal(double goal, int slot) {
         System.out.println("Runnign");
-        elevatorController_.setReference(goal, ControlType.kPosition);
+        elevatorController_.setReference(goal, ControlType.kPosition, slot);
         // elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
 
@@ -314,20 +319,20 @@ public class Climber extends SubsystemBase {
     }
 
     public CommandBase ExtendClimber() {
-        elevatorController_.setP(Constants.ELEVATOR_KP);
-        elevatorController_.setD(Constants.ELEVATOR_KD);
-        elevatorController_.setI(Constants.ELEVATOR_KI);
-        elevatorController_.setFF(Constants.ELEVATOR_KF);
-        return new InstantCommand(() -> setElevatorGoal(36.5));
+        // elevatorController_.setP(Constants.ELEVATOR_KP);
+        // elevatorController_.setD(Constants.ELEVATOR_KD);
+        // elevatorController_.setI(Constants.ELEVATOR_KI);
+        // elevatorController_.setFF(Constants.ELEVATOR_KF);
+        return new InstantCommand(() -> setElevatorGoal(33.5, 0));
  
      }
 
      public CommandBase RetractClimber() {
-        elevatorController_.setP(Constants.DOWN_ELEVATOR_KP);
-        elevatorController_.setD(Constants.DOWN_ELEVATOR_KD);
-        elevatorController_.setI(Constants.DOWN_ELEVATOR_KI);
-        elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF);
-        return new InstantCommand(() -> setElevatorGoal(0.76));
+        // elevatorController_.setP(Constants.DOWN_ELEVATOR_KP);
+        // elevatorController_.setD(Constants.DOWN_ELEVATOR_KD);
+        // elevatorController_.setI(Constants.DOWN_ELEVATOR_KI);
+        // elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF);
+        return new InstantCommand(() -> setElevatorGoal(0.05, 1));
      }
 
     public CommandGroupBase StartRoutine() {
