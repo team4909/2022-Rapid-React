@@ -3,6 +3,7 @@ package frc.robot.subsystems.drivetrain.commands.auto_routines;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.commands.PathResetOdometry;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.intake.IntakeFeeder;
@@ -25,13 +26,13 @@ public class ThreeBallBottomTarmac extends SequentialCommandGroup {
         )
         .andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(),
+        new LimelightShoot(Constants.kWallShotVelocity),
         
        (new TrajectoryFollow("A-B").withTimeout(3)
         .raceWith(new RunCommand(intake_::intake, intake_)))
         .andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot()
+        new LimelightShoot(Constants.kLongShotVelocity)
         );
 
    }

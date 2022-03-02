@@ -96,8 +96,8 @@ public final class Constants {
     // Climber Constants
     public static final int RIGHT_PIVOT_MOTOR = 20; //CAN SparkMax
     public static final int LEFT_PIVOT_MOTOR = 21; //CAN SparkMax
-    public static final int RIGHT_ELEVATOR_MOTOR = 25; //Talon FX
-    public static final int LEFT_ELEVATOR_MOTOR = 19; //TalonFX
+    public static final int RIGHT_ELEVATOR_MOTOR = 19; //Talon FX
+    public static final int LEFT_ELEVATOR_MOTOR = 25; //TalonFX
 
     private static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
     private static final double ELEVATOR_NEO_GEAR_RATIO = 5/1;
@@ -118,7 +118,7 @@ public final class Constants {
     public static final double ELEVATOR_KI = 0;
     public static final double ELEVATOR_KD = 0;
     public static final double ELEVATOR_KF = 0.0;
-    public static final double DOWN_ELEVATOR_KP = 10;
+    public static final double DOWN_ELEVATOR_KP = 5;
     public static final double DOWN_ELEVATOR_KI = 0;
     public static final double DOWN_ELEVATOR_KD = 0;
     public static final double DOWN_ELEVATOR_KF = 0.075;
@@ -152,6 +152,7 @@ public final class Constants {
     public static final double kFenderShotVelocity = 2300; //4300
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 4000; 
+    public static final double kWallShotVelocity = 3600;
 
     public static final double kShooterP = 0.06; //0.1
     public static final double kShooterI = 0;

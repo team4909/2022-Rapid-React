@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -85,7 +86,9 @@ public class RobotContainer {
     // Create the driver tab
     Shuffleboard.getTab("Driver");
     PDH = new PowerDistribution(1, ModuleType.kRev);
-    PDH.clearStickyFaults();
+    PDH.clearStickyFaults(); 
+    LiveWindow.disableTelemetry(PDH);
+    System.out.println(PDH.getCurrent(1));
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
@@ -182,10 +185,13 @@ public class RobotContainer {
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
         new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);});
-        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
+        new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
+        
+        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
+        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach));
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
-        new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
+        // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
         new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));

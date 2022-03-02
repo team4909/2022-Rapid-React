@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.subsystems.climber.commands.Elevator;
 import frc.robot.subsystems.climber.commands.Pivot;
@@ -97,8 +98,8 @@ public class Climber extends SubsystemBase {
 
         //#region Motor Config
         //TODO CHANGE
-        elevatorLeft_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, MotorType.kBrushless);
-        elevatorRight_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, MotorType.kBrushless);
+        elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, MotorType.kBrushless);
+        elevatorRight_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, MotorType.kBrushless);
         elevatorRight_.setInverted(true);
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
@@ -117,6 +118,7 @@ public class Climber extends SubsystemBase {
         elevatorController_.setD(Constants.DOWN_ELEVATOR_KD, 1);
         elevatorController_.setI(Constants.DOWN_ELEVATOR_KI, 1);
         elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF, 1);
+
 
         pivotRight_ = new TalonFX(Constants.RIGHT_PIVOT_MOTOR);
         pivotLeft_ = new TalonFX(Constants.LEFT_PIVOT_MOTOR);
@@ -208,6 +210,17 @@ public class Climber extends SubsystemBase {
         System.out.println("Runnign");
         elevatorController_.setReference(goal, ControlType.kPosition, slot);
         // elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
+    }
+
+    //temp method for manual climb
+    //used for getting off the bar so we can back pivot
+    public void detach() {
+        setElevatorGoal(10, 0);
+    }
+
+    public void stopEl() {
+        elevatorLeft_.set(0);
+        elevatorRight_.set(0);
     }
 
     public void setState(ClimberStates state) {
@@ -323,17 +336,19 @@ public class Climber extends SubsystemBase {
         // elevatorController_.setD(Constants.ELEVATOR_KD);
         // elevatorController_.setI(Constants.ELEVATOR_KI);
         // elevatorController_.setFF(Constants.ELEVATOR_KF);
-        return new InstantCommand(() -> setElevatorGoal(33.5, 0));
+        return new RunCommand(() -> setElevatorGoal(36.5, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 35, 36)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
  
      }
 
      public CommandBase RetractClimber() {
+        stopTalons();
         // elevatorController_.setP(Constants.DOWN_ELEVATOR_KP);
         // elevatorController_.setD(Constants.DOWN_ELEVATOR_KD);
         // elevatorController_.setI(Constants.DOWN_ELEVATOR_KI);
         // elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF);
-        return new InstantCommand(() -> setElevatorGoal(0.05, 1));
-     }
+        return new RunCommand(() -> setElevatorGoal(0.025, 1)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 0, 1)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+    
+    }
 
     public CommandGroupBase StartRoutine() {
         holdingPivot_ = false;
