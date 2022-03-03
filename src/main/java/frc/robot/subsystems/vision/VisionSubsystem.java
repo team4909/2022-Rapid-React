@@ -66,7 +66,7 @@ public void switchCamera(String camName) {
             currentCamera_ = CameraServer.startAutomaticCapture("Front Camera", 0);
             break;
         case "Climber Camera":
-            currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);
+            // currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);
             break;
         default: break;
     }

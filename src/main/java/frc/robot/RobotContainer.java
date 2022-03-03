@@ -63,7 +63,7 @@ import frc.robot.utils.BionicController;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
-    private final Climber climber_ = Climber.getInstance();
+    // private final Climber climber_ = Climber.getInstance();
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
@@ -130,15 +130,15 @@ public class RobotContainer {
         // Back button zeros the gyroscope
         // new Button(m_controller::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem);
         //All these will be on the operator controller
-        new Button(m_operatorController::getBackButton).whenPressed(climber_.LowerClimber());
-        new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber());
+        // new Button(m_operatorController::getBackButton).whenPressed(climber_.LowerClimber());
+        // new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber());
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+        // new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
 
-        new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
-        new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
+        // new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
+        // new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
         // new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setElevatorGains(1, 0, 0, 0)); //up
         // new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.sete//down
         new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
@@ -193,7 +193,7 @@ public class RobotContainer {
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
-        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach));
+        // new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach));
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());

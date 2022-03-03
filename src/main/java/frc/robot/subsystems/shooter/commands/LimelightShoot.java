@@ -17,7 +17,7 @@ public class LimelightShoot extends SequentialCommandGroup{
     public LimelightShoot(double goal, boolean hoodUp) {
         
         addCommands(
-            new RunCommand(vision_::setLimelightOffset).withTimeout(2)
+            new RunCommand(vision_::setLimelightOffset).withTimeout(1)
             .andThen(() -> vision_.setLimelightOffset(0)),
     
             new InstantCommand(
@@ -26,7 +26,7 @@ public class LimelightShoot extends SequentialCommandGroup{
                 .withInterrupt(() -> shooter_.spunUp()
             ),
             
-            new RunCommand(intake_::shoot).withTimeout(3)
+            new RunCommand(intake_::shoot).withTimeout(2)
             .andThen(new InstantCommand(intake_::stopIntake))
             .andThen(new InstantCommand(shooter_::stop))
         );
