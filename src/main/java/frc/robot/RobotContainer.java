@@ -135,7 +135,7 @@ public class RobotContainer {
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        // new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+        new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
 
         new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
         new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
@@ -202,14 +202,14 @@ public class RobotContainer {
         new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));
 
         
-    new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))
-    .whenActive(climber_.RetractClimber(m_operatorController.getRightTriggerAxis()));
+    // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))
+    // .whenActive(climber_.RetractClimber(m_operatorController.getRightTriggerAxis()));
     
 
         // Run intake: Operator right trigger
-        // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
-        //             .whenActive(m_intakeSubsystem::intake)
-        //             .whenInactive(m_intakeSubsystem::stopIntake);
+        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
+                    .whenActive(m_intakeSubsystem::intake)
+                    .whenInactive(m_intakeSubsystem::stopIntake);
 
         // Reverse intake: Operator left trigger
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))

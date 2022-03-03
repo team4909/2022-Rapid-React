@@ -104,13 +104,13 @@ public class Climber extends SubsystemBase {
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
         elevatorRight_.clearFaults();
-        // elevatorLeft_.setSmartCurrentLimit(50);
-        // elevatorRight_.setSmartCurrentLimit(50);
         elevatorRight_.getEncoder().setPosition(0);
+        elevatorLeft_.setSmartCurrentLimit(60);
+        elevatorRight_.setSmartCurrentLimit(60);
         elevatorLeft_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
         elevatorRight_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
-        elevatorLeft_.setClosedLoopRampRate(0.02);
-        elevatorRight_.setClosedLoopRampRate(0.02);
+        elevatorLeft_.setClosedLoopRampRate(0.2);
+        elevatorRight_.setClosedLoopRampRate(0.2);
 
         elevatorController_ = elevatorRight_.getPIDController();
         elevatorController_.setP(Constants.ELEVATOR_KP, 0);
@@ -182,9 +182,11 @@ public class Climber extends SubsystemBase {
         // elevatorController_.setReference(10, ControlType.kPosition);
         // elevatorRight_.set(0.3);
         // SmartDashboard.putNumber("a", elevatorController_.getError)
-        SmartDashboard.putNumber("key2", elevatorRight_.getAppliedOutput());
-        SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
-        SmartDashboard.putNumber("key", elevatorRight_.getOutputCurrent());
+        
+        SmartDashboard.putNumber("key1", elevatorRight_.getOutputCurrent());
+        SmartDashboard.putNumber("key2", elevatorRight_.getOutputCurrent());
+        // SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
+        // SmartDashboard.putNumber("key", elevatorRight_.getOutputCurrent());
         SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
         SmartDashboard.putNumber("piv pos", pivotRight_.getSelectedSensorPosition());
         SmartDashboard.putBoolean("is climber out", isClimberOut_.getAsBoolean());
@@ -345,14 +347,14 @@ public class Climber extends SubsystemBase {
     }
 
     public CommandBase ExtendClimber() {
-        return new RunCommand(() -> setElevatorGoal(29, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 35, 36)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        return new RunCommand(() -> setElevatorGoal(29, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 28, 30)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
  
     }
 
-     public CommandBase RetractClimber(double a) {
+     public CommandBase RetractClimber() {
         stopTalons();
-        return new RunCommand(() -> elevatorRight_.set(a)).andThen(new InstantCommand(this::stopEl));
-        // return new RunCommand(() -> setElevatorGoal(0.025, 1)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 0, 1)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        // return new RunCommand(() -> elevatorRight_.set(a)).andThen(new InstantCommand(this::stopEl));
+        return new RunCommand(() -> setElevatorGoal(0.025, 1)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 0, 1)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
     
     }
 
