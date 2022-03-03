@@ -99,7 +99,7 @@ public class RobotContainer {
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
             () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
-            () -> (-modifyAxis(m_driverController.getRightX()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND + m_VisionSubsystem.getLimelightOffset()) * m_drivetrainSubsystem.getPreciseModeScale()
+            () -> ((-modifyAxis(m_driverController.getRightX()) + m_VisionSubsystem.getLimelightOffset()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * m_drivetrainSubsystem.getPreciseModeScale()
     ));
 
         configureButtonBindings();
@@ -135,8 +135,10 @@ public class RobotContainer {
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+        // new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+
         new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
+        new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
         // new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setElevatorGains(1, 0, 0, 0)); //up
         // new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.sete//down
         new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
@@ -170,13 +172,16 @@ public class RobotContainer {
     //.whenHeld(getLimelightCommand()
     //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
 
+
     // Shoot the shot
     new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
                 .whenActive(() -> { m_intakeSubsystem.shoot(); } )
                 .whenInactive(() -> { m_intakeSubsystem.stopIntake(); m_shooterSubsystem.stop(); } );
-    new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis()) > 0.7))
-                .whenActive(new RunCommand(m_VisionSubsystem::setLimelightOffset))
-                .whenInactive(new RunCommand(() -> m_VisionSubsystem.setLimelightOffset(0)));
+
+    new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis())) > 0.7)
+                .whenActive(new RunCommand(m_VisionSubsystem::setLimelightOffset)
+                    .withInterrupt(() -> m_driverController.getLeftTriggerAxis() < 0.7))
+                .whenInactive(new InstantCommand(() -> m_VisionSubsystem.setLimelightOffset(0)));
 
         /////////////////////////////////
         ///      Operator Buttons     ///
@@ -196,11 +201,15 @@ public class RobotContainer {
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
         new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));
 
+        
+    new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))
+    .whenActive(climber_.RetractClimber(m_operatorController.getRightTriggerAxis()));
+    
 
         // Run intake: Operator right trigger
-        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
-                    .whenActive(m_intakeSubsystem::intake)
-                    .whenInactive(m_intakeSubsystem::stopIntake);
+        // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
+        //             .whenActive(m_intakeSubsystem::intake)
+        //             .whenInactive(m_intakeSubsystem::stopIntake);
 
         // Reverse intake: Operator left trigger
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))

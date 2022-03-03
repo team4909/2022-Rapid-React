@@ -118,10 +118,10 @@ public final class Constants {
     public static final double ELEVATOR_KI = 0;
     public static final double ELEVATOR_KD = 0;
     public static final double ELEVATOR_KF = 0.0;
-    public static final double DOWN_ELEVATOR_KP = 5;
+    public static final double DOWN_ELEVATOR_KP = 10;
     public static final double DOWN_ELEVATOR_KI = 0;
     public static final double DOWN_ELEVATOR_KD = 0;
-    public static final double DOWN_ELEVATOR_KF = 0.075;
+    public static final double DOWN_ELEVATOR_KF = 0.05;
     
     private static final double BAR_DIST_X = 24;
     private static final double BAR_DIST_Y = 15.375;
@@ -129,8 +129,8 @@ public final class Constants {
 
 
     // The PID Values for the Limelight driven alignment to the goal.
-    public static final double GOAL_ALIGN_KP = 0.02;
-    public static final double GOAL_ALIGN_KD = 0.0;
+    public static final double GOAL_ALIGN_KP = 0.008;
+    public static final double GOAL_ALIGN_KD = 0.0008;
 
     // Shooter Constants 
     public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
@@ -151,7 +151,7 @@ public final class Constants {
     // Shooter Velocity Goal Constants
     public static final double kFenderShotVelocity = 2300; //4300
     // public static final double kTarmacShotVelocity = 5000;
-    public static final double kLongShotVelocity = 4000; 
+    public static final double kLongShotVelocity = 4050; 
     public static final double kWallShotVelocity = 3600;
 
     public static final double kShooterP = 0.06; //0.1

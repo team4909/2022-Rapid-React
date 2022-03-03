@@ -20,19 +20,19 @@ public class ThreeBallBottomTarmac extends SequentialCommandGroup {
     public ThreeBallBottomTarmac() {
         addCommands( 
 
-        new PathResetOdometry("Tarmac-A"), (
-            new TrajectoryFollow("Tarmac-A").withTimeout(2)
+        new PathResetOdometry("Tarmac-Almost-A"), (
+            new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
             .raceWith(new RunCommand(intake_::intake, intake_))
         )
         .andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(Constants.kWallShotVelocity),
+        new LimelightShoot(Constants.kWallShotVelocity, true),
         
-       (new TrajectoryFollow("A-B").withTimeout(3)
+       (new TrajectoryFollow("Near-A-B").withTimeout(3)
         .raceWith(new RunCommand(intake_::intake, intake_)))
         .andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(Constants.kLongShotVelocity)
+        new LimelightShoot(Constants.kLongShotVelocity, true)
         );
 
    }

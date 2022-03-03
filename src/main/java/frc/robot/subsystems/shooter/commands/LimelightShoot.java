@@ -14,14 +14,14 @@ public class LimelightShoot extends SequentialCommandGroup{
     private final VisionSubsystem vision_ = VisionSubsystem.getInstance();
     private final IntakeFeeder intake_ = IntakeFeeder.getInstance();
 
-    public LimelightShoot(double goal) {
+    public LimelightShoot(double goal, boolean hoodUp) {
         
         addCommands(
             new RunCommand(vision_::setLimelightOffset).withTimeout(2)
             .andThen(() -> vision_.setLimelightOffset(0)),
     
             new InstantCommand(
-                () -> shooter_.setVelocityGoal(goal, false))
+                () -> shooter_.setVelocityGoal(goal, hoodUp))
                 .perpetually()
                 .withInterrupt(() -> shooter_.spunUp()
             ),

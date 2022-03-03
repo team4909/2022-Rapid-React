@@ -141,6 +141,8 @@ public static VisionSubsystem instance_ = null;
             if (this.getXDegrees() >= 0) 
                 limelightOffset = angularSpeed;
         }
+
+        SmartDashboard.putNumber("Angulat speed", limelightOffset);
     }
 
     public void setLimelightOffset(double value) {

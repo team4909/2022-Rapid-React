@@ -104,9 +104,13 @@ public class Climber extends SubsystemBase {
         elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
         elevatorRight_.clearFaults();
+        // elevatorLeft_.setSmartCurrentLimit(50);
+        // elevatorRight_.setSmartCurrentLimit(50);
         elevatorRight_.getEncoder().setPosition(0);
         elevatorLeft_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
         elevatorRight_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
+        elevatorLeft_.setClosedLoopRampRate(0.02);
+        elevatorRight_.setClosedLoopRampRate(0.02);
 
         elevatorController_ = elevatorRight_.getPIDController();
         elevatorController_.setP(Constants.ELEVATOR_KP, 0);
@@ -128,7 +132,8 @@ public class Climber extends SubsystemBase {
         pivotRight_.clearStickyFaults(kTimeoutMs);
         // pivotLeft_.follow(pivotRight_);
         pivotLeft_.setInverted(InvertType.InvertMotorOutput);
-        
+        pivotRight_.setInverted(InvertType.None);
+
         pivotLeft_.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         pivotRight_.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
@@ -176,7 +181,10 @@ public class Climber extends SubsystemBase {
 
         // elevatorController_.setReference(10, ControlType.kPosition);
         // elevatorRight_.set(0.3);
+        // SmartDashboard.putNumber("a", elevatorController_.getError)
+        SmartDashboard.putNumber("key2", elevatorRight_.getAppliedOutput());
         SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
+        SmartDashboard.putNumber("key", elevatorRight_.getOutputCurrent());
         SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
         SmartDashboard.putNumber("piv pos", pivotRight_.getSelectedSensorPosition());
         SmartDashboard.putBoolean("is climber out", isClimberOut_.getAsBoolean());
@@ -331,22 +339,20 @@ public class Climber extends SubsystemBase {
 
     }
 
-    public CommandBase ExtendClimber() {
-        // elevatorController_.setP(Constants.ELEVATOR_KP);
-        // elevatorController_.setD(Constants.ELEVATOR_KD);
-        // elevatorController_.setI(Constants.ELEVATOR_KI);
-        // elevatorController_.setFF(Constants.ELEVATOR_KF);
+    public CommandBase ExtendClimberHigh() {
         return new RunCommand(() -> setElevatorGoal(36.5, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 35, 36)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
  
-     }
+    }
 
-     public CommandBase RetractClimber() {
+    public CommandBase ExtendClimber() {
+        return new RunCommand(() -> setElevatorGoal(29, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 35, 36)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+ 
+    }
+
+     public CommandBase RetractClimber(double a) {
         stopTalons();
-        // elevatorController_.setP(Constants.DOWN_ELEVATOR_KP);
-        // elevatorController_.setD(Constants.DOWN_ELEVATOR_KD);
-        // elevatorController_.setI(Constants.DOWN_ELEVATOR_KI);
-        // elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF);
-        return new RunCommand(() -> setElevatorGoal(0.025, 1)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 0, 1)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        return new RunCommand(() -> elevatorRight_.set(a)).andThen(new InstantCommand(this::stopEl));
+        // return new RunCommand(() -> setElevatorGoal(0.025, 1)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 0, 1)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
     
     }
 
