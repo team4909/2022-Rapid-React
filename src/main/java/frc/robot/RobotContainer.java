@@ -41,6 +41,7 @@ import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.ThreeBallBottomTarmac;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
@@ -109,6 +110,7 @@ public class RobotContainer {
 
     private void configureSendableChooser() {
         m_chooser.setDefaultOption("Three Ball from Bottom of Tarmac", new ThreeBallBottomTarmac());
+        m_chooser.addOption("Two Ball from Bottom of Tarmac", new TwoBallBottomTarmac());
         m_chooser.addOption("Fender Shot", new FenderShot());
         m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
         
