@@ -26,8 +26,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -50,7 +52,9 @@ public class Climber extends SubsystemBase {
     private TalonFX pivotLeft_;
     private TalonFX pivotRight_;
 
-    private SparkMaxPIDController elevatorController_;
+    private SparkMaxPIDController elevatorControllerR_;
+    private SparkMaxPIDController elevatorControllerL_;
+
 
     public boolean holdingPivot_;
 
@@ -101,27 +105,40 @@ public class Climber extends SubsystemBase {
         elevatorLeft_ = new CANSparkMax(Constants.LEFT_ELEVATOR_MOTOR, MotorType.kBrushless);
         elevatorRight_ = new CANSparkMax(Constants.RIGHT_ELEVATOR_MOTOR, MotorType.kBrushless);
         elevatorRight_.setInverted(true);
-        elevatorLeft_.follow(elevatorRight_, true);
+       // elevatorLeft_.follow(elevatorRight_, true);
         elevatorLeft_.clearFaults();
         elevatorRight_.clearFaults();
         elevatorRight_.getEncoder().setPosition(0);
-        elevatorLeft_.setSmartCurrentLimit(60);
-        elevatorRight_.setSmartCurrentLimit(60);
+        elevatorLeft_.setSmartCurrentLimit(80);
+        elevatorRight_.setSmartCurrentLimit(80);
         elevatorLeft_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
         elevatorRight_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
         elevatorLeft_.setClosedLoopRampRate(0.2);
         elevatorRight_.setClosedLoopRampRate(0.2);
 
-        elevatorController_ = elevatorRight_.getPIDController();
-        elevatorController_.setP(Constants.ELEVATOR_KP, 0);
-        elevatorController_.setD(Constants.ELEVATOR_KD, 0);
-        elevatorController_.setI(Constants.ELEVATOR_KI, 0);
-        elevatorController_.setFF(Constants.ELEVATOR_KF, 0);
+        elevatorControllerR_ = elevatorRight_.getPIDController();
+        elevatorControllerL_ = elevatorLeft_.getPIDController();
+
+        elevatorControllerR_.setP(Constants.ELEVATOR_KP, 0);
+        elevatorControllerR_.setD(Constants.ELEVATOR_KD, 0);
+        elevatorControllerR_.setI(Constants.ELEVATOR_KI, 0);
+        elevatorControllerR_.setFF(Constants.ELEVATOR_KF, 0);
     
-        elevatorController_.setP(Constants.DOWN_ELEVATOR_KP, 1);
-        elevatorController_.setD(Constants.DOWN_ELEVATOR_KD, 1);
-        elevatorController_.setI(Constants.DOWN_ELEVATOR_KI, 1);
-        elevatorController_.setFF(Constants.DOWN_ELEVATOR_KF, 1);
+        elevatorControllerR_.setP(Constants.DOWN_ELEVATOR_KP, 1);
+        elevatorControllerR_.setD(Constants.DOWN_ELEVATOR_KD, 1);
+        elevatorControllerR_.setI(Constants.DOWN_ELEVATOR_KI, 1);
+        elevatorControllerR_.setFF(Constants.DOWN_ELEVATOR_KF, 1);
+
+        elevatorControllerL_.setP(Constants.ELEVATOR_KP, 0);
+        elevatorControllerL_.setD(Constants.ELEVATOR_KD, 0);
+        elevatorControllerL_.setI(Constants.ELEVATOR_KI, 0);
+        elevatorControllerL_.setFF(Constants.ELEVATOR_KF, 0);
+    
+        elevatorControllerL_.setP(Constants.DOWN_ELEVATOR_KP, 1);
+        elevatorControllerL_.setD(Constants.DOWN_ELEVATOR_KD, 1);
+        elevatorControllerL_.setI(Constants.DOWN_ELEVATOR_KI, 1);
+        elevatorControllerL_.setFF(Constants.DOWN_ELEVATOR_KF, 1);
+
 
 
         pivotRight_ = new TalonFX(Constants.RIGHT_PIVOT_MOTOR);
@@ -172,6 +189,8 @@ public class Climber extends SubsystemBase {
         voltageTracker_ = new VoltageTracker(10);
         state_ = ClimberStates.IDLE;
 
+        // this.setDefaultCommand(IdleClimber());
+
 
         //0.76
 
@@ -185,9 +204,9 @@ public class Climber extends SubsystemBase {
         
         SmartDashboard.putNumber("key1", elevatorRight_.getOutputCurrent());
         SmartDashboard.putNumber("key2", elevatorRight_.getOutputCurrent());
-        // SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
+        SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
         // SmartDashboard.putNumber("key", elevatorRight_.getOutputCurrent());
-        SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
         SmartDashboard.putNumber("piv pos", pivotRight_.getSelectedSensorPosition());
         SmartDashboard.putBoolean("is climber out", isClimberOut_.getAsBoolean());
         
@@ -208,8 +227,15 @@ public class Climber extends SubsystemBase {
         return pivotRight_.getSelectedSensorPosition() / Constants.TICKS_PER_ELEVATOR_INCH;
     }
 
+    // 0
     private boolean inTolerance(double value, double min, double max) {
-        return value < max && value > min;
+        if (value > 0) {
+            return value < max && value > min;
+        } 
+        // -2, 3, -3
+        // -62, -60, -65
+        
+        return value < min && value > max;
     }
 
     public void setPivotGoal(double goal) {
@@ -217,8 +243,10 @@ public class Climber extends SubsystemBase {
     }
 
     public void setElevatorGoal(double goal, int slot) {
-        System.out.println("Runnign");
-        elevatorController_.setReference(goal, ControlType.kPosition, slot);
+        // System.out.println("Runnign");
+        elevatorControllerR_.setReference(goal, ControlType.kPosition, slot);
+        elevatorControllerL_.setReference(goal, ControlType.kPosition, slot);
+
         // elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
     }
 
@@ -248,8 +276,8 @@ public class Climber extends SubsystemBase {
         if (isClimberOut_.getAsBoolean()) {
             System.out.println(pivotRight_.getSelectedSensorPosition());
             voltageTracker_.reset();
-            pivotRight_.setSelectedSensorPosition(0); // Zero the pivot motors
-            pivotLeft_.setSelectedSensorPosition(0); // Zero the pivot motors
+            if (!out) pivotRight_.setSelectedSensorPosition(0); // Zero the pivot motors
+            if (!out) pivotLeft_.setSelectedSensorPosition(0); // Zero the pivot motors
 
         }
         
@@ -315,47 +343,58 @@ public class Climber extends SubsystemBase {
     //     pivotRight_.set(TalonFXControlMode.Position, 0);
     // }
 
+    public CommandBase IdleClimber() {
+        return new InstantCommand(() -> {stopTalons(); elevatorControllerR_.setReference(0.0, ControlType.kVoltage);} );
+
+    }
+
     private void stopRoutine() {
         shouldRun_ = () -> false;
     }
     //#endregion
 
     //#region Commands
-    public CommandGroupBase RaiseClimber() {
+    public CommandBase RaiseClimber() { //CommandBaseGroup
         holdingPivot_ = true;
-        return new RunCommand(() -> climberDeploy(true), this).withTimeout(1).andThen(this.HoldClimber()); // .withInterrupt(this.isClimberOut_);
+        // return new RunCommand(() -> climberDeploy(true), this).withTimeout(1).andThen(this.HoldClimber(-4400)); // .withInterrupt(this.isClimberOut_);
+        return HoldClimber(-4400); // .withInterrupt(this.isClimberOut_);
     }
 
     public CommandGroupBase LowerClimber() {
         isClimberOut_ = () -> false;
         holdingPivot_ = false;
-        return new RunCommand(() -> climberDeploy(false), this).withTimeout(1).andThen(this.HoldClimber());
+        return new RunCommand(() -> climberDeploy(false), this).withTimeout(1).andThen(this.HoldClimber(0));
     }
 
-    public RunCommand HoldClimber() {
-    //    return  new SequentialCommandGroup(
-            // new PrintCommand("setting to 0"),
-        pivotRight_.setSelectedSensorPosition(0);
-        pivotLeft_.setSelectedSensorPosition(0);
-        return new RunCommand(() -> {pivotRight_.set(TalonFXControlMode.Position, 0); pivotLeft_.set(TalonFXControlMode.Position, 0);}); //.withInterrupt(() -> this.holdingPivot_)
+    public CommandGroupBase HoldClimber(double pos) {
+
+        return new RunCommand(() -> {pivotRight_.set(TalonFXControlMode.Position, pos); pivotLeft_.set(TalonFXControlMode.Position, pos);})
+        .withTimeout(1.0).andThen(new RunCommand(() -> {pivotLeft_.set(TalonFXControlMode.PercentOutput, -0.06);
+             pivotRight_.set(TalonFXControlMode.PercentOutput, -0.06);})); //.withInterrupt(() -> this.holdingPivot_)
 
     }
 
     public CommandBase ExtendClimberHigh() {
-        return new RunCommand(() -> setElevatorGoal(36.5, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 35, 36)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        return new RunCommand(() -> setElevatorGoal(-68, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -67, -69)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
  
     }
 
     public CommandBase ExtendClimber() {
-        return new RunCommand(() -> setElevatorGoal(29, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 28, 30)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        return new RunCommand(() -> setElevatorGoal(-68, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -67, -69)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
  
     }
 
      public CommandBase RetractClimber() {
-        stopTalons();
+        CommandScheduler.getInstance().cancel(ExtendClimber());
         // return new RunCommand(() -> elevatorRight_.set(a)).andThen(new InstantCommand(this::stopEl));
-        return new RunCommand(() -> setElevatorGoal(0.025, 1)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 0, 1)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
-    
+        return new RunCommand(() -> setElevatorGoal(-60, 0)).withInterrupt(() -> (inTolerance(elevatorRight_.getEncoder().getPosition(), -59, -61) ||
+            inTolerance(elevatorLeft_.getEncoder().getPosition(), -59, -61)))
+        .andThen(new RunCommand(() -> setElevatorGoal(-5, 1)).withInterrupt(() -> 
+        inTolerance(elevatorRight_.getEncoder().getPosition(), -6, -3))
+        .andThen(new WaitCommand(1.5))
+        .andThen(new InstantCommand(() -> {setElevatorGoal(-0.025, 0);})
+            .raceWith(new WaitCommand(1.5))))
+        ;
     }
 
     public CommandGroupBase StartRoutine() {

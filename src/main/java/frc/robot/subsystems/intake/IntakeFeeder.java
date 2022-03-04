@@ -18,6 +18,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     private enum IntakeState {
         kIdle("Idle"),
+        kBarSpit("BarSpit"),
         kIdleFeeder("Idle Feeder"),
         kIntakeFirst("Intake First"),
         kIntakeSecond("Intake Second"),
@@ -36,7 +37,7 @@ public class IntakeFeeder extends SubsystemBase {
     };
 
     private enum BallCount{
-        kZero, kOne, kTwo
+        kZero, kOne, kTwo, kBarSpit
     }
 
     // Object instance
@@ -66,6 +67,7 @@ public class IntakeFeeder extends SubsystemBase {
     private static Timer shot_timer_;
 
 
+
     private IntakeFeeder() {
         intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
         centeringWheel_ = new CANSparkMax(16, MotorType.kBrushless);
@@ -86,7 +88,7 @@ public class IntakeFeeder extends SubsystemBase {
         currentState_ = IntakeState.kIdle;
         lastState_ = IntakeState.kIdle;
 
-        ballsHeld_ = BallCount.kZero;
+        ballsHeld_ = BallCount.kBarSpit;
 
         shot_timer_ = new Timer();
         shot_timer_.reset();
@@ -102,6 +104,11 @@ public class IntakeFeeder extends SubsystemBase {
     public void intake() {
         intakeSolenoidState_ = true;
         switch (ballsHeld_) {
+            case kBarSpit:
+                currentState_ = IntakeState.kBarSpit;
+                shot_timer_.reset();
+                shot_timer_.start();
+                break;
             case kZero:
                 currentState_ = IntakeState.kIntakeFirst; // Change back to intake first
                 break;
@@ -180,6 +187,14 @@ public class IntakeFeeder extends SubsystemBase {
                 feederWheel_.set(0.0);
                 shot_timer_.stop();
                 
+                break;
+            case kBarSpit:
+                ballsHeld_ = BallCount.kZero;
+                intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
+                if (shot_timer_.get() > 0.75) {
+                    currentState_ = IntakeState.kIntakeFirst;
+                    shot_timer_.stop();
+                }
                 break;
             case kIdleFeeder:
                 // Only go to this state between intaking balls one and two. Could be better named
