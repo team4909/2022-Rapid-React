@@ -17,7 +17,7 @@ public class LimelightShoot extends SequentialCommandGroup{
     public LimelightShoot(double goal, boolean hoodUp) {
         
         addCommands(
-            new RunCommand(vision_::setLimelightOffset).withTimeout(1)
+            new RunCommand(vision_::setLimelightOffset).withTimeout(0.5)
             .andThen(() -> vision_.setLimelightOffset(0)),
     
             new InstantCommand(

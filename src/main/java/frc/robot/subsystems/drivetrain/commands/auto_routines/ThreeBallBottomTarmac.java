@@ -24,6 +24,7 @@ public class ThreeBallBottomTarmac extends SequentialCommandGroup {
             new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
             .raceWith(new RunCommand(intake_::intake, intake_))
         )
+        
         .andThen(new InstantCommand(intake_::stopIntake)),
 
         new LimelightShoot(Constants.kWallShotVelocity, true),
@@ -34,6 +35,7 @@ public class ThreeBallBottomTarmac extends SequentialCommandGroup {
 
         new LimelightShoot(Constants.kLongShotVelocity, true)
         );
+
 
    }
     
