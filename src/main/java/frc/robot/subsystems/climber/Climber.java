@@ -376,7 +376,7 @@ public class Climber extends SubsystemBase {
     public CommandGroupBase LowerClimber() {
         // isClimberOut_ = () -> true;
         haltingPivot_ = true;
-        return new RunCommand(() -> climberDeploy(false), this).withTimeout(1).andThen(this.HoldClimber(0));
+        return new RunCommand(() -> climberDeploy(false), this).withTimeout(1).andThen(new InstantCommand(this::stopTalons));
     }
 
     public CommandGroupBase HoldClimber(double pos) {
