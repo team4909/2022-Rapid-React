@@ -55,7 +55,7 @@ public class Climber extends SubsystemBase {
     private SparkMaxPIDController elevatorControllerR_;
     private SparkMaxPIDController elevatorControllerL_;
 
-
+    private boolean notMid_ = false;
     public boolean haltingPivot_;
 
     private ClimberStates state_;
@@ -177,7 +177,20 @@ public class Climber extends SubsystemBase {
         pivotRight_.config_kI(0, Constants.PIVOT_KI);
         pivotRight_.config_kD(0, Constants.PIVOT_KD);
         pivotRight_.config_kF(0, Constants.PIVOT_KF);
+
+        // CLimbing PID so stronger
+        pivotLeft_.config_kP(1, Constants.PIVOT_KP * 2);
+        pivotLeft_.config_kI(1, Constants.PIVOT_KI);
+        pivotLeft_.config_kD(1, Constants.PIVOT_KD);
+        pivotLeft_.config_kF(1, 0.0075);
+
+        pivotRight_.config_kP(1, Constants.PIVOT_KP * 2);
+        pivotRight_.config_kI(1, Constants.PIVOT_KI);
+        pivotRight_.config_kD(1, Constants.PIVOT_KD);
+        pivotRight_.config_kF(1, 0.0075);
         pivotRight_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
+        pivotLeft_.config_IntegralZone(0, (int) (200 / kVelocityConversion));
+
         //#endregion
 
         //#region Shuffleboard Shennaigans
@@ -195,6 +208,7 @@ public class Climber extends SubsystemBase {
 
         isClimberOut_ = () -> false;
         shouldRun_ = () -> true;
+        notMid_ = false;
 
         voltageTracker_ = new VoltageTracker(10);
         state_ = ClimberStates.IDLE;
@@ -218,7 +232,7 @@ public class Climber extends SubsystemBase {
         // SmartDashboard.putNumber("key", elevatorRight_.getOutputCurrent());
         // SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
         SmartDashboard.putNumber("piv pos", pivotRight_.getSelectedSensorPosition());
-        SmartDashboard.putBoolean("is pivot hold", haltingPivot_);
+        SmartDashboard.putBoolean("is not mid", notMid_);
         
         // System.out.println("R"+pivotRight_.getSelectedSensorPosition());
         // System.out.println("L"+pivotLeft_.getSelectedSensorPosition());
@@ -254,7 +268,7 @@ public class Climber extends SubsystemBase {
 
     public void setElevatorGoal(double goal, int slot) {
         // System.out.println("Runnign");
-        elevatorControllerR_.setReference(goal, ControlType.kPosition, slot);
+        elevatorControllerR_.setReference(goal - 0.75, ControlType.kPosition, slot);
         elevatorControllerL_.setReference(goal, ControlType.kPosition, slot);
 
         // elevatorController_.setReference(goal * Constants.TICKS_PER_ELEVATOR_INCH, ControlType.kPosition);
@@ -354,6 +368,7 @@ public class Climber extends SubsystemBase {
     // }
 
     public CommandBase IdleClimber() {
+        // while (this.getCurrentCommand() != null) CommandScheduler.getInstance().cancel(this.getCurrentCommand());
         return new InstantCommand(() -> {stopTalons(); elevatorControllerR_.setReference(0.0, ControlType.kVoltage); elevatorControllerL_.setReference(0.0, ControlType.kVoltage);} );
 
     }
@@ -368,9 +383,9 @@ public class Climber extends SubsystemBase {
     public CommandBase RaiseClimber() { //CommandBaseGroup
         haltingPivot_ = false;
         // return new RunCommand(() -> climberDeploy(true), this).withTimeout(1).andThen(this.HoldClimber(-4400)); // .withInterrupt(this.isClimberOut_);
-        return new InstantCommand(() -> {pivotRight_.set(ControlMode.PercentOutput, -0.15); //Deploy at 30%
-                                         pivotLeft_.set(ControlMode.PercentOutput, -0.15);})
-                                         .andThen(HoldClimber(-4400));
+        return new InstantCommand(() -> {pivotRight_.set(ControlMode.PercentOutput, 0); //Deploy at 30%
+                                         pivotLeft_.set(ControlMode.PercentOutput, 0);})
+                                         .andThen(HoldClimber(-4200));
     }
 
     public CommandGroupBase LowerClimber() {
@@ -379,35 +394,54 @@ public class Climber extends SubsystemBase {
         return new RunCommand(() -> climberDeploy(false), this).withTimeout(1).andThen(new InstantCommand(this::stopTalons));
     }
 
-    public CommandGroupBase HoldClimber(double pos) {
+    public InstantCommand HoldClimber(double pos) {
 
-        return new RunCommand(() -> {pivotRight_.set(TalonFXControlMode.Position, pos); pivotLeft_.set(TalonFXControlMode.Position, pos);})
-        .withTimeout(1.0).andThen(new RunCommand(() -> {pivotLeft_.set(TalonFXControlMode.PercentOutput, -0.06);
-             pivotRight_.set(TalonFXControlMode.PercentOutput, -0.06);})).withInterrupt(() -> pos == 0 ? this.haltingPivot_ : !this.haltingPivot_);
+        return new InstantCommand(() -> { SetPivotPosition(0, pos);});
+        // .withTimeout(1.0).andThen(new RunCommand(() -> {pivotLeft_.set(TalonFXControlMode.PercentOutput, -0.06);
+        //      pivotRight_.set(TalonFXControlMode.PercentOutput, -0.06);})).withInterrupt(() -> pos == 0 ? this.haltingPivot_ : !this.haltingPivot_);
 
     }
 
     public CommandBase ExtendClimberHigh() {
-        return new RunCommand(() -> setElevatorGoal(-87, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -86, -88)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        notMid_ = true;
+        return new RunCommand(() -> setElevatorGoal(-87, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -86, -88))
+        .andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl, this));
  
     }
 
     public CommandBase ExtendClimber() {
-        return new RunCommand(() -> setElevatorGoal(-68, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -67, -69)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        notMid_ = false;
+        return new RunCommand(() -> setElevatorGoal(-68, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -67, -69))
+        .andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl, this));
  
     }
 
      public CommandBase RetractClimber() {
         CommandScheduler.getInstance().cancel(ExtendClimber());
-        
+
+        if (notMid_) {
+                return new RunCommand(() -> {setElevatorGoal(0, 1); SetPivotPosition(1, -3800);}, this)
+            // .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -11, -12))
+            // .andThen(new RunCommand(() -> setElevatorGoal(0, 2))
+            .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 1, -1.25))
+            .andThen(new InstantCommand(() -> {this.stopEl(); this.stopTalons();}));
+        }
         // return new RunCommand(() -> elevatorRight_.set(a)).andThen(new InstantCommand(this::stopEl));
-        return new RunCommand(() -> setElevatorGoal(-60, 0)).withInterrupt(() -> (inTolerance(elevatorRight_.getEncoder().getPosition(), -59, -61) &&
-            inTolerance(elevatorLeft_.getEncoder().getPosition(), -59, -61)))
-        .andThen(new RunCommand(() -> setElevatorGoal(-10, 1))
+        return new RunCommand(() -> setElevatorGoal(-64, 0), this).withInterrupt(() -> (inTolerance(elevatorRight_.getEncoder().getPosition(), -63, -66) &&
+            inTolerance(elevatorLeft_.getEncoder().getPosition(), -63, -66)))
+        .andThen(new RunCommand(() -> {setElevatorGoal(-10, 1); SetPivotPosition(1, -3800);})
         .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -11, -12))
-        .andThen(new RunCommand(() -> setElevatorGoal(0, 2))
-        .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 1, -1)))
-        .andThen(new InstantCommand(this::stopEl)));
+        .andThen(new RunCommand(() -> setElevatorGoal(0, 2)).withTimeout(1.0)
+       // .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 1, -0.5)))
+        .andThen(new InstantCommand(() -> {this.stopEl(); this.stopTalons();}))));
+    }
+
+    public void SetPivotPosition(int slot, double goal) {
+        pivotLeft_.selectProfileSlot(slot, 0);
+        pivotRight_.selectProfileSlot(slot, 0);
+        pivotLeft_.set(TalonFXControlMode.Position, goal);
+        pivotRight_.set(TalonFXControlMode.Position, goal);
+
     }
 
     public CommandGroupBase StartRoutine() {

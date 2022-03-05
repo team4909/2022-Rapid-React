@@ -18,7 +18,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     private enum IntakeState {
         kIdle("Idle"),
-        kBarSpit("BarSpit"),
+        kAdjust("Adjust Balls"),
         kIdleFeeder("Idle Feeder"),
         kIntakeFirst("Intake First"),
         kIntakeSecond("Intake Second"),
@@ -37,7 +37,7 @@ public class IntakeFeeder extends SubsystemBase {
     };
 
     private enum BallCount{
-        kZero, kOne, kTwo, kBarSpit
+        kZero, kOne, kTwo
     }
 
     // Object instance
@@ -63,6 +63,7 @@ public class IntakeFeeder extends SubsystemBase {
     private static int fallingEdges = 0;
     private static boolean lastEdgeHigh = false;
     private static boolean rumble_ = false;
+    private static boolean adjusted_ = false;
 
     private static Timer shot_timer_;
 
@@ -88,7 +89,7 @@ public class IntakeFeeder extends SubsystemBase {
         currentState_ = IntakeState.kIdle;
         lastState_ = IntakeState.kIdle;
 
-        ballsHeld_ = BallCount.kBarSpit;
+        ballsHeld_ = BallCount.kZero;
 
         shot_timer_ = new Timer();
         shot_timer_.reset();
@@ -104,11 +105,6 @@ public class IntakeFeeder extends SubsystemBase {
     public void intake() {
         intakeSolenoidState_ = true;
         switch (ballsHeld_) {
-            case kBarSpit:
-                currentState_ = IntakeState.kBarSpit;
-                shot_timer_.reset();
-                shot_timer_.start();
-                break;
             case kZero:
                 currentState_ = IntakeState.kIntakeFirst; // Change back to intake first
                 break;
@@ -185,15 +181,25 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
                 feederWheel_.set(0.0);
-                shot_timer_.stop();
-                
+                shot_timer_.stop();  
+                if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
+                    currentState_ = IntakeState.kAdjust;
+                    shot_timer_.reset();
+                    shot_timer_.start();
+                }      
                 break;
-            case kBarSpit:
-                ballsHeld_ = BallCount.kZero;
-                intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
-                if (shot_timer_.get() > 0.75) {
-                    currentState_ = IntakeState.kIntakeFirst;
+            case kAdjust:
+                intakeWheels_.set(0.0);
+                centeringWheel_.set(0.0);
+                 if (shot_timer_.get() < 0.5 ) {
+                    feederWheel_.set(0.0);  
+                } else if (shot_timer_.get() < 1.0) {
+                    feederWheel_.set(Constants.kFeederAdjustVoltage);
+                } else {
+                    feederWheel_.set(0.0);  
                     shot_timer_.stop();
+                    currentState_ = IntakeState.kIdle;
+                    adjusted_ = false;
                 }
                 break;
             case kIdleFeeder:
@@ -207,6 +213,7 @@ public class IntakeFeeder extends SubsystemBase {
                     // Set state to get the next ball
                     currentState_ = IntakeState.kIntakeSecond;
                 }
+                adjusted_ = false;
                 break;
             case kIntakeFirst:
                 // Run everything to get first ball into position
@@ -219,7 +226,8 @@ public class IntakeFeeder extends SubsystemBase {
                     ballsHeld_ = BallCount.kOne;
                     // Not doing this yet, but for the future driver feedback
                     rumble_ = true;
-                }
+                }        
+                adjusted_ = false;
                 break;
             case kIntakeSecond:
                 // Keep running intake, but now know the second ball is at least in the robot
@@ -235,6 +243,7 @@ public class IntakeFeeder extends SubsystemBase {
                     // Not doing this yet, but for the future driver feedback
                     rumble_ = true;
                 }
+                adjusted_ = false;
                 break;
             case kShootBalls:
                 intakeWheels_.set(0.0);
@@ -243,11 +252,8 @@ public class IntakeFeeder extends SubsystemBase {
                     feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 } else {
                     feederWheel_.setVoltage(0.0);
-                }
-
-                // ballsHeld_ = BallCount.kZero;
-                
-                
+                }     
+                adjusted_ = false;
                 break;
             case kReverseWrongBall:
                 // Reverse the motors
@@ -255,6 +261,7 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVoltage);
                 feederWheel_.setVoltage(Constants.kFeederReverseVoltage);
+                adjusted_ = false;
                 break;
             default:
                 break;
