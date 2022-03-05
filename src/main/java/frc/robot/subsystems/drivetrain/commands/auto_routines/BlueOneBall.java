@@ -10,13 +10,13 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class OneBall extends SequentialCommandGroup{
+public class BlueOneBall extends SequentialCommandGroup{
 
     private final Shooter shooter_ = Shooter.getInstance();
     private final VisionSubsystem vision_ = VisionSubsystem.getInstance();
     private final IntakeFeeder intake_ = IntakeFeeder.getInstance();
 
-    public OneBall() {
+    public BlueOneBall() {
         
         addCommands(
             new InstantCommand(
@@ -30,7 +30,7 @@ public class OneBall extends SequentialCommandGroup{
             .andThen(new InstantCommand(shooter_::stop)),
     
 
-        new PathResetOdometry("Tarmac-Almost-A"),
+        new PathResetOdometry("Tarmac-Almost-A", -250),
         new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
         );
         

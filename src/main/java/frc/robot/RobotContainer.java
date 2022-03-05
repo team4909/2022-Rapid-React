@@ -40,7 +40,8 @@ import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.RedThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
@@ -110,11 +111,12 @@ public class RobotContainer {
     }
 
     private void configureSendableChooser() {
-        m_chooser.setDefaultOption("Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
+        m_chooser.setDefaultOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
+        m_chooser.setDefaultOption("Blue Three Ball from Bottom of Tarmac", new BlueThreeBallBottomTarmac());
         m_chooser.addOption("Two Ball from Bottom of Tarmac", new TwoBallBottomTarmac());
         m_chooser.addOption("Fender Shot", new FenderShot());
         m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
-        m_chooser.addOption("One Ball Taxi", new OneBall());
+        m_chooser.addOption("Blue One Ball Taxi", new BlueOneBall());
         SmartDashboard.putData(m_chooser);
     }
 
@@ -188,7 +190,7 @@ public class RobotContainer {
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
-        // new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach));
+        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach));
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());

@@ -56,7 +56,7 @@ public class Climber extends SubsystemBase {
     private SparkMaxPIDController elevatorControllerL_;
 
 
-    public boolean holdingPivot_;
+    public boolean haltingPivot_;
 
     private ClimberStates state_;
 
@@ -139,6 +139,16 @@ public class Climber extends SubsystemBase {
         elevatorControllerL_.setI(Constants.DOWN_ELEVATOR_KI, 1);
         elevatorControllerL_.setFF(Constants.DOWN_ELEVATOR_KF, 1);
 
+        elevatorControllerR_.setP(1, 2);
+        elevatorControllerR_.setD(0, 2);
+        elevatorControllerR_.setI(0, 2);
+        elevatorControllerR_.setFF(0.01, 2);
+
+        elevatorControllerL_.setP(1, 2);
+        elevatorControllerL_.setD(0, 2);
+        elevatorControllerL_.setI(0, 2);
+        elevatorControllerL_.setFF(0.01, 2);
+
 
 
         pivotRight_ = new TalonFX(Constants.RIGHT_PIVOT_MOTOR);
@@ -202,13 +212,13 @@ public class Climber extends SubsystemBase {
         // elevatorRight_.set(0.3);
         // SmartDashboard.putNumber("a", elevatorController_.getError)
         
-        SmartDashboard.putNumber("key1", elevatorRight_.getOutputCurrent());
+        SmartDashboard.putNumber("key1", elevatorLeft_.getOutputCurrent());
         SmartDashboard.putNumber("key2", elevatorRight_.getOutputCurrent());
         SmartDashboard.putNumber("posel", elevatorRight_.getEncoder().getPosition());
         // SmartDashboard.putNumber("key", elevatorRight_.getOutputCurrent());
         // SmartDashboard.putNumber("piv vol", pivotRight_.getMotorOutputVoltage());
         SmartDashboard.putNumber("piv pos", pivotRight_.getSelectedSensorPosition());
-        SmartDashboard.putBoolean("is climber out", isClimberOut_.getAsBoolean());
+        SmartDashboard.putBoolean("is pivot hold", haltingPivot_);
         
         // System.out.println("R"+pivotRight_.getSelectedSensorPosition());
         // System.out.println("L"+pivotLeft_.getSelectedSensorPosition());
@@ -234,7 +244,7 @@ public class Climber extends SubsystemBase {
         } 
         // -2, 3, -3
         // -62, -60, -65
-        
+        // - 0.05, 0, -1
         return value < min && value > max;
     }
 
@@ -253,7 +263,7 @@ public class Climber extends SubsystemBase {
     //temp method for manual climb
     //used for getting off the bar so we can back pivot
     public void detach() {
-        setElevatorGoal(10, 0);
+        setElevatorGoal(-20, 0);
     }
 
     public void stopEl() {
@@ -274,7 +284,7 @@ public class Climber extends SubsystemBase {
         double avgV = voltageTracker_.calculate(pivotRight_.getMotorOutputVoltage());
         isClimberOut_ = () -> (Math.abs(pivotRight_.getMotorOutputVoltage()) > 1); // (Math.abs(avgV) * 10);
         if (isClimberOut_.getAsBoolean()) {
-            System.out.println(pivotRight_.getSelectedSensorPosition());
+            // System.out.println(pivotRight_.getSelectedSensorPosition());
             voltageTracker_.reset();
             if (!out) pivotRight_.setSelectedSensorPosition(0); // Zero the pivot motors
             if (!out) pivotLeft_.setSelectedSensorPosition(0); // Zero the pivot motors
@@ -344,7 +354,7 @@ public class Climber extends SubsystemBase {
     // }
 
     public CommandBase IdleClimber() {
-        return new InstantCommand(() -> {stopTalons(); elevatorControllerR_.setReference(0.0, ControlType.kVoltage);} );
+        return new InstantCommand(() -> {stopTalons(); elevatorControllerR_.setReference(0.0, ControlType.kVoltage); elevatorControllerL_.setReference(0.0, ControlType.kVoltage);} );
 
     }
 
@@ -352,17 +362,20 @@ public class Climber extends SubsystemBase {
         shouldRun_ = () -> false;
     }
     //#endregion
+    
 
     //#region Commands
     public CommandBase RaiseClimber() { //CommandBaseGroup
-        holdingPivot_ = true;
+        haltingPivot_ = false;
         // return new RunCommand(() -> climberDeploy(true), this).withTimeout(1).andThen(this.HoldClimber(-4400)); // .withInterrupt(this.isClimberOut_);
-        return HoldClimber(-4400); // .withInterrupt(this.isClimberOut_);
+        return new InstantCommand(() -> {pivotRight_.set(ControlMode.PercentOutput, -0.15); //Deploy at 30%
+                                         pivotLeft_.set(ControlMode.PercentOutput, -0.15);})
+                                         .andThen(HoldClimber(-4400));
     }
 
     public CommandGroupBase LowerClimber() {
-        isClimberOut_ = () -> false;
-        holdingPivot_ = false;
+        // isClimberOut_ = () -> true;
+        haltingPivot_ = true;
         return new RunCommand(() -> climberDeploy(false), this).withTimeout(1).andThen(this.HoldClimber(0));
     }
 
@@ -370,12 +383,12 @@ public class Climber extends SubsystemBase {
 
         return new RunCommand(() -> {pivotRight_.set(TalonFXControlMode.Position, pos); pivotLeft_.set(TalonFXControlMode.Position, pos);})
         .withTimeout(1.0).andThen(new RunCommand(() -> {pivotLeft_.set(TalonFXControlMode.PercentOutput, -0.06);
-             pivotRight_.set(TalonFXControlMode.PercentOutput, -0.06);})); //.withInterrupt(() -> this.holdingPivot_)
+             pivotRight_.set(TalonFXControlMode.PercentOutput, -0.06);})).withInterrupt(() -> pos == 0 ? this.haltingPivot_ : !this.haltingPivot_);
 
     }
 
     public CommandBase ExtendClimberHigh() {
-        return new RunCommand(() -> setElevatorGoal(-68, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -67, -69)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
+        return new RunCommand(() -> setElevatorGoal(-87, 0)).withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -86, -88)).andThen(new WaitCommand(0.5)).andThen(new InstantCommand(this::stopEl));
  
     }
 
@@ -386,19 +399,19 @@ public class Climber extends SubsystemBase {
 
      public CommandBase RetractClimber() {
         CommandScheduler.getInstance().cancel(ExtendClimber());
+        
         // return new RunCommand(() -> elevatorRight_.set(a)).andThen(new InstantCommand(this::stopEl));
-        return new RunCommand(() -> setElevatorGoal(-60, 0)).withInterrupt(() -> (inTolerance(elevatorRight_.getEncoder().getPosition(), -59, -61) ||
+        return new RunCommand(() -> setElevatorGoal(-60, 0)).withInterrupt(() -> (inTolerance(elevatorRight_.getEncoder().getPosition(), -59, -61) &&
             inTolerance(elevatorLeft_.getEncoder().getPosition(), -59, -61)))
-        .andThen(new RunCommand(() -> setElevatorGoal(-5, 1)).withInterrupt(() -> 
-        inTolerance(elevatorRight_.getEncoder().getPosition(), -6, -3))
-        .andThen(new WaitCommand(1.5))
-        .andThen(new InstantCommand(() -> {setElevatorGoal(-0.025, 0);})
-            .raceWith(new WaitCommand(1.5))))
-        ;
+        .andThen(new RunCommand(() -> setElevatorGoal(-10, 1))
+        .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), -11, -12))
+        .andThen(new RunCommand(() -> setElevatorGoal(0, 2))
+        .withInterrupt(() -> inTolerance(elevatorRight_.getEncoder().getPosition(), 1, -1)))
+        .andThen(new InstantCommand(this::stopEl)));
     }
 
     public CommandGroupBase StartRoutine() {
-        holdingPivot_ = false;
+        haltingPivot_ = false;
         return new RunCommand(this::runRoutine, this).withInterrupt(shouldRun_);
     }
 

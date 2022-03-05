@@ -11,13 +11,13 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class ThreeBallBottomTarmac extends SequentialCommandGroup {
+public class BlueThreeBallBottomTarmac extends SequentialCommandGroup {
 
     IntakeFeeder intake_ = IntakeFeeder.getInstance();
     Shooter shooter_ = Shooter.getInstance();
     VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-    public ThreeBallBottomTarmac() {
+    public BlueThreeBallBottomTarmac() {
         addCommands( 
 
         new PathResetOdometry("Tarmac-Almost-A"), (
