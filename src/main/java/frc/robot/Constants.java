@@ -161,8 +161,11 @@ public final class Constants {
     public static final double kShooterD = 0;
     public static final double kShooterFF = 0.05;
 
+    public static final int kTimeoutMs = 100;
+    
     // Climber stuff
     public static final class Climber {
+        public static final double kClimberVelocityConversion = 600 / 2048d;
         public static final double kClimberTimeoutLong = 3.0;
         public static final int kElevatorPIDSlot = 0;
         public static final int kPivotPIDSlot = 0;
