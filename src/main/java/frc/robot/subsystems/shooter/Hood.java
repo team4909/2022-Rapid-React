@@ -60,9 +60,9 @@ public class Hood extends SubsystemBase {
         m_hoodController.setP(kHoodP, 0);   
         m_hoodController.setD(kHoodD, 0);
         m_hoodController.setFF(kHoodFF, 0);
-        
-        this.zeroHood();
         //#endregion
+                
+        this.zeroHood();
     }
 
     @Override
