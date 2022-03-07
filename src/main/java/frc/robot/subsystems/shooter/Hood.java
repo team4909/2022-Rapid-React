@@ -98,9 +98,9 @@ public class Hood extends SubsystemBase {
      */
     private double mapHoodAngle(double value, boolean convertTicks) {
         final double kMinTicks = 0d;
-        final double kMinDegrees = 0d;
-        final double kMaxTicks = 0d;
-        final double kMaxDegrees = 0d;
+        final double kMaxTicks = 0d; //TODO find with testing
+        final double kMinDegrees = 53d;
+        final double kMaxDegrees = 83d;
         return convertTicks ? (value - kMinTicks) / (kMaxTicks - kMinTicks) * (kMaxDegrees - kMinDegrees) + kMinDegrees 
         : (value - kMinDegrees) / (kMaxDegrees - kMinDegrees) * (kMaxTicks - kMinTicks) + kMinTicks;
     }
