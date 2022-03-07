@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -29,6 +30,8 @@ public class Hood extends SubsystemBase {
     //TODO Move these to Constants.java
     private static int HOOD_MOTOR_ID = 0;
     private static double kHoodMotorGearRatio;
+    private static double ticksPerDegree = 1/1;
+    private static double degreesPerTick = 1/1;
     private static double kHoodP = 1.0D;
     private static double kHoodD = 0.0D;
     private static double kHoodFF = 0.0D;
@@ -101,8 +104,8 @@ public class Hood extends SubsystemBase {
         final double kMaxTicks = 0d; //TODO find with testing
         final double kMinDegrees = 53d;
         final double kMaxDegrees = 83d;
-        return convertTicks ? (value - kMinTicks) / (kMaxTicks - kMinTicks) * (kMaxDegrees - kMinDegrees) + kMinDegrees 
-        : (value - kMinDegrees) / (kMaxDegrees - kMinDegrees) * (kMaxTicks - kMinTicks) + kMinTicks;
+        return convertTicks ? MathUtil.clamp(value * ticksPerDegree, kMinTicks, kMaxTicks)
+        : MathUtil.clamp(value * degreesPerTick, kMinDegrees, kMaxDegrees);
     }
 
     public static Hood getInstance() {
@@ -135,8 +138,9 @@ public class Hood extends SubsystemBase {
         public HoodDisplay() {
             m_layout.add(Hood.this);
             m_layout.add("Current Amps", Hood.this.getHoodMotorCurrent()).withWidget(BuiltInWidgets.kDial);
-            m_layout.add("Position(Angle) Graph", Hood.this.getHoodAngle()).withWidget(BuiltInWidgets.kGraph);
-            m_layout.add("Position(Angle)", Hood.this.getHoodAngle()).withWidget(BuiltInWidgets.kTextView);
+            m_layout.add("Position (Angle) Graph", Hood.this.getHoodAngle()).withWidget(BuiltInWidgets.kGraph);
+            m_layout.add("Position (Angle)", Hood.this.getHoodAngle()).withWidget(BuiltInWidgets.kTextView);
+            m_layout.add("Position (Ticks)", Hood.this.m_hood.getEncoder().getPosition()).withWidget(BuiltInWidgets.kTextView);
             
             m_posEntry =  m_layout.add("Setpoint", 0d).withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("Min", 0, "Max", 100)).getEntry();
