@@ -28,6 +28,7 @@ public class Hood extends SubsystemBase {
     //#region Constants
     //TODO Move these to Constants.java
     private static int HOOD_MOTOR_ID = 0;
+    private static double kHoodMotorGearRatio;
     private static double kHoodP = 1.0D;
     private static double kHoodD = 0.0D;
     private static double kHoodFF = 0.0D;
