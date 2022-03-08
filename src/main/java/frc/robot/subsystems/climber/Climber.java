@@ -219,7 +219,7 @@ public class Climber extends SubsystemBase {
 
         @Override
         public void end(boolean interrupted) {
-            m_state = ClimberStates.IDLE;
+            // m_state = ClimberStates.IDLE;
         }
     }
 
@@ -228,11 +228,13 @@ public class Climber extends SubsystemBase {
     }
 
     public void periodic() {
-        SmartDashboard.putNumber("key1", m_leftElevatorMotor.getOutputCurrent());
+        SmartDashboard.putBoolean("key1", m_leftPivot.getMotorOutputVoltage() > 1.1 && m_rightPivot.getMotorOutputVoltage() > 1.1);
         SmartDashboard.putNumber("key2", m_rightElevatorMotor.getOutputCurrent());
         SmartDashboard.putNumber("posel", m_rightElevatorMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("piv pos", m_rightPivot.getSelectedSensorPosition());
-        
+        SmartDashboard.putNumber("piv vol", m_rightPivot.getMotorOutputVoltage());
+        SmartDashboard.putString("Climber State", m_state.name());
+
         stateEntry.setString(m_state.toString());
         pivotPos.setDouble(m_rightPivot.getSelectedSensorPosition());
         elevatorPos.setDouble(m_rightElevatorMotor.getEncoder().getPosition());
@@ -299,7 +301,8 @@ public class Climber extends SubsystemBase {
         }
 
         m_lastState = m_state;
-        currentClimberCommand.schedule();
+        if (currentClimberCommand != null)
+            currentClimberCommand.schedule();
         //#endregion
 
     }
@@ -309,7 +312,7 @@ public class Climber extends SubsystemBase {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(0); 
                     setPivotGoal(0); },
-            () -> false,
+            () -> true,
             this);
     } 
 
@@ -317,7 +320,7 @@ public class Climber extends SubsystemBase {
         return new ClimberCommandBuilder(
             () -> { m_rightPivot.set(ControlMode.PercentOutput, 0.15); 
                     m_leftPivot.set(ControlMode.PercentOutput, 0.15); },
-            () -> m_rightPivot.getStatorCurrent() > 15 && m_leftPivot.getStatorCurrent() > 15, 
+            () -> m_leftPivot.getMotorOutputVoltage() > 1.1 && m_rightPivot.getMotorOutputVoltage() > 1.1, 
             this).andThen(new InstantCommand(() -> { m_leftPivot.setSelectedSensorPosition(0); 
                                                      m_rightPivot.setSelectedSensorPosition(0); }));
     }
@@ -432,5 +435,7 @@ public class Climber extends SubsystemBase {
  
         return value < min && value > max;
     }
+    private class ClimberDisplay {
 
+    }
 }

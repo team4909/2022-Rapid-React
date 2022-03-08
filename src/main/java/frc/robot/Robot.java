@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
-    Climber.getInstance().IdleClimber().schedule();
+    // Climber.getInstance().IdleClimber().schedule();
 
   }
 
