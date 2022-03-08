@@ -45,6 +45,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.utils.PIDGains;
+import pabeles.concurrency.IntObjectConsumer;
 
 
 public class Climber extends SubsystemBase {
@@ -188,15 +189,21 @@ public class Climber extends SubsystemBase {
         private final Runnable m_init;
         private final Runnable m_execute;
         private final BooleanSupplier m_isFinished;
+        private final ClimberStates m_transitionState;
 
         public ClimberCommandBuilder (Runnable execute, BooleanSupplier isFinished, Subsystem... subsystem) {
-            this(null, execute, isFinished, subsystem);
+            this(null, execute, isFinished, null, subsystem);
+        }
+        
+        public ClimberCommandBuilder (Runnable execute, BooleanSupplier isFinished, ClimberStates transition, Subsystem... subsystem) {
+            this(null, execute, isFinished, transition, subsystem);
         }
 
-        public ClimberCommandBuilder (Runnable init, Runnable execute, BooleanSupplier isFinished, Subsystem... subsystem) {
+        public ClimberCommandBuilder (Runnable init, Runnable execute, BooleanSupplier isFinished, ClimberStates transition, Subsystem... subsystem) {
             m_init = init;
             m_execute = execute;
             m_isFinished = isFinished;
+            m_transitionState = transition;
             addRequirements(subsystem);
         }
 
@@ -219,7 +226,8 @@ public class Climber extends SubsystemBase {
 
         @Override
         public void end(boolean interrupted) {
-            // m_state = ClimberStates.IDLE;
+            if (m_transitionState != null)
+                m_state = m_transitionState;
         }
     }
 
@@ -228,10 +236,12 @@ public class Climber extends SubsystemBase {
     }
 
     public void periodic() {
-        SmartDashboard.putBoolean("key1", m_leftPivot.getMotorOutputVoltage() > 1.1 && m_rightPivot.getMotorOutputVoltage() > 1.1);
-        SmartDashboard.putNumber("key2", m_rightElevatorMotor.getOutputCurrent());
+        SmartDashboard.putBoolean("key1", inTolerance(m_leftPivot.getSelectedSensorPosition(), 
+                                            Constants.Climber.kPivotForward + 200, 
+                                            Constants.Climber.kPivotForward - 200));
+        SmartDashboard.putNumber("key2", m_leftPivot.getStatorCurrent());
         SmartDashboard.putNumber("posel", m_rightElevatorMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("piv pos", m_rightPivot.getSelectedSensorPosition());
+        SmartDashboard.putNumber("piv pos", m_leftPivot.getSelectedSensorPosition());
         SmartDashboard.putNumber("piv vol", m_rightPivot.getMotorOutputVoltage());
         SmartDashboard.putString("Climber State", m_state.name());
 
@@ -267,37 +277,38 @@ public class Climber extends SubsystemBase {
         Command currentClimberCommand = null;
         
         //#region State Machine
-        switch (m_state) {
-            case IDLE:
-                if (m_lastState != ClimberStates.IDLE) {
+        if (m_state != m_lastState){
+            switch (m_state) {
+                case IDLE:
                     currentClimberCommand = idleClimber();
-                }
-                break;
-            case CALIBRATE:
-                currentClimberCommand = 
-                    new SequentialCommandGroup(calibrateClimber(), pivotBackward())
+                    
+                    break;
+                case CALIBRATE:
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(calibrateClimber(), pivotBackward())
+                            .withTimeout(Constants.Climber.kClimberTimeoutLong);
+                    break;
+                case MID_ALIGN:
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(pivotForward(), extendToMid())
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
-                break;
-            case MID_ALIGN:
-                currentClimberCommand = 
-                    new SequentialCommandGroup(pivotForward(), extendToMid())
-                    .withTimeout(Constants.Climber.kClimberTimeoutLong);
-                break;
-            case MID_CLIMB:
-                // Doesn't currently "hold" the pivot but could
-                currentClimberCommand = 
-                    new SequentialCommandGroup(retractProfiledClimber())
-                    .withTimeout(Constants.Climber.kClimberTimeoutLong);
-                break;
-            case HIGHER_CLIMB:
-                currentClimberCommand = 
-                    new SequentialCommandGroup(detach(), pivotBackward(), extendToHigh(),
-                                                pivotClimbingHold(), retractProfiledClimber())
-                    .withTimeout(Constants.Climber.kClimberTimeoutLong);
-                break;
-            default:
-                m_state = ClimberStates.IDLE;
-                break;
+                    break;
+                case MID_CLIMB:
+                    // Doesn't currently "hold" the pivot but could
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(retractProfiledClimber())
+                        .withTimeout(Constants.Climber.kClimberTimeoutLong);
+                    break;
+                case HIGHER_CLIMB:
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(detach(), pivotBackward(), extendToHigh(),
+                                                    pivotClimbingHold(), retractProfiledClimber())
+                        .withTimeout(Constants.Climber.kClimberTimeoutLong);
+                    break;
+                default:
+                    m_state = ClimberStates.IDLE;
+                    break;
+            }
         }
 
         m_lastState = m_state;
@@ -308,6 +319,10 @@ public class Climber extends SubsystemBase {
     }
 
     /// PRIVATE COMMANDS ///
+   private final Command setDefaultState(ClimberStates state) {
+       return new InstantCommand(() -> m_state = state);
+   }
+
     private final Command idleClimber() {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(0); 
@@ -320,7 +335,8 @@ public class Climber extends SubsystemBase {
         return new ClimberCommandBuilder(
             () -> { m_rightPivot.set(ControlMode.PercentOutput, 0.15); 
                     m_leftPivot.set(ControlMode.PercentOutput, 0.15); },
-            () -> m_leftPivot.getMotorOutputVoltage() > 1.1 && m_rightPivot.getMotorOutputVoltage() > 1.1, 
+            () -> m_leftPivot.getStatorCurrent() > 30 && m_rightPivot.getStatorCurrent() > 30, 
+            ClimberStates.IDLE,
             this).andThen(new InstantCommand(() -> { m_leftPivot.setSelectedSensorPosition(0); 
                                                      m_rightPivot.setSelectedSensorPosition(0); }));
     }
@@ -328,21 +344,21 @@ public class Climber extends SubsystemBase {
     private final Command pivotForward() {
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(Constants.Climber.kPivotForward); }, 
-            () -> true, 
+            () -> pivotTolerance(Constants.Climber.kPivotForward), 
             this);
     }
 
     private final Command pivotClimbingHold() {
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(Constants.Climber.kMidPivotHold); }, 
-            () -> true, 
+            () -> pivotTolerance(Constants.Climber.kMidPivotHold), 
             this);
     }
 
     private final Command pivotBackward() {
         return new ClimberCommandBuilder(
-            () -> { setPivotGoal(0);}, 
-            () -> true, 
+            () -> { setPivotGoal(-500);}, 
+            () -> pivotTolerance(-500), 
             this);
     }
 
@@ -350,8 +366,8 @@ public class Climber extends SubsystemBase {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionMidGoal); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
-                              Constants.Climber.kExtensionMidGoal - 1, 
-                              Constants.Climber.kExtensionMidGoal + 1), 
+                              Constants.Climber.kExtensionMidGoal + 1, 
+                              Constants.Climber.kExtensionMidGoal - 1), 
             this);
     }
 
@@ -359,8 +375,8 @@ public class Climber extends SubsystemBase {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionHighGoal); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
-                              Constants.Climber.kExtensionHighGoal - 1, 
-                              Constants.Climber.kExtensionHighGoal + 1), 
+                              Constants.Climber.kExtensionHighGoal + 1, 
+                              Constants.Climber.kExtensionHighGoal - 1), 
             this);
     }
 
@@ -368,8 +384,8 @@ public class Climber extends SubsystemBase {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionDetach); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
-                              Constants.Climber.kExtensionDetach - 1, 
-                              Constants.Climber.kExtensionDetach + 1), 
+                              Constants.Climber.kExtensionDetach + 1, 
+                              Constants.Climber.kExtensionDetach - 1), 
             this);
 
     }
@@ -415,7 +431,8 @@ public class Climber extends SubsystemBase {
                     m_rightElevatorController.setReference(
                         currentRState.position, ControlType.kPosition, 0, rightFF);
                     },
-            () -> true,
+            () -> false,
+            null,
             this);
             
         
@@ -428,6 +445,19 @@ public class Climber extends SubsystemBase {
         c.setFF(gains.kF, slot);
     }
 
+    private boolean pivotTolerance(double t) {
+        return inTolerance(m_leftPivot.getSelectedSensorPosition(), 
+                              t + 200, 
+                              t - 200);
+    }
+
+    private boolean elevatorTolerance(double t) {
+        return inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
+                            t + 1, 
+                            t - 1);
+    }
+
+        // -3724, -3800-400, -3800+400
     private boolean inTolerance(double value, double min, double max) {
         if (value > 0) {
             return value < max && value > min;
