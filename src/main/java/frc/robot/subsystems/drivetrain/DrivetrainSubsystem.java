@@ -6,6 +6,7 @@ package frc.robot.subsystems.drivetrain;
 
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderFaults;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
@@ -154,6 +155,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
         m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
+
         m_pigeon.clearStickyFaults();
     }
 
@@ -174,6 +176,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
             FRONT_LEFT_STEER_OFFSET
         );
+
+
 
         m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
@@ -250,7 +254,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE;
         m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond * AUTO_DRIVE_SCALE;
         m_chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond;
-        
     }
 
     // Note: to get to max speed multiply by max voltage on the desaturateWheelSpeeds

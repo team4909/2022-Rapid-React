@@ -162,7 +162,7 @@ public final class Constants {
     public static final double kShooterFF = 0.05;
 
     public static final int kTimeoutMs = 100;
-    
+
     // Climber stuff
     public static final class Climber {
         public static final double kClimberVelocityConversion = 600 / 2048d;
@@ -179,6 +179,6 @@ public final class Constants {
         public static final TrapezoidProfile.Constraints kEleavatorTrapConstraints =
             new TrapezoidProfile.Constraints(3000.0 / 60.0, 6000.0 / 60.0);
         public static final ElevatorFeedforward kElevatorFFContraints = 
-            new ElevatorFeedforward(0.025, -0.16, 1 / 5880.0); // TODO calculate emperically 
+            new ElevatorFeedforward(0.025, -0.16, 1 / 5880.0); // TODO calculate empirically 
     }
 }
