@@ -74,7 +74,7 @@ public final class Constants {
     public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
     public static final int BACK_RIGHT_STEER_MOTOR = 3;
     public static final int BACK_RIGHT_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(18.104296875000003); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(114.778); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 6;
