@@ -15,7 +15,7 @@ public class SnapToAngle extends CommandBase {
     private XboxController currentInput_;
     private boolean fenderAngle_ = false;
 
-    private final double kP = 0.12;
+    private final double kP = 0.1;
     private final double kI = 0.0;
     private final double kD = 0.0012;
 

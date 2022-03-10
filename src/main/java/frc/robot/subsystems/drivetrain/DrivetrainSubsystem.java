@@ -137,22 +137,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void initilizeEncoders(){
-<<<<<<< HEAD
         m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_MODULE_STEER_ENCODER);
         m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_MODULE_STEER_ENCODER);
         m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_ENCODER);
         m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_ENCODER);
-=======
-        m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_STEER_ENCODER);
-        m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_STEER_ENCODER);
-        m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_STEER_ENCODER);
-        m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_STEER_ENCODER);
-
-        canFL.add(m_frontLeftCanCoder.configFactoryDefault());
-        canFR.add(m_frontRightCanCoder.configFactoryDefault());
-        canBL.add(m_backLeftCanCoder.configFactoryDefault());
-        canBR.add(m_backRightCanCoder.configFactoryDefault());
->>>>>>> 85d792a3ea31acffded12048d8d1bb99e341a2c7
 
         canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
         canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
