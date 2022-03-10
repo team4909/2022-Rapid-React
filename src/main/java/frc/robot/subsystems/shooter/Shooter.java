@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.filter.MedianFilter;
@@ -56,8 +57,8 @@ public class Shooter extends SubsystemBase {
         follower_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
 
         // Set the follower
-        // follower_.setInverted(TalonFXInvertType.FollowMaster);
-        // follower_.follow(leader_);
+        follower_.setInverted(TalonFXInvertType.FollowMaster);
+        follower_.follow(leader_);
         // TODO: set inverted 
 
         // Control Loop Configuration

@@ -248,7 +248,7 @@ public class IntakeFeeder extends SubsystemBase {
             case kShootBalls:
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
-                if (shot_timer_.get() < 0.1 || shot_timer_.get() > 0.8) {
+                if (shot_timer_.get() < 0.1 || shot_timer_.get() > 0.5) {
                     feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 } else {
                     feederWheel_.setVoltage(0.0);

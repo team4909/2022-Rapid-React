@@ -8,6 +8,8 @@ import com.swervedrivespecialties.swervelib.ModuleConfiguration;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 
+import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.utils.Conversion;
 
 /**
@@ -160,5 +162,24 @@ public final class Constants {
     public static final double kShooterD = 0;
     public static final double kShooterFF = 0.05;
 
+    public static final int kTimeoutMs = 100;
 
+    // Climber stuff
+    public static final class Climber {
+        public static final double kClimberVelocityConversion = 600 / 2048d;
+        public static final double kClimberTimeoutLong = 3.0;
+        public static final int kElevatorPIDSlot = 0;
+        public static final int kPivotPIDSlot = 0;
+        public static final double kPivotForward = -3800;
+        public static final double kMidPivotHold = -4000;
+        public static final double kExtensionMidGoal = -68;
+        public static final double kExtensionHighGoal = -75;
+        public static final double kExtensionBottom = 0;
+        public static final double kExtensionDetach = -20;
+
+        public static final TrapezoidProfile.Constraints kEleavatorTrapConstraints =
+            new TrapezoidProfile.Constraints(3000.0 / 60.0, 6000.0 / 60.0);
+        public static final ElevatorFeedforward kElevatorFFContraints = 
+            new ElevatorFeedforward(0.1, -0.16, 1 / 5880.0); // TODO calculate empirically 
+    }
 }

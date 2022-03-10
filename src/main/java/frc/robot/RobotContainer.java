@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.Climber.ClimberStates;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -194,7 +195,7 @@ public class RobotContainer {
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
-        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach, climber_));
+        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(() -> climber_.setState(ClimberStates.IDLE));
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
@@ -217,16 +218,15 @@ public class RobotContainer {
                     .whenActive(m_intakeSubsystem::reverseIntake)
                     .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Button(m_operatorController::getBackButton).whenPressed(climber_.LowerClimber());
-        new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber());
+        new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
+        new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+        new Button(m_operatorController::getLeftBumper).whenPressed(() -> climber_.setState(ClimberStates.MID_CLIMB));
 
-        new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
-        new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
-        new Button(m_operatorController::getYButton).whenPressed(climber_.IdleClimber());
+        new Button(m_operatorController::getRightBumper).whenPressed(() -> climber_.setState(ClimberStates.HIGHER_CLIMB));
+        // new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
     }
     
 
