@@ -179,6 +179,6 @@ public final class Constants {
         public static final TrapezoidProfile.Constraints kEleavatorTrapConstraints =
             new TrapezoidProfile.Constraints(3000.0 / 60.0, 6000.0 / 60.0);
         public static final ElevatorFeedforward kElevatorFFContraints = 
-            new ElevatorFeedforward(0.025, -0.16, 1 / 5880.0); // TODO calculate empirically 
+            new ElevatorFeedforward(0.1, -0.16, 1 / 5880.0); // TODO calculate empirically 
     }
 }

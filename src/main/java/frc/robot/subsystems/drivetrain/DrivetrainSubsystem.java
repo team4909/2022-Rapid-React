@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderFaults;
@@ -30,6 +31,7 @@ import frc.robot.Constants;
 import static frc.robot.Constants.*;
 
 import java.util.Map;
+import java.util.Vector;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -112,6 +114,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean lockInPlace_ = false;
 
+    private Vector<ErrorCode> canFR = new Vector<ErrorCode>(10);
+    private Vector<ErrorCode>  canFL= new Vector<ErrorCode>(10);
+    private Vector<ErrorCode>  canBR= new Vector<ErrorCode>(10);
+    private Vector<ErrorCode> canBL= new Vector<ErrorCode>(10);
+
     private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
         m_driverTab = Shuffleboard.getTab("Driver");
@@ -135,26 +142,60 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_STEER_ENCODER);
         m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_STEER_ENCODER);
 
-        m_frontLeftCanCoder.configFactoryDefault();
-        m_frontRightCanCoder.configFactoryDefault();
-        m_backLeftCanCoder.configFactoryDefault();
-        m_backRightCanCoder.configFactoryDefault();
+        canFL.add(m_frontLeftCanCoder.configFactoryDefault());
+        canFR.add(m_frontRightCanCoder.configFactoryDefault());
+        canBL.add(m_backLeftCanCoder.configFactoryDefault());
+        canBR.add(m_backRightCanCoder.configFactoryDefault());
 
-        m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        canBL.add(m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        canBR.add(m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
 
-        m_frontLeftCanCoder.configSensorDirection(true);
-        m_frontRightCanCoder.configSensorDirection(true);
-        m_backLeftCanCoder.configSensorDirection(true);
-        m_backRightCanCoder.configSensorDirection(true);
+        canFL.add(m_frontLeftCanCoder.configSensorDirection(true));
+        canFR.add(m_frontRightCanCoder.configSensorDirection(true));
+        canBL.add(m_backLeftCanCoder.configSensorDirection(true));
+        canBR.add(m_backRightCanCoder.configSensorDirection(true));
 
-        m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        canFL.add(m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        canFR.add(m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        canBL.add(m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        canBR.add(m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
 
+        SmartDashboard.putBoolean("CANFL", true);
+        for (ErrorCode e : canFL) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANFL", false);
+                break;
+            }
+
+        }
+        SmartDashboard.putBoolean("CANFR", true);
+        for (ErrorCode e : canFR) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANFR", false);
+                break;
+            }
+
+        }
+        SmartDashboard.putBoolean("CANBL", true);
+        for (ErrorCode e : canBL) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANBL", false);
+                break;
+            }
+            
+
+        }
+        SmartDashboard.putBoolean("CANBR", true);
+        for (ErrorCode e : canBR) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANBR", false);
+                break;
+            }
+            
+
+        }
 
         m_pigeon.clearStickyFaults();
     }
@@ -276,6 +317,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
+        if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
+            m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
+            m_backLeftCanCoder.getLastError() != ErrorCode.OK ||
+            m_backRightCanCoder.getLastError() != ErrorCode.OK) {
+                SmartDashboard.putBoolean("Bad CanCoder Periodic", true);
+
+            }
         // System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);
