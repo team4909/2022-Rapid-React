@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -41,6 +42,7 @@ import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.RedThreeBallBottomTarmac;
@@ -118,6 +120,7 @@ public class RobotContainer {
         m_chooser.addOption("Fender Shot", new FenderShot());
         m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
         m_chooser.addOption("Blue One Ball Taxi", new BlueOneBall());
+        m_chooser.addOption("Blue? FIve Ball Auto", new FiveBallAuto());
         SmartDashboard.putData(m_chooser);
     }
 
@@ -187,7 +190,8 @@ public class RobotContainer {
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
         new Button(m_operatorController::getXButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity + 200, false);});
-        new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);});
+        new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
+                                                                         });
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});

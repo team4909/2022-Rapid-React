@@ -76,7 +76,7 @@ public final class Constants {
     public static final int BACK_RIGHT_DRIVE_MOTOR = 4;
     public static final int BACK_RIGHT_STEER_MOTOR = 3;
     public static final int BACK_RIGHT_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(18.104296875000003); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
+    public static final double BACK_RIGHT_STEER_OFFSET = -Math.toRadians(114.778); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_DRIVE_MOTOR = 6;
@@ -111,7 +111,7 @@ public final class Constants {
     public static final double TICKS_PER_ELEVATOR_INCH = (NEO_UNITS_PER_REV * ELEVATOR_NEO_GEAR_RATIO) / (ELEVATOR_PULLEY_DIAMETER * Math.PI);
     public static final double MAX_ELEVATOR_HEIGHT = 29.35;
 
-    public static final double PIVOT_KP = 0.1;
+    public static final double PIVOT_KP = 0.15;
     public static final double PIVOT_KI = 0;
     public static final double PIVOT_KD = 0;
     public static final double PIVOT_KF = 0.005;
@@ -120,10 +120,10 @@ public final class Constants {
     public static final double ELEVATOR_KI = 0;
     public static final double ELEVATOR_KD = 0;
     public static final double ELEVATOR_KF = 0.0;
-    public static final double DOWN_ELEVATOR_KP = 1;
+    public static final double DOWN_ELEVATOR_KP = 4;
     public static final double DOWN_ELEVATOR_KI = 0;
     public static final double DOWN_ELEVATOR_KD = 0;
-    public static final double DOWN_ELEVATOR_KF = 0.05;
+    public static final double DOWN_ELEVATOR_KF = 0.0075;
     
     private static final double BAR_DIST_X = 24;
     private static final double BAR_DIST_Y = 15.375;
@@ -146,6 +146,7 @@ public final class Constants {
     public static final double kFeederFeedingVoltage = 3.0;
     public static final double kFeederShootingVoltage = 6.0;
     public static final double kFeederReverseVoltage = -6.0;
+    public static final double kFeederAdjustVoltage = -0.4;
     // TODO to invert these properly
     public static final double kCenteringWheelForwardVoltage = -12.0;
     public static final double kCenteringWheelReverseVoltage = 6.0;
@@ -153,7 +154,7 @@ public final class Constants {
     // Shooter Velocity Goal Constants
     public static final double kFenderShotVelocity = 2300; //4300
     // public static final double kTarmacShotVelocity = 5000;
-    public static final double kLongShotVelocity = 3900; 
+    public static final double kLongShotVelocity = 3850; 
     public static final double kWallShotVelocity = 3675;
 
     public static final double kShooterP = 0.06; //0.1

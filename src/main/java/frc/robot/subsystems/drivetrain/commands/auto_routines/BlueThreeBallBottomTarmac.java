@@ -33,10 +33,12 @@ public class BlueThreeBallBottomTarmac extends SequentialCommandGroup {
         .raceWith(new RunCommand(intake_::intake, intake_)))
         .andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(Constants.kLongShotVelocity, true)
+        new LimelightShoot(Constants.kLongShotVelocity, true),
+
+        new TrajectoryFollow("B-CD").withTimeout(2.3)
+            .raceWith(new RunCommand(intake_::intake, intake_))
+       
         );
-
-
    }
     
 }

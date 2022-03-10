@@ -9,7 +9,6 @@ import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
-import frc.robot.subsystems.shooter.commands.ShootCmd;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class FiveBallAuto extends SequentialCommandGroup {
@@ -22,18 +21,23 @@ public class FiveBallAuto extends SequentialCommandGroup {
         addCommands(
             new PathResetOdometry("Tarmac-Almost-A"),
             new TrajectoryFollow("Tarmac-Almost-A").withTimeout(1),
+            // .raceWith(intake_::intake),
             
             new LimelightShoot(Constants.kWallShotVelocity, true),
             //do re mi fa so la ti do dp re mi faf so la ti do
-            new RunCommand(intake_::intake, intake_).withTimeout(0.5),
+            new RunCommand(intake_::intake, intake_).withTimeout(1),
 
-            (new TrajectoryFollow("Near-A-B").withTimeout(3)
+            (new TrajectoryFollow("Near-A-B").withTimeout(2.3)
             .raceWith(new RunCommand(intake_::intake, intake_)))
             .andThen(new InstantCommand(intake_::stopIntake)),
     
             new LimelightShoot(Constants.kLongShotVelocity, true),
     
-            new TrajectoryFollow("B-CD")
+            new TrajectoryFollow("B-CD").withTimeout(2.3)
+            .raceWith(new RunCommand(intake_::intake, intake_)),
+
+            new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3),
+            new LimelightShoot(Constants.kLongShotVelocity, true)
         );
     }
 

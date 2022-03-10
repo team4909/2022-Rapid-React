@@ -55,8 +55,8 @@ public class TrajectoryFollow extends CommandBase {
         new PPSwerveControllerCommand(m_trajectory,
                 DrivetrainSubsystem.getInstance()::getCurrentPose,
                 DrivetrainSubsystem.getInstance().getKinematics(),
-                new PIDController(4, 0, 0),
-                new PIDController(5, 0, 0),
+                new PIDController(6, 0, 0),
+                new PIDController(6, 0, 0),
                 thetaController,
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,
                 DrivetrainSubsystem.getInstance())

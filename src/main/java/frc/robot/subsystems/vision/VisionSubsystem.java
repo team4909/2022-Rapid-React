@@ -35,23 +35,16 @@ public class VisionSubsystem extends SubsystemBase{
 
 private VisionSubsystem() {
 
-    // frontCamera_ = new UsbCamera("Front Camera", 0);
-    // climberCamera_ = new UsbCamera("Climber Camera", 1);
+    // switchCamera("Front Camera");
 
-    // frontCamera_.setResolution(240, 128);
-    // frontCamera_.setFPS(30);
-
-
-    switchCamera("Front Camera");
-
-    currentCamera_.setResolution(240, 128);
-    currentCamera_.setFPS(30);
+    // currentCamera_.setResolution(240, 128);
+    // currentCamera_.setFPS(30);
     
-    Shuffleboard.getTab("Driver").add(currentCamera_)
-        .withPosition(8, 0)
-        .withSize(5, 4)
-        .withWidget("Camera Stream")
-        .withProperties(Map.of("Rotation", "HALF", "Show controls", true));
+    // Shuffleboard.getTab("Driver").add(currentCamera_)
+    //     .withPosition(8, 0)
+    //     .withSize(5, 4)
+    //     .withWidget("Camera Stream")
+    //     .withProperties(Map.of("Rotation", "HALF", "Show controls", true));
     
     isAligned_ = false;
     lastDistance_ = 0.0;
@@ -63,7 +56,7 @@ private VisionSubsystem() {
 public void switchCamera(String camName) {
     switch (camName) {
         case "Front Camera":
-            currentCamera_ = CameraServer.startAutomaticCapture("Front Camera", 0);
+            // currentCamera_ = CameraServer.startAutomaticCapture("Front Camera", 0);
             break;
         case "Climber Camera":
             // currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);
