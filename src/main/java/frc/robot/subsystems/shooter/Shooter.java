@@ -6,18 +6,29 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import com.revrobotics.CANSparkMax;
+import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+
+import java.util.ArrayList;
 
 public class Shooter extends SubsystemBase {
 
     // Object instances
     private static Shooter instance_ = null;
+    private static boolean hoodDebug_ = true;
 
+//    private final CANSparkMax
     private final TalonFX leader_;
     private final TalonFX follower_;
     private final Solenoid hoodSolenoid_;
@@ -148,5 +159,10 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter speed", leader_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
     }
 
+    private class ShooterDisplay {
+        private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
+        private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList);
+        private NetworkTableEntry m_shooterSpeed;
+    }
 
 }
