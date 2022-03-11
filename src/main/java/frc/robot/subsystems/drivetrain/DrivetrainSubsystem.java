@@ -132,7 +132,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
-        initilizeEncoders();
+        // initilizeEncoders();
         initializeMotors();       
     }
 
@@ -248,11 +248,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
-
-        m_frontLeftModule.set(0, 0);
-        m_frontRightModule.set(0, 0);
-        m_backLeftModule.set(0, 0);
-        m_backRightModule.set(0, 0);
     }
 
     /**
@@ -312,13 +307,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
-        if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
-            m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
-            m_backLeftCanCoder.getLastError() != ErrorCode.OK ||
-            m_backRightCanCoder.getLastError() != ErrorCode.OK) {
-                SmartDashboard.putBoolean("Bad CanCoder Periodic", true);
+        // if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
+        //     m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
+        //     m_backLeftCanCoder.getLastError() != ErrorCode.OK ||
+        //     m_backRightCanCoder.getLastError() != ErrorCode.OK) {
+        //         SmartDashboard.putBoolean("Bad CanCoder Periodic", true);
 
-            }
+        // }
         // System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);

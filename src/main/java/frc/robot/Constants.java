@@ -136,8 +136,8 @@ public final class Constants {
 
     // Shooter Constants 
     public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
-    public static final double limelightHeight = 27.0; // Height of the limelight off the ground in INCHES
-    public static final double limelightAngle = 18.75; // Angle of the limelight in DEGREES
+    public static final double limelightHeight = 40.0; // Height of the limelight off the ground in INCHES
+    public static final double limelightAngle = 10.0; // Angle of the limelight in DEGREES
  
     // Superstructure Constants
     // TODO Change if needed

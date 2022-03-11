@@ -43,6 +43,7 @@ import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.AutoTest;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.RedThreeBallBottomTarmac;
@@ -244,6 +245,7 @@ public class RobotContainer {
    */
     public Command getAutonomousCommand() {
 
+        // return new AutoTest();
         return m_chooser.getSelected();
     }
 

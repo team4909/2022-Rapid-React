@@ -1,5 +1,8 @@
 package frc.robot.subsystems.drivetrain.commands.auto_routines;
 
+import javax.sound.midi.Sequence;
+
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -11,22 +14,25 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class BlueTwoBallTopTarmac extends SequentialCommandGroup {
 
+public class AutoTest extends SequentialCommandGroup {
+    
     IntakeFeeder intake_ = IntakeFeeder.getInstance();
     Shooter shooter_ = Shooter.getInstance();
     VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-    public BlueTwoBallTopTarmac() {
-        addCommands(
-            new PathResetOdometry("TarmacN-E"), (
-                new TrajectoryFollow("TarmacN-E").withTimeout(2)
+    public AutoTest() {
+            addCommands(
+                new PathResetOdometry("Tarmac-Almost-A"), 
+                (
+                new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
                 .raceWith(new RunCommand(intake_::intake, intake_))
-            )
-            .andThen(new InstantCommand(intake_::stopIntake)),
+                // .alongWith(new InstantCommand(() -> shooter_.setVelocityGoal(Constants.kWallShotVelocity, true)))
+                .alongWith(new LimelightShoot(Constants.kWallShotVelocity, true, true))
+                )
+                .andThen(new InstantCommand(intake_::stopIntake))
 
-            new LimelightShoot(Constants.kWallShotVelocity, true, false)
         );
+        
     }
-    
 }

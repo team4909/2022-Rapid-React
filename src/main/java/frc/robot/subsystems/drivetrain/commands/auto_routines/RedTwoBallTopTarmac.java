@@ -25,7 +25,7 @@ public class RedTwoBallTopTarmac extends SequentialCommandGroup {
             )
             .andThen(new InstantCommand(intake_::stopIntake)),
 
-            new LimelightShoot(Constants.kWallShotVelocity, true)
+            new LimelightShoot(Constants.kWallShotVelocity, true, false)
         );
     }
     
