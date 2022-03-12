@@ -1,6 +1,5 @@
 package frc.robot.subsystems.shooter;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 import com.revrobotics.CANSparkMax;
@@ -25,19 +24,19 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 public class Hood extends SubsystemBase {
     
     public static Hood instance_ = null;
-    public static boolean hoodDebug_ = true;
+    public static boolean m_hoodDebug = true;
 
     //#region Constants
     //TODO Move these to Constants.java
-    private static int HOOD_MOTOR_ID = 0;
-    private static double kHoodMotorGearRatio;
+    private static int HOOD_MOTOR_ID = 23;
+    private static double kHoodMotorGearRatio = 81;
     private static double ticksPerDegree = 1/1;
     private static double degreesPerTick = 1/1;
     private static double kHoodP = 1.0D;
     private static double kHoodD = 0.0D;
     private static double kHoodFF = 0.0D;
-    private static float kHoodUpperLimit = 0.0F;
-    private static float kHoodLowerLimit = 0.0F;
+    private static float kHoodUpperLimit = 50F;
+    private static float kHoodLowerLimit = 0F;
     private static double kAimCoeffA = 1D;
     private static double kAimCoeffB = 1D;
     private static double kAimCoeffC = 1D;
@@ -48,9 +47,10 @@ public class Hood extends SubsystemBase {
     private final Hood.HoodDisplay m_hoodDisplay;
 
     private Hood() {
+        System.out.println("HOOD MOTOR INIT");
         m_hood = new CANSparkMax(HOOD_MOTOR_ID, MotorType.kBrushless);
         m_hoodController = m_hood.getPIDController();
-        m_hoodDisplay = new Hood.HoodDisplay();
+        m_hoodDisplay = this.new HoodDisplay();
 
         //#region Motor Config
         m_hood.restoreFactoryDefaults();
@@ -66,12 +66,12 @@ public class Hood extends SubsystemBase {
         m_hoodController.setFF(kHoodFF, 0);
         //#endregion
                 
-        this.zeroHood();
     }
 
     @Override
     public void periodic() {
-        if (hoodDebug_) m_hoodDisplay.periodic();
+        if (m_hoodDebug) m_hoodDisplay.periodic();
+        
         
     }
 
@@ -134,27 +134,37 @@ public class Hood extends SubsystemBase {
     private class HoodDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
         private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList);
-        private NetworkTableEntry m_posEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry;
+        private boolean setters = true;
+        private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry;
 
         public HoodDisplay() {
+            System.out.println("HELLLLLO WHERE ARE UUU??? \n\n\n\n\n\n");
             m_layout.add(Hood.this);
-            m_layout.add("Current Amps", Hood.this.getHoodMotorCurrent()).withWidget(BuiltInWidgets.kDial);
-            m_layout.add("Position (Angle) Graph", Hood.this.getHoodAngle()).withWidget(BuiltInWidgets.kGraph);
-            m_layout.add("Position (Angle)", Hood.this.getHoodAngle()).withWidget(BuiltInWidgets.kTextView);
-            m_layout.add("Position (Ticks)", Hood.this.m_hood.getEncoder().getPosition()).withWidget(BuiltInWidgets.kTextView);
+
+            m_current = m_layout.add("Current Amps", 0).withWidget(BuiltInWidgets.kDial).getEntry();
+            m_posAngleEntry = m_layout.add("Position (Angle)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_posTicksEntry = m_layout.add("Position (Ticks)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
             
-            m_posEntry =  m_layout.add("Setpoint", 0d).withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("Min", 0, "Max", 100)).getEntry();
+            m_setpointEntry =  m_layout.add("Setpoint", 0d).withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
             m_hoodPEntry = m_layout.addPersistent("P", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_hoodDEntry = m_layout.addPersistent("D", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_hoodFFEntry = m_layout.addPersistent("FF", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_layout.add(new InstantCommand(() -> Hood.this.zeroHood()));
         }
 
         public void periodic() {
-            m_hoodController.setReference(m_posEntry.getDouble(0), ControlType.kPosition);
-            m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
-            m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);
-            m_hoodController.setFF(m_hoodFFEntry.getDouble(kHoodFF), 0);
+
+            m_current.setDouble(Hood.this.getHoodMotorCurrent());
+            m_posAngleEntry.setDouble(Hood.this.getHoodAngle());
+            m_posTicksEntry.setDouble(Hood.this.m_hood.getEncoder().getPosition());
+            if (setters) {
+                m_hoodController.setReference(m_setpointEntry.getDouble(0), ControlType.kPosition);
+                m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
+                m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);
+                m_hoodController.setFF(m_hoodFFEntry.getDouble(kHoodFF), 0);
+            }
+
         }
         
     }

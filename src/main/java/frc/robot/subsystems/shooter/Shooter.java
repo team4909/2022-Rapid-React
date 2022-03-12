@@ -7,6 +7,9 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -26,12 +29,13 @@ public class Shooter extends SubsystemBase {
 
     // Object instances
     private static Shooter instance_ = null;
-    private static boolean hoodDebug_ = true;
+    public static boolean m_shooterDebug = true;
 
 //    private final CANSparkMax
-    private final TalonFX leader_;
-    private final TalonFX follower_;
-    private final Solenoid hoodSolenoid_;
+    private final TalonFX flywheel_;
+    private final CANSparkMax backSpinWheel_;
+    private final Shooter.ShooterDisplay m_shooterDisplay;
+    private final SparkMaxPIDController backSpinPID;
 
     // Constants
     private final static int kTimeoutMs = 100;
@@ -49,54 +53,39 @@ public class Shooter extends SubsystemBase {
 
 
     private Shooter() {
-        leader_ = new TalonFX(13);
-        follower_ = new TalonFX(14);
-        hoodSolenoid_ = new Solenoid(PneumaticsModuleType.REVPH, 2);
+        flywheel_ = new TalonFX(13);
+        backSpinWheel_ = new CANSparkMax(24, MotorType.kBrushless);
+        m_shooterDisplay = new Shooter.ShooterDisplay();
 
         // General Motor Configuration for the TalonFXs
-        leader_.clearStickyFaults(kTimeoutMs);
-        leader_.configNominalOutputForward(0, kTimeoutMs);
-        leader_.configNominalOutputReverse(0, kTimeoutMs);
-        leader_.configNeutralDeadband(0.04, kTimeoutMs);
+        flywheel_.clearStickyFaults(kTimeoutMs);
+        flywheel_.configNominalOutputForward(0, kTimeoutMs);
+        flywheel_.configNominalOutputReverse(0, kTimeoutMs);
+        flywheel_.configNeutralDeadband(0.04, kTimeoutMs);
 
-        leader_.configPeakOutputForward(1.0, kTimeoutMs);
-        leader_.configPeakOutputReverse(-1.0, kTimeoutMs);
+        flywheel_.configPeakOutputForward(1.0, kTimeoutMs);
+        flywheel_.configPeakOutputReverse(-1.0, kTimeoutMs);
 
-        leader_.configVoltageCompSaturation(12.0, kTimeoutMs);
-        leader_.enableVoltageCompensation(true);
-        leader_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
-        follower_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
-
-        // Set the follower
-        follower_.setInverted(TalonFXInvertType.FollowMaster);
-        follower_.follow(leader_);
-        // TODO: set inverted 
+        flywheel_.configVoltageCompSaturation(12.0, kTimeoutMs);
+        flywheel_.enableVoltageCompensation(true);
+        flywheel_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
 
         // Control Loop Configuration
-        leader_.config_kP(0, Constants.kShooterP, kTimeoutMs);
-        leader_.config_kI(0, Constants.kShooterI, kTimeoutMs);
-        leader_.config_kD(0, Constants.kShooterD, kTimeoutMs);
-        leader_.config_kF(0, Constants.kShooterFF, kTimeoutMs);
-        leader_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
-        leader_.selectProfileSlot(0, 0);
-        leader_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
+        flywheel_.config_kP(0, Constants.kShooterP, kTimeoutMs);
+        flywheel_.config_kI(0, Constants.kShooterI, kTimeoutMs);
+        flywheel_.config_kD(0, Constants.kShooterD, kTimeoutMs);
+        flywheel_.config_kF(0, Constants.kShooterFF, kTimeoutMs);
+        flywheel_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
+        flywheel_.selectProfileSlot(0, 0);
+        flywheel_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
 
-        leader_.configClosedloopRamp(0.2);
+        flywheel_.configClosedloopRamp(0.2);
 
-        leader_.set(ControlMode.PercentOutput, 0);
+        flywheel_.set(ControlMode.PercentOutput, 0);
 
-        follower_.config_kP(0, Constants.kShooterP, kTimeoutMs);
-        follower_.config_kI(0, Constants.kShooterI, kTimeoutMs);
-        follower_.config_kD(0, Constants.kShooterD, kTimeoutMs);
-        follower_.config_kF(0, Constants.kShooterFF, kTimeoutMs);
-        follower_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
-        follower_.selectProfileSlot(0, 0);
-        follower_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
-
-        follower_.configClosedloopRamp(0.2);
-
-        follower_.set(ControlMode.PercentOutput, 0);
-        // follower_.setInverted(true);
+        backSpinPID = backSpinWheel_.getPIDController();
+        backSpinPID.setP(1);
+        backSpinWheel_.setSmartCurrentLimit(30); //TODO idk if we need one but the sparks keep frying
 
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
@@ -145,24 +134,33 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        hoodSolenoid_.set(hoodUp_);
-        movingAverage_ = movingFilter_.calculate(leader_.getSelectedSensorVelocity());
+        movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
         if (!runningOpenLoop_) {
-            leader_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
-            follower_.set(ControlMode.Velocity, acceleratorDemand_ / kFlywheelVelocityConversion);
-
+            flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
+            backSpinPID.setReference(acceleratorDemand_ / kFlywheelVelocityConversion , ControlType.kVelocity);
         } else {
-            leader_.set(ControlMode.PercentOutput, goalDemand_);
-            follower_.set(ControlMode.PercentOutput, acceleratorDemand_);
+            flywheel_.set(ControlMode.PercentOutput, goalDemand_);
+            backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
         }
+
+        if (m_shooterDebug) m_shooterDisplay.periodic();
+
         SmartDashboard.putBoolean("Shooter At Speed", spunUp());
-        SmartDashboard.putNumber("Shooter speed", leader_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
+        SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
     }
 
     private class ShooterDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
         private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList);
         private NetworkTableEntry m_shooterSpeed;
+
+        public ShooterDisplay() {
+
+        }
+
+        public void periodic() {
+            
+        }
     }
 
 }
