@@ -53,6 +53,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 import frc.robot.subsystems.vision.EnableClimberCamera;
+import frc.robot.subsystems.vision.LEDs;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.BionicController;
 
@@ -75,6 +76,7 @@ public class RobotContainer {
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
+    private final LEDs m_ledSubsystem = new LEDs();
     
     private final XboxController m_driverController = new XboxController(0);
     private final XboxController m_operatorController = new XboxController(1);
@@ -222,6 +224,8 @@ public class RobotContainer {
 
         new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
         new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
+
+        new Button(m_operatorController::getLeftStickButton).whenPressed(new InstantCommand(m_ledSubsystem::setLEDsRED));
     }
     
 
