@@ -29,17 +29,18 @@ public class VisionSubsystem extends SubsystemBase{
     public boolean isAligned;
     boolean toggle = true;
 
-    private UsbCamera frontCamera_;
+    private UsbCamera m_frontCamera;
     private UsbCamera climberCamera_;
+    private NetworkTableEntry cameraSelection;
     private VideoSource currentCamera_;
 
 private VisionSubsystem() {
 
-    // switchCamera("Front Camera");
+    m_frontCamera = CameraServer.startAutomaticCapture(0);
 
-    // currentCamera_.setResolution(240, 128);
-    // currentCamera_.setFPS(30);
-    
+    cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+    switchCamera("Front Camera");
+
     // Shuffleboard.getTab("Driver").add(currentCamera_)
     //     .withPosition(8, 0)
     //     .withSize(5, 4)
@@ -56,7 +57,7 @@ private VisionSubsystem() {
 public void switchCamera(String camName) {
     switch (camName) {
         case "Front Camera":
-            // currentCamera_ = CameraServer.startAutomaticCapture("Front Camera", 0);
+            cameraSelection.setString(m_frontCamera.getName());
             break;
         case "Climber Camera":
             // currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);

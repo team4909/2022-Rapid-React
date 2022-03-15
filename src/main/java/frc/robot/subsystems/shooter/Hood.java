@@ -66,6 +66,7 @@ public class Hood extends SubsystemBase {
         m_hoodController.setFF(kHoodFF, 0);
         //#endregion
                 
+        this.zeroHood();
     }
 
     @Override

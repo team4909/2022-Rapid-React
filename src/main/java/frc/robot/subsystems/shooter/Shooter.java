@@ -16,6 +16,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Shooter extends SubsystemBase {
 
@@ -55,7 +57,7 @@ public class Shooter extends SubsystemBase {
     private Shooter() {
         flywheel_ = new TalonFX(13);
         backSpinWheel_ = new CANSparkMax(24, MotorType.kBrushless);
-        m_shooterDisplay = new Shooter.ShooterDisplay();
+
 
         // General Motor Configuration for the TalonFXs
         flywheel_.clearStickyFaults(kTimeoutMs);
@@ -82,11 +84,15 @@ public class Shooter extends SubsystemBase {
         flywheel_.configClosedloopRamp(0.2);
 
         flywheel_.set(ControlMode.PercentOutput, 0);
-
+    
+        backSpinWheel_.setInverted(true);
+        backSpinWheel_.setClosedLoopRampRate(0.2);
         backSpinPID = backSpinWheel_.getPIDController();
-        backSpinPID.setP(1);
+        backSpinPID.setP(0.05);
         backSpinWheel_.setSmartCurrentLimit(30); //TODO idk if we need one but the sparks keep frying
+        
 
+        m_shooterDisplay = new Shooter.ShooterDisplay();
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
 
@@ -147,19 +153,45 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putBoolean("Shooter At Speed", spunUp());
         SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
+        SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
     }
 
     private class ShooterDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
-        private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList);
-        private NetworkTableEntry m_shooterSpeed;
+        private ShuffleboardLayout m_layout = m_tab.getLayout("Shooter", BuiltInLayouts.kGrid)
+        .withPosition(2, 0).withSize(6, 6);
+        private NetworkTableEntry m_backSpeed, m_backSetpointSpeed, m_backSpinP, m_backSpinF,
+                                  m_flywheelSpeed, m_flywheelSetpointSpeed, m_flywheelP, m_flywheelF;
+        private boolean setters = true;
 
         public ShooterDisplay() {
-
+            m_backSpeed = m_layout.add("Backspin speed", 0).withWidget(BuiltInWidgets.kDial).getEntry();
+            m_backSetpointSpeed = m_layout.add("Backspin Setpoint speed", 0d).withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
+            m_backSpinP = m_layout.addPersistent("P backspin", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_backSpinF = m_layout.addPersistent("FF backspin", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_flywheelSpeed = m_layout.add("Flywheel speed", 0).withWidget(BuiltInWidgets.kDial).getEntry();
+            m_flywheelSetpointSpeed = m_layout.add("Flywheel Setpoint speed", 0d).withWidget(BuiltInWidgets.kNumberSlider)
+                .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
+            
+                m_flywheelP = m_layout.addPersistent("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
+            m_flywheelF = m_layout.addPersistent("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
+        
         }
 
         public void periodic() {
-            
+            m_backSpeed.setDouble(backSpinWheel_.getEncoder().getVelocity());
+            m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
+            if (setters) {
+                flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
+                flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
+                flywheel_.config_kF(0, m_flywheelF.getDouble(0));
+
+
+                backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
+                backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
+                backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
+            }
         }
     }
 
