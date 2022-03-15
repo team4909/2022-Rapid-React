@@ -10,22 +10,26 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.leds;
 
 public class RedThreeBallBottomTarmac extends SequentialCommandGroup {
 
     IntakeFeeder intake_ = IntakeFeeder.getInstance();
     Shooter shooter_ = Shooter.getInstance();
     VisionSubsystem vision_ = VisionSubsystem.getInstance();
+    leds lightstuff = leds.getInstance();
 
     public RedThreeBallBottomTarmac() {
-        addCommands( 
+        addCommands(
 
         new PathResetOdometry("Tarmac-Almost-A", -180), (
             new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
             .raceWith(new RunCommand(intake_::intake, intake_))
+            .alongWith(new InstantCommand(lightstuff::LedIntakeGo))
         )
-        
         .andThen(new InstantCommand(intake_::stopIntake)),
+         
+        new InstantCommand(lightstuff::LedIntakeStop),
 
         new LimelightShoot(Constants.kWallShotVelocity, true),
         
@@ -37,6 +41,6 @@ public class RedThreeBallBottomTarmac extends SequentialCommandGroup {
         );
 
 
-   }
+        }
     
-}
+    }
