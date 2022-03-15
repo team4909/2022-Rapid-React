@@ -13,7 +13,9 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -37,7 +39,9 @@ public class VisionSubsystem extends SubsystemBase{
 private VisionSubsystem() {
 
     m_frontCamera = CameraServer.startAutomaticCapture(0);
-
+    // m_frontCamera.setResolution(160, 90); //256 144
+    m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
+    m_frontCamera.setExposureManual(10);
     cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
     switchCamera("Front Camera");
 
