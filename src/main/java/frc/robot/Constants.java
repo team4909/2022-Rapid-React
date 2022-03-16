@@ -98,8 +98,8 @@ public final class Constants {
     // Climber Constants
     public static final int RIGHT_PIVOT_MOTOR = 20; //TalonFX
     public static final int LEFT_PIVOT_MOTOR = 21; //TalonFX
-    public static final int RIGHT_ELEVATOR_MOTOR = 25; //Spark/NEO //TODO FIX THIS GIVE IT A CAN IDEA WHEN IT GOES BACK ON 19
-    public static final int LEFT_ELEVATOR_MOTOR = 25; //Spark/NEO 20
+    public static final int RIGHT_ELEVATOR_MOTOR = 19; //Spark/NEO //TODO FIX THIS GIVE IT A CAN IDEA WHEN IT GOES BACK ON 19
+    public static final int LEFT_ELEVATOR_MOTOR = 22; //Spark/NEO 20
 
     private static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
     private static final double ELEVATOR_NEO_GEAR_RATIO = 5/1;

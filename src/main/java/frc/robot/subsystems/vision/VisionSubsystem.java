@@ -38,6 +38,7 @@ public class VisionSubsystem extends SubsystemBase{
 
 private VisionSubsystem() {
 
+    
     m_frontCamera = CameraServer.startAutomaticCapture(0);
     // m_frontCamera.setResolution(160, 90); //256 144
     m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);

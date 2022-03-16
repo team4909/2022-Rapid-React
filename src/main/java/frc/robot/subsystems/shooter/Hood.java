@@ -16,9 +16,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class Hood extends SubsystemBase {
@@ -73,11 +76,16 @@ public class Hood extends SubsystemBase {
     public void periodic() {
         if (m_hoodDebug) m_hoodDisplay.periodic();
         
-        
+        SmartDashboard.putNumber("HOod", m_hood.getEncoder().getVelocity());
     }
 
     public void zeroHood() {
-        m_hood.getEncoder().setPosition(0);
+        new ParallelCommandGroup(
+            new RunCommand(() -> m_hoodController.setReference(-200, ControlType.kVelocity, 0), this),
+            new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
+
+        ).withTimeout(1).schedule();
+        
     }
 
     //For manual hood adjustment
@@ -139,7 +147,6 @@ public class Hood extends SubsystemBase {
         private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry;
 
         public HoodDisplay() {
-            System.out.println("HELLLLLO WHERE ARE UUU??? \n\n\n\n\n\n");
             m_layout.add(Hood.this);
 
             m_current = m_layout.add("Current Amps", 0).withWidget(BuiltInWidgets.kDial).getEntry();

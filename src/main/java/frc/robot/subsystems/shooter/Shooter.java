@@ -88,7 +88,7 @@ public class Shooter extends SubsystemBase {
         backSpinWheel_.setInverted(true);
         backSpinWheel_.setClosedLoopRampRate(0.2);
         backSpinPID = backSpinWheel_.getPIDController();
-        backSpinPID.setP(0.05);
+        backSpinPID.setP(0.0001);
         backSpinWheel_.setSmartCurrentLimit(30); //TODO idk if we need one but the sparks keep frying
         
 
@@ -161,8 +161,8 @@ public class Shooter extends SubsystemBase {
         private ShuffleboardLayout m_layout = m_tab.getLayout("Shooter", BuiltInLayouts.kGrid)
         .withPosition(2, 0).withSize(6, 6);
         private NetworkTableEntry m_backSpeed, m_backSetpointSpeed, m_backSpinP, m_backSpinF,
-                                  m_flywheelSpeed, m_flywheelSetpointSpeed, m_flywheelP, m_flywheelF;
-        private boolean setters = true;
+                                  m_flywheelSpeed, m_flywheelSetpointSpeed, m_flywheelP, m_flywheelF,
+                                  m_setters;
 
         public ShooterDisplay() {
             m_backSpeed = m_layout.add("Backspin speed", 0).withWidget(BuiltInWidgets.kDial).getEntry();
@@ -176,17 +176,18 @@ public class Shooter extends SubsystemBase {
             
                 m_flywheelP = m_layout.addPersistent("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
             m_flywheelF = m_layout.addPersistent("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
-        
+            m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
         }
 
         public void periodic() {
             m_backSpeed.setDouble(backSpinWheel_.getEncoder().getVelocity());
             m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
-            if (setters) {
+            
+            if (m_setters.getBoolean(false)) {
                 flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
                 flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
                 flywheel_.config_kF(0, m_flywheelF.getDouble(0));
-
+                
 
                 backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
                 backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
