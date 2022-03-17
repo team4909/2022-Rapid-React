@@ -78,7 +78,7 @@ public class RobotContainer {
 
     private final PowerDistribution PDH;
 
-    // private final Hood m_hoodSubsystem  = Hood.getInstance();
+    private final Hood m_hoodSubsystem  = Hood.getInstance();
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
     

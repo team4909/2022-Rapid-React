@@ -198,10 +198,10 @@ public final class Constants {
         public static final PIDGains kFlywheelPIDGains = 
             new PIDGains(kP_f, kI_f, kD_f);
 
-        private static final double kS_b = 0.51681;
-        private static final double kV_b = 0.34371;
-        private static final double kA_b = 0.047444;
-        private static final double kP_b = 0.19508; // 0.21785
+        private static final double kS_b = 0.25412;
+        private static final double kV_b = 0.41051;
+        private static final double kA_b = 0.031141;
+        private static final double kP_b = 4.7165E-05; // 0.21785
         private static final double kI_b = 0.0;
         private static final double kD_b = 0.0;
         public static final SimpleMotorFeedforward kBackspinFFConstraints = 

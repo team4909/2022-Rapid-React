@@ -179,10 +179,10 @@ public class Shooter extends SubsystemBase {
         m_shooterTimer.start();
         return new RunCommand(() -> {
             double arbFFValue_f = m_flywheelFF.calculate(m_shooterTimer.get());
-            flywheel_.set(ControlMode.Velocity, goal, DemandType.ArbitraryFeedForward, arbFFValue_f);
+            flywheel_.set(ControlMode.Velocity, goal * 2, DemandType.ArbitraryFeedForward, arbFFValue_f);
 
             double arbFFValue_b = m_backspinFF.calculate(m_shooterTimer.get());
-            backSpinPID.setReference(goal, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
+            backSpinPID.setReference(goal * 8, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
 
         }, this);
     }
@@ -215,14 +215,15 @@ public class Shooter extends SubsystemBase {
             m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
             
             if (m_setters.getBoolean(false)) {
-                flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
-                flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
-                flywheel_.config_kF(0, m_flywheelF.getDouble(0));
+                runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
+                // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
+                // flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
+                // flywheel_.config_kF(0, m_flywheelF.getDouble(0));
                 
 
-                backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
-                backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
-                backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
+                // backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
+                // backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
+                // backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
             }
         }
     }
