@@ -9,8 +9,10 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.utils.Conversion;
+import frc.robot.utils.PIDGains;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -173,7 +175,7 @@ public final class Constants {
         public static final double kPivotForward = -3800;
         public static final double kMidPivotHold = -4000;
         public static final double kExtensionMidGoal = -68;
-        public static final double kExtensionHighGoal = -75;
+        public static final double kExtensionHighGoal = -94;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
 
@@ -181,5 +183,30 @@ public final class Constants {
             new TrapezoidProfile.Constraints(3000.0 / 60.0, 6000.0 / 60.0);
         public static final ElevatorFeedforward kElevatorFFContraints = 
             new ElevatorFeedforward(0.1, -0.16, 1 / 5880.0); // TODO calculate empirically 
+    }
+
+    public static final class Shooter {
+        // SVA-PID gains
+        private static final double kS_f = 0.51681;
+        private static final double kV_f = 0.34371;
+        private static final double kA_f = 0.047444;
+        private static final double kP_f = 0.19508; // 0.21785
+        private static final double kI_f = 0.0;
+        private static final double kD_f = 0.0;
+        public static final SimpleMotorFeedforward kFlywheelFFConstraints = 
+            new SimpleMotorFeedforward(kS_f, kV_f, kA_f);
+        public static final PIDGains kFlywheelPIDGains = 
+            new PIDGains(kP_f, kI_f, kD_f);
+
+        private static final double kS_b = 0.51681;
+        private static final double kV_b = 0.34371;
+        private static final double kA_b = 0.047444;
+        private static final double kP_b = 0.19508; // 0.21785
+        private static final double kI_b = 0.0;
+        private static final double kD_b = 0.0;
+        public static final SimpleMotorFeedforward kBackspinFFConstraints = 
+            new SimpleMotorFeedforward(kS_b, kV_b, kA_b);
+        public static final PIDGains kBackspinPIDGains = 
+            new PIDGains(kP_b, kI_b, kD_b);
     }
 }

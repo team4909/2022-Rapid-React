@@ -345,6 +345,7 @@ public class Climber extends SubsystemBase {
     }
 
     private final Command pivotBackward() {
+        System.out.println("pivoting backwords \n\n\n\n\n");
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(-500);}, 
             () -> pivotTolerance(-500), 
@@ -455,6 +456,6 @@ public class Climber extends SubsystemBase {
         return value < min && value > max;
     }
     private class ClimberDisplay {
-
+        
     }
 }

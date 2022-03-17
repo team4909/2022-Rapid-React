@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
@@ -11,16 +12,23 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
+
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -38,6 +46,8 @@ public class Shooter extends SubsystemBase {
     private final CANSparkMax backSpinWheel_;
     private final Shooter.ShooterDisplay m_shooterDisplay;
     private final SparkMaxPIDController backSpinPID;
+    private final SimpleMotorFeedforward m_flywheelFF;
+    private final SimpleMotorFeedforward m_backspinFF;
 
     // Constants
     private final static int kTimeoutMs = 100;
@@ -50,13 +60,20 @@ public class Shooter extends SubsystemBase {
     private static boolean runningOpenLoop_ = false;
     private static boolean hoodUp_ = false;
 
+    private TrapezoidProfile m_profile;
+    private TrapezoidProfile.State m_targetState;
+    private TrapezoidProfile.State m_beginState;
+
     private MedianFilter movingFilter_;
     private static double movingAverage_;
+    private Timer m_shooterTimer;
 
 
     private Shooter() {
         flywheel_ = new TalonFX(13);
         backSpinWheel_ = new CANSparkMax(24, MotorType.kBrushless);
+        m_flywheelFF = Constants.Shooter.kFlywheelFFConstraints;
+        m_backspinFF = Constants.Shooter.kBackspinFFConstraints;
 
 
         // General Motor Configuration for the TalonFXs
@@ -73,10 +90,9 @@ public class Shooter extends SubsystemBase {
         flywheel_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
 
         // Control Loop Configuration
-        flywheel_.config_kP(0, Constants.kShooterP, kTimeoutMs);
-        flywheel_.config_kI(0, Constants.kShooterI, kTimeoutMs);
-        flywheel_.config_kD(0, Constants.kShooterD, kTimeoutMs);
-        flywheel_.config_kF(0, Constants.kShooterFF, kTimeoutMs);
+        flywheel_.config_kP(0, Constants.Shooter.kFlywheelPIDGains.kP, kTimeoutMs);
+        flywheel_.config_kI(0, Constants.Shooter.kFlywheelPIDGains.kI, kTimeoutMs);
+        flywheel_.config_kD(0, Constants.Shooter.kFlywheelPIDGains.kD, kTimeoutMs);
         flywheel_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
         flywheel_.selectProfileSlot(0, 0);
         flywheel_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
@@ -88,8 +104,9 @@ public class Shooter extends SubsystemBase {
         backSpinWheel_.setInverted(true);
         backSpinWheel_.setClosedLoopRampRate(0.2);
         backSpinPID = backSpinWheel_.getPIDController();
-        backSpinPID.setP(0.0001);
-        backSpinWheel_.setSmartCurrentLimit(30); //TODO idk if we need one but the sparks keep frying
+        backSpinPID.setP(Constants.Shooter.kBackspinPIDGains.kP, 0);
+        backSpinPID.setI(Constants.Shooter.kBackspinPIDGains.kI, 0);
+        backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
         
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
@@ -141,19 +158,33 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
-        if (!runningOpenLoop_) {
-            flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
-            backSpinPID.setReference(acceleratorDemand_ / kFlywheelVelocityConversion , ControlType.kVelocity);
-        } else {
-            flywheel_.set(ControlMode.PercentOutput, goalDemand_);
-            backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
-        }
+        // if (!runningOpenLoop_) {
+        //     flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
+        //     backSpinPID.setReference(acceleratorDemand_ / kFlywheelVelocityConversion , ControlType.kVelocity);
+        // } else {
+        //     flywheel_.set(ControlMode.PercentOutput, goalDemand_);
+        //     backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
+        // }
 
         if (m_shooterDebug) m_shooterDisplay.periodic();
 
         SmartDashboard.putBoolean("Shooter At Speed", spunUp());
         SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
         SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
+    }
+
+    public RunCommand runShooter(double goal) {
+        m_shooterTimer = new Timer();
+        m_shooterTimer.reset();
+        m_shooterTimer.start();
+        return new RunCommand(() -> {
+            double arbFFValue_f = m_flywheelFF.calculate(m_shooterTimer.get());
+            flywheel_.set(ControlMode.Velocity, goal, DemandType.ArbitraryFeedForward, arbFFValue_f);
+
+            double arbFFValue_b = m_backspinFF.calculate(m_shooterTimer.get());
+            backSpinPID.setReference(goal, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
+
+        }, this);
     }
 
     private class ShooterDisplay {
