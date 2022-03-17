@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
@@ -213,6 +215,11 @@ public static VisionSubsystem instance_ = null;
         SmartDashboard.putNumber("Distance", lastDistance_);
         SmartDashboard.putNumber("ofset speed", limelightOffset);
 
+    }
+
+    public CommandGroupBase LimelightAim() {
+        return new RunCommand(this::setLimelightOffset, this).withTimeout(0.5)
+        .andThen(() -> this.setLimelightOffset(0));
     }
 
     
