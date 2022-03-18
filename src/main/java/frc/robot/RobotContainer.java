@@ -23,6 +23,8 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.subsystems.Extras.BionicController;
+import frc.robot.subsystems.Extras.Rumble;
 import frc.robot.subsystems.climber.Climber;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
@@ -53,9 +55,7 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 import frc.robot.subsystems.vision.EnableClimberCamera;
-import frc.robot.subsystems.vision.LEDs;
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.utils.BionicController;
 
 
 /**
@@ -66,8 +66,15 @@ import frc.robot.utils.BionicController;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
+
+    private final XboxController m_driverController = new XboxController(0);
+    private final XboxController m_operatorController = new XboxController(1);
+    // private final XboxController m_testController = new XboxController(2);
+
+
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final Climber climber_ = Climber.getInstance();
+    private final Rumble rumble_ = Rumble.getInstance(m_driverController, m_operatorController);
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
@@ -76,11 +83,7 @@ public class RobotContainer {
 
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
-    private final LEDs m_ledSubsystem = new LEDs();
     
-    private final XboxController m_driverController = new XboxController(0);
-    private final XboxController m_operatorController = new XboxController(1);
-
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
  
   /**
@@ -225,7 +228,6 @@ public class RobotContainer {
         new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
         new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
 
-        new Button(m_operatorController::getLeftStickButton).whenPressed(new InstantCommand(m_ledSubsystem::setLEDsRED));
     }
     
 
@@ -289,7 +291,5 @@ public class RobotContainer {
 
         return value;
     }
-
-
     
 }
