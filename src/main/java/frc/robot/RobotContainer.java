@@ -24,8 +24,6 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.Extras.BionicController;
-import frc.robot.subsystems.Extras.Rumble;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -61,6 +59,7 @@ import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.utils.Rumble;
 
 
 /**
