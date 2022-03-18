@@ -9,8 +9,10 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.utils.Conversion;
+import frc.robot.utils.PIDGains;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -98,8 +100,8 @@ public final class Constants {
     // Climber Constants
     public static final int RIGHT_PIVOT_MOTOR = 20; //TalonFX
     public static final int LEFT_PIVOT_MOTOR = 21; //TalonFX
-    public static final int RIGHT_ELEVATOR_MOTOR = 25; //Spark/NEO //TODO FIX THIS GIVE IT A CAN IDEA WHEN IT GOES BACK ON 19
-    public static final int LEFT_ELEVATOR_MOTOR = 25; //Spark/NEO 20
+    public static final int RIGHT_ELEVATOR_MOTOR = 19; //Spark/NEO //TODO FIX THIS GIVE IT A CAN IDEA WHEN IT GOES BACK ON 19
+    public static final int LEFT_ELEVATOR_MOTOR = 22; //Spark/NEO 20
 
     private static final double PIVOT_FALCON_GEAR_RATIO = 15/1;
     private static final double ELEVATOR_NEO_GEAR_RATIO = 5/1;
@@ -152,7 +154,7 @@ public final class Constants {
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 2300; //4300
+    public static final double kFenderShotVelocity = 2500; //4300
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 3850; 
     public static final double kWallShotVelocity = 3675;
@@ -170,10 +172,10 @@ public final class Constants {
         public static final double kClimberTimeoutLong = 3.0;
         public static final int kElevatorPIDSlot = 0;
         public static final int kPivotPIDSlot = 0;
-        public static final double kPivotForward = -3800;
+        public static final double kPivotForward = -4200; //-3800
         public static final double kMidPivotHold = -4000;
-        public static final double kExtensionMidGoal = -68;
-        public static final double kExtensionHighGoal = -75;
+        public static final double kExtensionMidGoal = -69;
+        public static final double kExtensionHighGoal = -94;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
 
@@ -181,5 +183,30 @@ public final class Constants {
             new TrapezoidProfile.Constraints(3000.0 / 60.0, 6000.0 / 60.0);
         public static final ElevatorFeedforward kElevatorFFContraints = 
             new ElevatorFeedforward(0.1, -0.16, 1 / 5880.0); // TODO calculate empirically 
+    }
+
+    public static final class Shooter {
+        // SVA-PID gains
+        private static final double kS_f = 0.51681;
+        private static final double kV_f = 0.34371;
+        private static final double kA_f = 0.047444;
+        private static final double kP_f = 0.19508; // 0.21785
+        private static final double kI_f = 0.0;
+        private static final double kD_f = 0.0;
+        public static final SimpleMotorFeedforward kFlywheelFFConstraints = 
+            new SimpleMotorFeedforward(kS_f, kV_f, kA_f);
+        public static final PIDGains kFlywheelPIDGains = 
+            new PIDGains(kP_f, kI_f, kD_f);
+
+        private static final double kS_b = 0.25412;
+        private static final double kV_b = 0.41051;
+        private static final double kA_b = 0.031141;
+        private static final double kP_b = 4.7165E-05; // 0.21785
+        private static final double kI_b = 0.0;
+        private static final double kD_b = 0.0;
+        public static final SimpleMotorFeedforward kBackspinFFConstraints = 
+            new SimpleMotorFeedforward(kS_b, kV_b, kA_b);
+        public static final PIDGains kBackspinPIDGains = 
+            new PIDGains(kP_b, kI_b, kD_b);
     }
 }

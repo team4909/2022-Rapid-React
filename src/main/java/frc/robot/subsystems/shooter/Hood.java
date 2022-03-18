@@ -16,9 +16,12 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class Hood extends SubsystemBase {
@@ -66,17 +69,22 @@ public class Hood extends SubsystemBase {
         m_hoodController.setFF(kHoodFF, 0);
         //#endregion
                 
+        m_hood.getEncoder().setPosition(0);
     }
 
     @Override
     public void periodic() {
         if (m_hoodDebug) m_hoodDisplay.periodic();
         
-        
+        SmartDashboard.putNumber("HOod", m_hood.getEncoder().getVelocity());
     }
 
     public void zeroHood() {
-        m_hood.getEncoder().setPosition(0);
+        new ParallelCommandGroup(
+            new RunCommand(() -> m_hoodController.setReference(-200, ControlType.kVelocity, 0), this),
+            new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
+
+        ).withTimeout(1).schedule();
     }
 
     //For manual hood adjustment
@@ -88,8 +96,9 @@ public class Hood extends SubsystemBase {
         return mapHoodAngle(m_hood.getEncoder().getPosition(), true);
     }
 
-    private void setHoodAngle(double deg) {
-        m_hoodController.setReference(mapHoodAngle(deg, false), ControlType.kPosition);
+    public void setHoodAngle(double deg) {
+        // m_hoodController.setReference(mapHoodAngle(deg, false), ControlType.kPosition); //TODO ADD MAPPING
+        m_hoodController.setReference(deg, ControlType.kPosition);
     }
 
     private double getHoodMotorCurrent() {
@@ -138,7 +147,6 @@ public class Hood extends SubsystemBase {
         private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry;
 
         public HoodDisplay() {
-            System.out.println("HELLLLLO WHERE ARE UUU??? \n\n\n\n\n\n");
             m_layout.add(Hood.this);
 
             m_current = m_layout.add("Current Amps", 0).withWidget(BuiltInWidgets.kDial).getEntry();
@@ -159,7 +167,7 @@ public class Hood extends SubsystemBase {
             m_posAngleEntry.setDouble(Hood.this.getHoodAngle());
             m_posTicksEntry.setDouble(Hood.this.m_hood.getEncoder().getPosition());
             if (setters) {
-                m_hoodController.setReference(m_setpointEntry.getDouble(0), ControlType.kPosition);
+                setHoodAngle(m_setpointEntry.getDouble(0));
                 m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
                 m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);
                 m_hoodController.setFF(m_hoodFFEntry.getDouble(kHoodFF), 0);

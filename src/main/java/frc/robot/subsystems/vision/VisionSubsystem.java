@@ -3,6 +3,8 @@ package frc.robot.subsystems.vision;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
@@ -13,7 +15,9 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.CvSink;
 import edu.wpi.first.cscore.MjpegServer;
 import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode;
 import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -29,17 +33,21 @@ public class VisionSubsystem extends SubsystemBase{
     public boolean isAligned;
     boolean toggle = true;
 
-    private UsbCamera frontCamera_;
+    private UsbCamera m_frontCamera;
     private UsbCamera climberCamera_;
+    private NetworkTableEntry cameraSelection;
     private VideoSource currentCamera_;
 
 private VisionSubsystem() {
 
-    // switchCamera("Front Camera");
-
-    // currentCamera_.setResolution(240, 128);
-    // currentCamera_.setFPS(30);
     
+    m_frontCamera = CameraServer.startAutomaticCapture(0);
+    // m_frontCamera.setResolution(160, 90); //256 144
+    m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
+    m_frontCamera.setExposureManual(10);
+    cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+    switchCamera("Front Camera");
+
     // Shuffleboard.getTab("Driver").add(currentCamera_)
     //     .withPosition(8, 0)
     //     .withSize(5, 4)
@@ -56,7 +64,7 @@ private VisionSubsystem() {
 public void switchCamera(String camName) {
     switch (camName) {
         case "Front Camera":
-            // currentCamera_ = CameraServer.startAutomaticCapture("Front Camera", 0);
+            cameraSelection.setString(m_frontCamera.getName());
             break;
         case "Climber Camera":
             // currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);
@@ -207,6 +215,11 @@ public static VisionSubsystem instance_ = null;
         SmartDashboard.putNumber("Distance", lastDistance_);
         SmartDashboard.putNumber("ofset speed", limelightOffset);
 
+    }
+
+    public CommandGroupBase LimelightAim() {
+        return new RunCommand(this::setLimelightOffset, this).withTimeout(0.5)
+        .andThen(() -> this.setLimelightOffset(0));
     }
 
     
