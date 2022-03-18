@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -26,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.subsystems.Extras.BionicController;
 import frc.robot.subsystems.Extras.Rumble;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.Climber.ClimberStates;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -42,6 +44,8 @@ import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.AutoTest;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.RedThreeBallBottomTarmac;
@@ -51,10 +55,11 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
 import frc.robot.subsystems.intake.commands.RunIntakeCmd;
+import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
-import frc.robot.subsystems.vision.EnableClimberCamera;
+
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 
@@ -81,6 +86,7 @@ public class RobotContainer {
 
     private final PowerDistribution PDH;
 
+    private final Hood m_hoodSubsystem  = Hood.getInstance();
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
     
@@ -116,12 +122,12 @@ public class RobotContainer {
     }
 
     private void configureSendableChooser() {
-        m_chooser.setDefaultOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
-        m_chooser.setDefaultOption("Blue Three Ball from Bottom of Tarmac", new BlueThreeBallBottomTarmac());
+        m_chooser.addOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
         m_chooser.addOption("Two Ball from Bottom of Tarmac", new TwoBallBottomTarmac());
         m_chooser.addOption("Fender Shot", new FenderShot());
         m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
         m_chooser.addOption("Blue One Ball Taxi", new BlueOneBall());
+        m_chooser.addOption("Blue? FIve Ball Auto", new FiveBallAuto());
         SmartDashboard.putData(m_chooser);
     }
 
@@ -191,11 +197,13 @@ public class RobotContainer {
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
         new Button(m_operatorController::getXButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity + 200, false);});
-        new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);});
+        // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
+        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.runShooter(Constants.kFenderShotVelocity)
+        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(15))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
-        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new InstantCommand(climber_::detach));
+
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
@@ -218,16 +226,18 @@ public class RobotContainer {
                     .whenActive(m_intakeSubsystem::reverseIntake)
                     .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Button(m_operatorController::getBackButton).whenPressed(climber_.LowerClimber());
-        new Button(m_operatorController::getStartButton).whenPressed(climber_.RaiseClimber());
+        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(() -> climber_.setState(ClimberStates.IDLE));
+        new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
+        new Button(m_operatorController::getStartButton).whenPressed(() 
+        
+        -> climber_.setState(ClimberStates.MID_ALIGN));
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_operatorController::getLeftBumper).whenPressed(climber_.RetractClimber());
+        new Button(m_operatorController::getLeftBumper).whenPressed(() -> climber_.setState(ClimberStates.MID_CLIMB));
 
-        new Button(m_operatorController::getRightBumper).whenPressed(climber_.ExtendClimber());
-        new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
-
+        new Button(m_operatorController::getRightBumper).whenPressed(() -> climber_.setState(ClimberStates.HIGHER_CLIMB));
+        // new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
     }
     
 
@@ -239,12 +249,14 @@ public class RobotContainer {
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
+   * 
    *%%
    * @return the command to run in autonomous
  * @throws IOException
    */
     public Command getAutonomousCommand() {
 
+        // return new AutoTest();
         return m_chooser.getSelected();
     }
 

@@ -15,7 +15,7 @@ public class SnapToAngle extends CommandBase {
     private XboxController currentInput_;
     private boolean fenderAngle_ = false;
 
-    private final double kP = 0.12;
+    private final double kP = 0.1;
     private final double kI = 0.0;
     private final double kD = 0.0012;
 
@@ -39,11 +39,6 @@ public class SnapToAngle extends CommandBase {
     public void initialize() {
 
         thetaController_.setTolerance(4); //if 2.5 degrees off thats ok
-        SmartDashboard.putNumber("goalAng", angle_);
-    }
-
-    @Override
-    public void execute() {
         if (fenderAngle_) {
             if (currentInput_.getPOV() != -1) {
                 if (angle_ > 180) angle_ -= 360;   
@@ -52,9 +47,29 @@ public class SnapToAngle extends CommandBase {
             if (angle_ > 180) angle_ -= 360;
         }
 
+        double gyroAngle = dt_.getGyroscopeRotation().getDegrees() % 360;
+        gyroAngle +=  (gyroAngle > 180) ? -360 : 360;
+
+        // Math to find shortest path
+        double angleDiff = angle_ - gyroAngle;
+        if (Math.abs(angleDiff) > 180) {
+            if (angle_ > 0 && gyroAngle < 0) {
+                angle_ -= 360;
+            } 
+            angle_ += 360;
+        }
+        SmartDashboard.putNumber("Snap Goal", angle_);        
+        SmartDashboard.putNumber("Snap Starting", gyroAngle);
+
+
+    }
+
+    @Override
+    public void execute() {
         SmartDashboard.putNumber("turnError", thetaController_.getPositionError());
         double gyroAngle = dt_.getGyroscopeRotation().getDegrees() % 360;
         if (gyroAngle > 180) gyroAngle = 360 - gyroAngle;
+
         //While snapping to angle, you can drive in its simplest state but without any  of the 
         //extra functionality that the arguements of DefaultDriveCommand provide.
         dt_.drive(ChassisSpeeds.fromFieldRelativeSpeeds(

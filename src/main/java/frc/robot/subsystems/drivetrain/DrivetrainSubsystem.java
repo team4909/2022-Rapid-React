@@ -4,8 +4,10 @@
 
 package frc.robot.subsystems.drivetrain;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderFaults;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
@@ -29,6 +31,7 @@ import frc.robot.Constants;
 import static frc.robot.Constants.*;
 
 import java.util.Map;
+import java.util.Vector;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -111,6 +114,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean lockInPlace_ = false;
 
+    private Vector<ErrorCode> canFR = new Vector<ErrorCode>(10);
+    private Vector<ErrorCode>  canFL= new Vector<ErrorCode>(10);
+    private Vector<ErrorCode>  canBR= new Vector<ErrorCode>(10);
+    private Vector<ErrorCode> canBL= new Vector<ErrorCode>(10);
+
     private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
         m_driverTab = Shuffleboard.getTab("Driver");
@@ -124,35 +132,65 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
-        initilizeEncoders();
+        // initilizeEncoders();
         initializeMotors();       
     }
 
     public void initilizeEncoders(){
-        m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_STEER_ENCODER);
-        m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_STEER_ENCODER);
-        m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_STEER_ENCODER);
-        m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_STEER_ENCODER);
+        m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_MODULE_STEER_ENCODER);
+        m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_MODULE_STEER_ENCODER);
+        m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_ENCODER);
+        m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_ENCODER);
 
-        m_frontLeftCanCoder.configFactoryDefault();
-        m_frontRightCanCoder.configFactoryDefault();
-        m_backLeftCanCoder.configFactoryDefault();
-        m_backRightCanCoder.configFactoryDefault();
+        canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        canBL.add(m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        canBR.add(m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
 
-        m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        canFL.add(m_frontLeftCanCoder.configSensorDirection(true));
+        canFR.add(m_frontRightCanCoder.configSensorDirection(true));
+        canBL.add(m_backLeftCanCoder.configSensorDirection(true));
+        canBR.add(m_backRightCanCoder.configSensorDirection(true));
 
-        m_frontLeftCanCoder.configSensorDirection(true);
-        m_frontRightCanCoder.configSensorDirection(true);
-        m_backLeftCanCoder.configSensorDirection(true);
-        m_backRightCanCoder.configSensorDirection(true);
+        canFL.add(m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        canFR.add(m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        canBL.add(m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        canBR.add(m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
 
-        m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
-        m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        SmartDashboard.putBoolean("CANFL", true);
+        for (ErrorCode e : canFL) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANFL", false);
+                break;
+            }
+
+        }
+        SmartDashboard.putBoolean("CANFR", true);
+        for (ErrorCode e : canFR) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANFR", false);
+                break;
+            }
+
+        }
+        SmartDashboard.putBoolean("CANBL", true);
+        for (ErrorCode e : canBL) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANBL", false);
+                break;
+            }
+            
+
+        }
+        SmartDashboard.putBoolean("CANBR", true);
+        for (ErrorCode e : canBR) {
+            if (e != ErrorCode.OK) {
+                SmartDashboard.putBoolean("CANBR", false);
+                break;
+            }
+            
+
+        }
 
         m_pigeon.clearStickyFaults();
     }
@@ -166,24 +204,26 @@ public class DrivetrainSubsystem extends SubsystemBase {
             // L1 - L4 Change in Constants
             GEAR_RATIO,
             // This is the ID of the drive motor
-            FRONT_LEFT_DRIVE_MOTOR,
+            FRONT_LEFT_MODULE_DRIVE_MOTOR,
             // This is the ID of the steer motor
-            FRONT_LEFT_STEER_MOTOR,
+            FRONT_LEFT_MODULE_STEER_MOTOR,
             // This is the ID of the steer encoder
-            FRONT_LEFT_STEER_ENCODER,
+            FRONT_LEFT_MODULE_STEER_ENCODER,
             // This is how much the steer encoder is offset from true zero (In our case, zero is facing straight forward)
-            FRONT_LEFT_STEER_OFFSET
+            FRONT_LEFT_MODULE_STEER_OFFSET
         );
+
+
 
         m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(2, 0),
             GEAR_RATIO,
-            FRONT_RIGHT_DRIVE_MOTOR,
-            FRONT_RIGHT_STEER_MOTOR,
-            FRONT_RIGHT_STEER_ENCODER,
-            FRONT_RIGHT_STEER_OFFSET
+            FRONT_RIGHT_MODULE_DRIVE_MOTOR, 
+            FRONT_RIGHT_MODULE_STEER_MOTOR,
+            FRONT_RIGHT_MODULE_STEER_ENCODER,
+            FRONT_RIGHT_MODULE_STEER_OFFSET
         );
 
         m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -191,10 +231,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                     .withSize(1, 4)
                     .withPosition(4, 0),
             GEAR_RATIO,
-            BACK_LEFT_DRIVE_MOTOR,
-            BACK_LEFT_STEER_MOTOR,
-            BACK_LEFT_STEER_ENCODER,
-            BACK_LEFT_STEER_OFFSET
+            BACK_LEFT_MODULE_DRIVE_MOTOR,
+            BACK_LEFT_MODULE_STEER_MOTOR,
+            BACK_LEFT_MODULE_STEER_ENCODER,
+            BACK_LEFT_MODULE_STEER_OFFSET
         );
         
 
@@ -203,16 +243,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
                     .withSize(1, 4)
                     .withPosition(6, 0),
             GEAR_RATIO,
-            BACK_RIGHT_DRIVE_MOTOR,
-            BACK_RIGHT_STEER_MOTOR,
-            BACK_RIGHT_STEER_ENCODER,
-            BACK_RIGHT_STEER_OFFSET
+            BACK_RIGHT_MODULE_DRIVE_MOTOR,
+            BACK_RIGHT_MODULE_STEER_MOTOR,
+            BACK_RIGHT_MODULE_STEER_ENCODER,
+            BACK_RIGHT_MODULE_STEER_OFFSET
         );
-
-        m_frontLeftModule.set(0, 0);
-        m_frontRightModule.set(0, 0);
-        m_backLeftModule.set(0, 0);
-        m_backRightModule.set(0, 0);
     }
 
     /**
@@ -250,7 +285,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds.vxMetersPerSecond = chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE;
         m_chassisSpeeds.vyMetersPerSecond = chassisSpeeds.vyMetersPerSecond * AUTO_DRIVE_SCALE;
         m_chassisSpeeds.omegaRadiansPerSecond = chassisSpeeds.omegaRadiansPerSecond;
-        
     }
 
     // Note: to get to max speed multiply by max voltage on the desaturateWheelSpeeds
@@ -273,6 +307,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
+        // if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
+        //     m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
+        //     m_backLeftCanCoder.getLastError() != ErrorCode.OK ||
+        //     m_backRightCanCoder.getLastError() != ErrorCode.OK) {
+        //         SmartDashboard.putBoolean("Bad CanCoder Periodic", true);
+
+        // }
         // System.out.println(getCurrentPose());
         // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
         // System.out.println(MAX_VOLTAGE);
@@ -294,7 +335,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_backRightModule.set(0, -315);
         }
         
-
         states[0].speedMetersPerSecond = Math.abs(m_frontLeftModule.getDriveVelocity());
        states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
        states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
