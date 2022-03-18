@@ -7,12 +7,12 @@ import edu.wpi.first.math.util.Units;
 public class Vision {
 
     //#region Constants
-    private final double LIMELIGHT_HEIGHT_METERS = Units.inchesToMeters(inches)
+    private final double LIMELIGHT_HEIGHT_METERS = Units.inchesToMeters(0);
     //#endregion
 
     private static Vision m_instance = null; 
 
-    PhotonCamera cam = STUPID FUCKING CAMERA;
+    // PhotonCamera cam = ;
     private Vision() {
 
     }

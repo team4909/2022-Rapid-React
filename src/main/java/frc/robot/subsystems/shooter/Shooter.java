@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -54,7 +55,7 @@ public class Shooter extends SubsystemBase {
     private final static int kShooterTolerance = 100; //TODO bad tolerance cause bad PID
 
     // State of the shooter
-    private static double goalDemand_ = 0.0;
+    private double goalDemand_ = 0.0;
     private static double acceleratorDemand_ = 0.0;
     private static boolean runningOpenLoop_ = false;
     private static boolean hoodUp_ = false;
@@ -65,7 +66,7 @@ public class Shooter extends SubsystemBase {
 
     private MedianFilter movingFilter_;
     private static double movingAverage_;
-    private Timer m_shooterTimer;
+    // private Timer m_shooterTimer;
 
 
     private Shooter() {
@@ -160,16 +161,27 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
-    @Override
+    private void setGoal(double g) {
+        this.goalDemand_ = g;
+    }
+
+    public InstantCommand setGoalDemand(double goal) {
+        return new InstantCommand(() -> {setGoal(goal);});
+    }
+
     public void periodic() {
-        movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
         if (!runningOpenLoop_) {
-            
+            double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_ / kFlywheelVelocityConversion, 0.2);
+            flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
+
+            double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
+            backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
         } else {
             flywheel_.set(ControlMode.PercentOutput, goalDemand_);
             backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
         }
 
+        movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
         if (m_shooterDebug) m_shooterDisplay.periodic();
 
         SmartDashboard.putBoolean("Shooter At Speed", spunUp());
@@ -177,7 +189,8 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
     }
 
-    double m_lastTime;
+    private Timer m_shooterTimer;
+    private double m_lastTime;
     public RunCommand runShooter(double goal) {
         m_shooterTimer = new Timer();
         m_shooterTimer.reset();
@@ -186,13 +199,10 @@ public class Shooter extends SubsystemBase {
 
         return new RunCommand(() -> {
             double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goal / kFlywheelVelocityConversion, m_shooterTimer.get() - m_lastTime);
-            // flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
+            flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
             double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goal * 8, m_shooterTimer.get() - m_lastTime);
             m_lastTime = m_shooterTimer.get();
-            // backSpinPID.setReference(goal * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
-            backSpinPID.setReference(goal * 8, CANSparkMax.ControlType.kVelocity, 0);
-            flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion);
-
+            backSpinPID.setReference(goal * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
         }, this);
     }
 
