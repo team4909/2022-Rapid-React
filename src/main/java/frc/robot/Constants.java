@@ -154,7 +154,7 @@ public final class Constants {
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 2600; //4300
+    public static final double kFenderShotVelocity = 2500; //4300
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 3850; 
     public static final double kWallShotVelocity = 3675;

@@ -177,16 +177,21 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
     }
 
+    double m_lastTime;
     public RunCommand runShooter(double goal) {
         m_shooterTimer = new Timer();
         m_shooterTimer.reset();
         m_shooterTimer.start();
-        return new RunCommand(() -> {
-            double arbFFValue_f = m_flywheelFF.calculate(m_shooterTimer.get());
-            flywheel_.set(ControlMode.Velocity, goal * 2, DemandType.ArbitraryFeedForward, arbFFValue_f);
+        m_lastTime = 0;
 
-            double arbFFValue_b = m_backspinFF.calculate(m_shooterTimer.get());
-            backSpinPID.setReference(goal * 8, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
+        return new RunCommand(() -> {
+            double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goal / kFlywheelVelocityConversion, m_shooterTimer.get() - m_lastTime);
+            // flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
+            double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goal * 8, m_shooterTimer.get() - m_lastTime);
+            m_lastTime = m_shooterTimer.get();
+            // backSpinPID.setReference(goal * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
+            backSpinPID.setReference(goal * 8, CANSparkMax.ControlType.kVelocity, 0);
+            flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion);
 
         }, this);
     }
@@ -221,6 +226,7 @@ public class Shooter extends SubsystemBase {
             if (m_setters.getBoolean(false)) {
                 runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
                 // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
+
                 // flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
                 // flywheel_.config_kF(0, m_flywheelF.getDouble(0));
                 
