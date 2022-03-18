@@ -57,7 +57,7 @@ import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
-import frc.robot.subsystems.vision.EnableClimberCamera;
+
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.BionicController;
 
@@ -117,8 +117,7 @@ public class RobotContainer {
     }
 
     private void configureSendableChooser() {
-        m_chooser.setDefaultOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
-        m_chooser.setDefaultOption("Blue Three Ball from Bottom of Tarmac", new BlueThreeBallBottomTarmac());
+        m_chooser.addOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
         m_chooser.addOption("Two Ball from Bottom of Tarmac", new TwoBallBottomTarmac());
         m_chooser.addOption("Fender Shot", new FenderShot());
         m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
@@ -194,7 +193,8 @@ public class RobotContainer {
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
         new Button(m_operatorController::getXButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity + 200, false);});
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
-        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.runShooter(Constants.kFenderShotVelocity));
+        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.runShooter(Constants.kFenderShotVelocity)
+        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(15))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});

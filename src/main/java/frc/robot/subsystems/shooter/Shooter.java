@@ -41,7 +41,6 @@ public class Shooter extends SubsystemBase {
     private static Shooter instance_ = null;
     public static boolean m_shooterDebug = true;
 
-//    private final CANSparkMax
     private final TalonFX flywheel_;
     private final CANSparkMax backSpinWheel_;
     private final Shooter.ShooterDisplay m_shooterDisplay;
@@ -140,6 +139,12 @@ public class Shooter extends SubsystemBase {
         hoodUp_ = hoodUp;
     }
 
+    public void setVelocityGoal(double goal) {
+        goalDemand_ = goal;
+        acceleratorDemand_ = goal;
+        runningOpenLoop_ = false;
+    }
+    
     public void setVelocityGoal(double goal, boolean hoodUp) {
         goalDemand_ = goal;
         acceleratorDemand_ = goal;
@@ -158,13 +163,12 @@ public class Shooter extends SubsystemBase {
     @Override
     public void periodic() {
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
-        // if (!runningOpenLoop_) {
-        //     flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
-        //     backSpinPID.setReference(acceleratorDemand_ / kFlywheelVelocityConversion , ControlType.kVelocity);
-        // } else {
-        //     flywheel_.set(ControlMode.PercentOutput, goalDemand_);
-        //     backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
-        // }
+        if (!runningOpenLoop_) {
+            
+        } else {
+            flywheel_.set(ControlMode.PercentOutput, goalDemand_);
+            backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
+        }
 
         if (m_shooterDebug) m_shooterDisplay.periodic();
 

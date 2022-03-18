@@ -352,7 +352,8 @@ public class Climber extends SubsystemBase {
             this);
     }
 
-    private final Command extendToMid() {
+    private final Command 
+    extendToMid() {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionMidGoal); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 

@@ -69,7 +69,7 @@ public class Hood extends SubsystemBase {
         m_hoodController.setFF(kHoodFF, 0);
         //#endregion
                 
-        this.zeroHood();
+        m_hood.getEncoder().setPosition(0);
     }
 
     @Override
@@ -80,12 +80,11 @@ public class Hood extends SubsystemBase {
     }
 
     public void zeroHood() {
-        // new ParallelCommandGroup(
-        //     new RunCommand(() -> m_hoodController.setReference(-200, ControlType.kVelocity, 0), this),
-        //     new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
+        new ParallelCommandGroup(
+            new RunCommand(() -> m_hoodController.setReference(-200, ControlType.kVelocity, 0), this),
+            new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
 
-        // ).withTimeout(1).schedule();
-        m_hood.getEncoder().setPosition(0);
+        ).withTimeout(1).schedule();
     }
 
     //For manual hood adjustment
@@ -97,8 +96,9 @@ public class Hood extends SubsystemBase {
         return mapHoodAngle(m_hood.getEncoder().getPosition(), true);
     }
 
-    private void setHoodAngle(double deg) {
-        m_hoodController.setReference(mapHoodAngle(deg, false), ControlType.kPosition);
+    public void setHoodAngle(double deg) {
+        // m_hoodController.setReference(mapHoodAngle(deg, false), ControlType.kPosition); //TODO ADD MAPPING
+        m_hoodController.setReference(deg, ControlType.kPosition);
     }
 
     private double getHoodMotorCurrent() {
@@ -167,7 +167,7 @@ public class Hood extends SubsystemBase {
             m_posAngleEntry.setDouble(Hood.this.getHoodAngle());
             m_posTicksEntry.setDouble(Hood.this.m_hood.getEncoder().getPosition());
             if (setters) {
-                m_hoodController.setReference(m_setpointEntry.getDouble(0), ControlType.kPosition);
+                setHoodAngle(m_setpointEntry.getDouble(0));
                 m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
                 m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);
                 m_hoodController.setFF(m_hoodFFEntry.getDouble(kHoodFF), 0);

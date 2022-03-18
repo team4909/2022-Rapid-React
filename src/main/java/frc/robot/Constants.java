@@ -154,7 +154,7 @@ public final class Constants {
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 2300; //4300
+    public static final double kFenderShotVelocity = 2600; //4300
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 3850; 
     public static final double kWallShotVelocity = 3675;
@@ -172,9 +172,9 @@ public final class Constants {
         public static final double kClimberTimeoutLong = 3.0;
         public static final int kElevatorPIDSlot = 0;
         public static final int kPivotPIDSlot = 0;
-        public static final double kPivotForward = -3800;
+        public static final double kPivotForward = -4200; //-3800
         public static final double kMidPivotHold = -4000;
-        public static final double kExtensionMidGoal = -68;
+        public static final double kExtensionMidGoal = -69;
         public static final double kExtensionHighGoal = -94;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
