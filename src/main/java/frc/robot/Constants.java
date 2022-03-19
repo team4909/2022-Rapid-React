@@ -190,7 +190,7 @@ public final class Constants {
         private static final double kS_f = 0.51681;
         private static final double kV_f = 0.34371;
         private static final double kA_f = 0.047444;
-        private static final double kP_f = 0.19508; // 0.21785
+        private static final double kP_f = 0.0125;//0.19508; // 0.21785
         private static final double kI_f = 0.0;
         private static final double kD_f = 0.0;
         public static final SimpleMotorFeedforward kFlywheelFFConstraints = 

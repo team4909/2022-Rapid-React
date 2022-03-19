@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
 
     // Constants
     private final static int kTimeoutMs = 100;
-    private static double kFlywheelVelocityConversion = 600.0 / 2048.0; // native units to rpm
+    private static double kFlywheelVelocityConversion = 600.0 / 2048; // native units to rpm
     private final static int kShooterTolerance = 100; //TODO bad tolerance cause bad PID
 
     // State of the shooter
@@ -98,6 +98,7 @@ public class Shooter extends SubsystemBase {
         flywheel_.config_kP(0, Constants.Shooter.kFlywheelPIDGains.kP, kTimeoutMs);
         flywheel_.config_kI(0, Constants.Shooter.kFlywheelPIDGains.kI, kTimeoutMs);
         flywheel_.config_kD(0, Constants.Shooter.kFlywheelPIDGains.kD, kTimeoutMs);
+        flywheel_.config_kF(0, 0.005);
         flywheel_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
         flywheel_.selectProfileSlot(0, 0);
         flywheel_.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, kTimeoutMs);
@@ -179,23 +180,25 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
         if (!runningOpenLoop_) {
+            // rpm * ticks / rpm
             // double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_ / kFlywheelVelocityConversion, 0.2);
             // flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
-            flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
+            flywheel_.set(ControlMode.Velocity,goalDemand_ / kFlywheelVelocityConversion);
+            // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
             // backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
             backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
         } else {
 
             flywheel_.set(ControlMode.PercentOutput, goalDemand_);
-            backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
+            backSpinPID.setReference(acceleratorDemand_, ControlType.kDutyCycle);
         }
 
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
         if (m_shooterDebug) m_shooterDisplay.periodic();
 
         SmartDashboard.putBoolean("Shooter At Speed", spunUp());
-        SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
+        SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion); // ticks * rpm / ticks
         SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
     }
 
