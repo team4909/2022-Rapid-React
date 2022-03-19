@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -290,10 +291,8 @@ public class Climber extends SubsystemBase {
                     break;
                 case HIGHER_CLIMB:
                     currentClimberCommand = 
-                        new SequentialCommandGroup(detach(), pivotBackward(), extendToHigh(),
-                                                    pivotClimbingHold(), retractProfiledClimber())
-                        .withTimeout(Constants.Climber.kClimberTimeoutLong);
-                    break;
+                        new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward(), extendToHigh(), pivotClimbingHold())
+                        .withTimeout(5.0);
                 default:
                     m_state = ClimberStates.IDLE;
                     break;
@@ -449,6 +448,7 @@ public class Climber extends SubsystemBase {
     }
 
         // -3724, -3800-400, -3800+400
+        // -20 -19, -21
     private boolean inTolerance(double value, double min, double max) {
         if (value > 0) {
             return value < max && value > min;

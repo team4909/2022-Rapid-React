@@ -235,15 +235,7 @@ public class Shooter extends SubsystemBase {
             
             if (m_setters.getBoolean(false)) {
                 runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
-                // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
-
-                // flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
-                // flywheel_.config_kF(0, m_flywheelF.getDouble(0));
-                
-
-                // backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
-                // backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
-                // backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
+            
             }
         }
     }
