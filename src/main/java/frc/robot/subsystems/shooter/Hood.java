@@ -143,7 +143,7 @@ public class Hood extends SubsystemBase {
     private class HoodDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
         private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList);
-        private boolean setters = true;
+        private boolean setters = false;
         private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry;
 
         public HoodDisplay() {

@@ -181,7 +181,7 @@ public class Shooter extends SubsystemBase {
         if (!runningOpenLoop_) {
             // double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_ / kFlywheelVelocityConversion, 0.2);
             // flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
-            flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_));
+            flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
             // backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
             backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));

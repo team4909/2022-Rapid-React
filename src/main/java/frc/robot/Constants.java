@@ -148,7 +148,7 @@ public final class Constants {
     public static final double kFeederFeedingVoltage = 3.0;
     public static final double kFeederShootingVoltage = 6.0;
     public static final double kFeederReverseVoltage = -6.0;
-    public static final double kFeederAdjustVoltage = -0.4;
+    public static final double kFeederAdjustVoltage = -0.1;
     // TODO to invert these properly
     public static final double kCenteringWheelForwardVoltage = -12.0;
     public static final double kCenteringWheelReverseVoltage = 6.0;

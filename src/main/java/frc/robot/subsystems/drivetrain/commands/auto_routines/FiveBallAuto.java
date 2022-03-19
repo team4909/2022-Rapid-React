@@ -43,11 +43,11 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         new TrajectoryFollow("B-CD").withTimeout(2.3)
             .raceWith(new RunCommand(intake_::intake, intake_))
-            .raceWith(new InstantCommand(() -> shooter_.setVelocityGoal(3263))),
+            .andThen(shooter_.setGoalDemand(3263)),
 
         new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3),
         // shooter_.runShooter(3553)
-        new InstantCommand(() -> shooter_.runShooter(3553).schedule())
+        shooter_.setGoalDemand(3553)
         // new InstantCommand(() -> shooter_.setVelocityGoal(3553))
         .andThen(vision_.LimelightAim())
         .andThen(() -> hood_.setHoodAngle(36)),

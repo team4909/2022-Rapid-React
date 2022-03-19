@@ -155,6 +155,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     public void compressBalls() {
         feederWheel_.set(-0.2);
+        
     }
 
     @Override
@@ -290,8 +291,8 @@ public class IntakeFeeder extends SubsystemBase {
         lastEdgeHigh = feederBallSeen;
 
 
-        if (getRumble() == true){
-            Rumble.getInstance().runRumble().schedule();
+        if (getRumble()){
+            // Rumble.getInstance().runRumble().schedule();
         }
     }
 
