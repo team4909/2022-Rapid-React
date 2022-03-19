@@ -291,7 +291,7 @@ public class Climber extends SubsystemBase {
                 case HIGHER_CLIMB:
                     currentClimberCommand = 
                         new SequentialCommandGroup(detach(), pivotBackward(), extendToHigh(),
-                                                    pivotClimbingHold(), retractProfiledClimber())
+                                                    pivotClimbingHold())
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
                 default:
