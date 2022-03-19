@@ -59,7 +59,7 @@ import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.shooter.commands.ShootCmd;
 
 import frc.robot.subsystems.vision.VisionSubsystem;
-import frc.robot.utils.BionicController;
+import frc.robot.utils.Rumble;
 
 
 /**
@@ -70,8 +70,15 @@ import frc.robot.utils.BionicController;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
+
+    private final XboxController m_driverController = new XboxController(0);
+    private final XboxController m_operatorController = new XboxController(1);
+    // private final XboxController m_testController = new XboxController(2);
+
+
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final Climber climber_ = Climber.getInstance();
+    private final Rumble rumble_ = Rumble.getInstance(m_driverController, m_operatorController);
     
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
@@ -82,9 +89,6 @@ public class RobotContainer {
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
     
-    private final XboxController m_driverController = new XboxController(0);
-    private final XboxController m_operatorController = new XboxController(1);
-
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
  
   /**
@@ -193,7 +197,7 @@ public class RobotContainer {
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
         new Button(m_operatorController::getXButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity + 200, false);});
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
-        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.runShooter(Constants.kFenderShotVelocity)
+        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(15))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
@@ -296,7 +300,5 @@ public class RobotContainer {
 
         return value;
     }
-
-
     
 }

@@ -37,7 +37,7 @@ public class Hood extends SubsystemBase {
     private static double degreesPerTick = 1/1;
     private static double kHoodP = 1.0D;
     private static double kHoodD = 0.0D;
-    private static double kHoodFF = 0.0D;
+    private static double kHoodFF = 0.005D;
     private static float kHoodUpperLimit = 50F;
     private static float kHoodLowerLimit = 0F;
     private static double kAimCoeffA = 1D;
@@ -81,10 +81,11 @@ public class Hood extends SubsystemBase {
 
     public void zeroHood() {
         new ParallelCommandGroup(
-            new RunCommand(() -> m_hoodController.setReference(-200, ControlType.kVelocity, 0), this),
+            new RunCommand(() -> m_hoodController.setReference(-0.2, ControlType.kDutyCycle, 0), this),
             new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
 
-        ).withTimeout(1).schedule();
+        ).withTimeout(1)
+        .andThen(new InstantCommand(() -> m_hoodController.setReference(0, ControlType.kDutyCycle, 0), this)).schedule();
     }
 
     //For manual hood adjustment
@@ -98,7 +99,7 @@ public class Hood extends SubsystemBase {
 
     public void setHoodAngle(double deg) {
         // m_hoodController.setReference(mapHoodAngle(deg, false), ControlType.kPosition); //TODO ADD MAPPING
-        m_hoodController.setReference(deg, ControlType.kPosition);
+        m_hoodController.setReference(deg, CANSparkMax.ControlType.kPosition);
     }
 
     private double getHoodMotorCurrent() {

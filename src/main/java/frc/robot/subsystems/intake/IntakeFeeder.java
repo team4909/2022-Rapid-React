@@ -9,10 +9,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.utils.Rumble;
 
 public class IntakeFeeder extends SubsystemBase {
 
@@ -151,6 +155,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     public void compressBalls() {
         feederWheel_.set(-0.2);
+        
     }
 
     @Override
@@ -181,7 +186,10 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
                 feederWheel_.set(0.0);
-                shot_timer_.stop();  
+
+                shot_timer_.stop();
+                rumble_ = false;
+
                 if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
                     currentState_ = IntakeState.kAdjust;
                     shot_timer_.reset();
@@ -201,6 +209,7 @@ public class IntakeFeeder extends SubsystemBase {
                     currentState_ = IntakeState.kIdle;
                     adjusted_ = false;
                 }
+                rumble_ = false;
                 break;
             case kIdleFeeder:
                 // Only go to this state between intaking balls one and two. Could be better named
@@ -213,6 +222,7 @@ public class IntakeFeeder extends SubsystemBase {
                     // Set state to get the next ball
                     currentState_ = IntakeState.kIntakeSecond;
                 }
+                rumble_ = false;
                 adjusted_ = false;
                 break;
             case kIntakeFirst:
@@ -241,7 +251,7 @@ public class IntakeFeeder extends SubsystemBase {
                     currentState_ = IntakeState.kIdleFeeder;
                     ballsHeld_ = BallCount.kTwo;
                     // Not doing this yet, but for the future driver feedback
-                    rumble_ = true;
+                    rumble_ = false;
                 }
                 adjusted_ = false;
                 break;
@@ -252,7 +262,12 @@ public class IntakeFeeder extends SubsystemBase {
                     feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 } else {
                     feederWheel_.setVoltage(0.0);
-                }     
+                }
+
+                // ballsHeld_ = BallCount.kZero;
+                rumble_ = false;
+                
+                
                 adjusted_ = false;
                 break;
             case kReverseWrongBall:
@@ -261,6 +276,7 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVoltage);
                 feederWheel_.setVoltage(Constants.kFeederReverseVoltage);
+                rumble_ = false;
                 adjusted_ = false;
                 break;
             default:
@@ -273,6 +289,11 @@ public class IntakeFeeder extends SubsystemBase {
         // for knowing what state the robot previously was in
         lastState_ = currentState_;
         lastEdgeHigh = feederBallSeen;
+
+
+        if (getRumble()){
+            // Rumble.getInstance().runRumble().schedule();
+        }
     }
 
     private boolean ballShot(boolean seen) {
