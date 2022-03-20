@@ -81,7 +81,7 @@ public class Hood extends SubsystemBase {
 
     public void zeroHood() {
         new ParallelCommandGroup(
-            new RunCommand(() -> m_hoodController.setReference(-0.2, ControlType.kDutyCycle, 0), this),
+            new RunCommand(() -> m_hoodController.setReference(-0.3, ControlType.kDutyCycle, 0), this),
             new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
 
         ).withTimeout(1)

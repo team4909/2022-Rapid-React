@@ -60,7 +60,7 @@ public class Shooter extends SubsystemBase {
     // State of the shooter
     private double goalDemand_ = 0.0;
     private static double acceleratorDemand_ = 0.0;
-    private boolean runningOpenLoop_ = false;
+    private boolean runningOpenLoop_ = true;
     private static boolean hoodUp_ = false;
 
     private TrapezoidProfile m_profile;
@@ -69,8 +69,6 @@ public class Shooter extends SubsystemBase {
 
     private MedianFilter movingFilter_;
     private static double movingAverage_;
-    private final BangBangController bangBangController;
-    private final BangBangController bangBangControllerBack;
     // private Timer m_shooterTimer;
 
 
@@ -80,8 +78,6 @@ public class Shooter extends SubsystemBase {
         m_flywheelFF = Constants.Shooter.kFlywheelFFConstraints;
         m_backspinFF = Constants.Shooter.kBackspinFFConstraints;
 
-        bangBangController = new BangBangController();
-        bangBangControllerBack = new BangBangController();
 
         // General Motor Configuration for the TalonFXs
         flywheel_.clearStickyFaults(kTimeoutMs);
@@ -115,6 +111,7 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setP(Constants.Shooter.kBackspinPIDGains.kP, 0);
         backSpinPID.setI(Constants.Shooter.kBackspinPIDGains.kI, 0);
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
+        backSpinPID.setFF(0.00025);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
@@ -173,7 +170,7 @@ public class Shooter extends SubsystemBase {
         this.goalDemand_ = g;
         this.runningOpenLoop_ = false;
         flywheel_.config_kF(0, MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.0075));
-        backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));
+        // backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));
     }
 
     public InstantCommand setGoalDemand(double goal) {
@@ -192,7 +189,7 @@ public class Shooter extends SubsystemBase {
             // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
             // backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
-            backSpinPID.setReference(goalDemand_ * 2, ControlType.kVelocity);
+            backSpinPID.setReference(8000, ControlType.kVelocity);
             // backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
         } else {
 

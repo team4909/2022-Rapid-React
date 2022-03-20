@@ -205,7 +205,7 @@ public class RobotContainer {
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
-        new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
+        new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
 

@@ -41,7 +41,17 @@ public class IntakeFeeder extends SubsystemBase {
     };
 
     private enum BallCount{
-        kZero, kOne, kTwo
+        
+        kZero("ZERO"), kOne("ONE"), kTwo("TWO");
+        String m_count;
+
+        private BallCount(String c) {
+            this.m_count = c;
+        }
+
+        public String toString() {
+            return this.m_count;
+        }
     }
 
     // Object instance
@@ -192,24 +202,24 @@ public class IntakeFeeder extends SubsystemBase {
                 shot_timer_.stop();
                 rumble_ = false;
 
-                // if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
-                //     currentState_ = IntakeState.kAdjust;
-                //     shot_timer_.reset();
-                //     shot_timer_.start();
-                // }      
+                if (!adjusted_ && feederBallSeen) {
+                    currentState_ = IntakeState.kAdjust;
+                    shot_timer_.reset();
+                    shot_timer_.start();
+                }      
                 break;
             case kAdjust:
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
-                 if (shot_timer_.get() < 0.5 ) {
+                 if (shot_timer_.get() < 1.0 ) {
                     feederWheel_.set(0.0);  
-                } else if (shot_timer_.get() < 1.0) {
+                } else if (shot_timer_.get() < 1.5) {
                     feederWheel_.set(Constants.kFeederAdjustVoltage);
                 } else {
                     feederWheel_.set(0.0);  
                     shot_timer_.stop();
                     currentState_ = IntakeState.kIdle;
-                    adjusted_ = false;
+                    adjusted_ = true;
                 }
                 rumble_ = false;
                 break;
@@ -220,10 +230,10 @@ public class IntakeFeeder extends SubsystemBase {
                 // Continue running the intaking and centering wheels until there's another ball seen
                 intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
-                if (incomingSeen && (ballsHeld_ != BallCount.kTwo)) {
-                    // Set state to get the next ball
-                    currentState_ = IntakeState.kIntakeSecond;
-                }
+                // if (incomingSeen && (ballsHeld_ != BallCount.kTwo)) {
+                //     // Set state to get the next ball
+                //     currentState_ = IntakeState.kIntakeSecond;
+                // }
                 rumble_ = false;
                 adjusted_ = false;
                 break;
@@ -260,7 +270,7 @@ public class IntakeFeeder extends SubsystemBase {
             case kShootBalls:
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
-                if (shot_timer_.get() < 0.25 || shot_timer_.get() > 0.75) {
+                if (shot_timer_.get() < 0.1 || shot_timer_.get() > 0.5) {
                     feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 } else {
                     feederWheel_.setVoltage(0.0);
@@ -290,9 +300,9 @@ public class IntakeFeeder extends SubsystemBase {
         lastEdgeHigh = feederBallSeen;
 
 
-        if (!lastBallsHeld.equals(ballsHeld_)){
-            Rumble.getInstance().runRumble(0, 3, 1);
-            Rumble.getInstance().runRumble(1, 3, 1);
+        if (!lastBallsHeld.toString().equals(ballsHeld_.toString())){
+            // Rumble.getInstance().runRumble(0, 3, 1).schedule();
+            // Rumble.getInstance().runRumble(1, 3, 1).schedule();
         }
 
 

@@ -27,7 +27,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         )
         .andThen(vision_.LimelightAim())
         .andThen(new InstantCommand(intake_::stopIntake))
-        .andThen(() -> hood_.setHoodAngle(29.5)),
+        .andThen(() -> hood_.setHoodAngle(37)),
 
         new RunCommand(intake_::shoot).withTimeout(3),
 
@@ -35,7 +35,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
         .raceWith(new RunCommand(intake_::intake, intake_)))
         .andThen(new InstantCommand(intake_::stopIntake))
         .andThen(vision_.LimelightAim())
-        .andThen(() -> hood_.setHoodAngle(22)),
+        .andThen(() -> hood_.setHoodAngle(37)),
         
 
         new RunCommand(intake_::shoot).withTimeout(3)
@@ -44,14 +44,11 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         new TrajectoryFollow("B-CD").withTimeout(2.3)
             .raceWith(new RunCommand(intake_::intake, intake_))
-            .andThen(shooter_.setGoalDemand(4711)),
+            .andThen(shooter_.setGoalDemand(5600)),
 
-        new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3),
-        // shooter_.runShooter(3553)
-        shooter_.setGoalDemand(5600)
-        // new InstantCommand(() -> shooter_.setVelocityGoal(3553))
+        new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3)
         .andThen(vision_.LimelightAim())
-        .andThen(() -> hood_.setHoodAngle(29.5)),
+        .andThen(() -> hood_.setHoodAngle(45)),
         new RunCommand(intake_::shoot).withTimeout(3)
             .andThen(new InstantCommand(intake_::stopIntake))
             .andThen(new InstantCommand(shooter_::stop))
