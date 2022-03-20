@@ -43,7 +43,6 @@ import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.AutoTest;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueTwoBallTopTarmac;
@@ -56,8 +55,6 @@ import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
 import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.shooter.commands.LimelightShoot;
-import frc.robot.subsystems.shooter.commands.ShootCmd;
 
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.Rumble;
@@ -201,13 +198,13 @@ public class RobotContainer {
         // Fender shot
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
-        new Button(m_operatorController::getXButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity + 200, false);});
+        new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity + 200));
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
-        new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
+        new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(m_shooterSubsystem.setGoalDemand(Constants.kLongShotVelocity));
         
-        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
+        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(m_shooterSubsystem.setGoalDemand(Constants.kWallShotVelocity));
 
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
@@ -247,6 +244,8 @@ public class RobotContainer {
     public void temp() {
         SmartDashboard.putNumber("POV", m_driverController.getPOV());
     }
+
+    
 
     // new Button(m_operatorController::getXButton).whenPressed(m_VisionSubsystem::setPipelineOne);
 

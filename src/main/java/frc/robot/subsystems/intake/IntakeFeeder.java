@@ -192,18 +192,18 @@ public class IntakeFeeder extends SubsystemBase {
                 shot_timer_.stop();
                 rumble_ = false;
 
-                // if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
-                //     currentState_ = IntakeState.kAdjust;
-                //     shot_timer_.reset();
-                //     shot_timer_.start();
-                // }      
+                if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
+                    currentState_ = IntakeState.kAdjust;
+                    shot_timer_.reset();
+                    shot_timer_.start();
+                }      
                 break;
             case kAdjust:
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
-                 if (shot_timer_.get() < 0.5 ) {
+                 if (shot_timer_.get() < 1.5 ) {
                     feederWheel_.set(0.0);  
-                } else if (shot_timer_.get() < 1.0) {
+                } else if (shot_timer_.get() < 2.0) {
                     feederWheel_.set(Constants.kFeederAdjustVoltage);
                 } else {
                     feederWheel_.set(0.0);  

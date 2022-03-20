@@ -145,8 +145,8 @@ public final class Constants {
     // TODO Change if needed
     public static final double kIntakeForwardVoltage = -6.0;
     public static final double kIntakeReverseVoltage = 6.0;
-    public static final double kFeederFeedingVoltage = 3.0;
-    public static final double kFeederShootingVoltage = 6.0;
+    public static final double kFeederFeedingVoltage = 2.0;
+    public static final double kFeederShootingVoltage = 12.0;
     public static final double kFeederReverseVoltage = -6.0;
     public static final double kFeederAdjustVoltage = -0.5;
     // TODO to invert these properly
