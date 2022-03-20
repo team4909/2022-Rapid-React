@@ -12,28 +12,28 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class BlueTwoBallTopTarmac extends SequentialCommandGroup {
 
-    IntakeFeeder intake_ = IntakeFeeder.getInstance();
-    Shooter shooter_ = Shooter.getInstance();
-    VisionSubsystem vision_ = VisionSubsystem.getInstance();
-    Hood hood_ = Hood.getInstance();
+	IntakeFeeder intake_ = IntakeFeeder.getInstance();
+	Shooter shooter_ = Shooter.getInstance();
+	VisionSubsystem vision_ = VisionSubsystem.getInstance();
+	Hood hood_ = Hood.getInstance();
 
-    public BlueTwoBallTopTarmac() {
-        addCommands(
-            shooter_.setGoalDemand(4711),
-            new PathResetOdometry("TarmacN-E"), 
-            new TrajectoryFollow("TarmacN-E").withTimeout(2)
-            .raceWith(new RunCommand(intake_::intake, intake_)),
+	public BlueTwoBallTopTarmac() {
+		addCommands(
+				shooter_.setGoalDemand(4711),
+				new PathResetOdometry("TarmacN-E"),
+				new TrajectoryFollow("TarmacN-E").withTimeout(2)
+						.raceWith(new RunCommand(intake_::intake, intake_)),
 
-            new InstantCommand(intake_::stopIntake)
-            .andThen(vision_.LimelightAim())
-            .andThen(() -> hood_.setHoodAngle(22)),
-        
+				new InstantCommand(intake_::stopIntake)
+						.andThen(vision_.LimelightAim())
+						.andThen(() -> hood_.setHoodAngle(22)),
 
-        new RunCommand(intake_::shoot).withTimeout(3)
-        .andThen(new InstantCommand(intake_::stopIntake))
-        .andThen(new InstantCommand(shooter_::stop))
-                
-        );
-    }
-    
+
+				new RunCommand(intake_::shoot).withTimeout(3)
+						.andThen(new InstantCommand(intake_::stopIntake))
+						.andThen(new InstantCommand(shooter_::stop))
+
+		);
+	}
+
 }

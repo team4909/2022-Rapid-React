@@ -13,20 +13,20 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class RedTwoBallTopTarmac extends SequentialCommandGroup {
 
-    IntakeFeeder intake_ = IntakeFeeder.getInstance();
-    Shooter shooter_ = Shooter.getInstance();
-    VisionSubsystem vision_ = VisionSubsystem.getInstance();
+	IntakeFeeder intake_ = IntakeFeeder.getInstance();
+	Shooter shooter_ = Shooter.getInstance();
+	VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-    public RedTwoBallTopTarmac() {
-        addCommands(
-            new PathResetOdometry("TarmacN-E", -45), (
-                new TrajectoryFollow("TarmacN-E").withTimeout(2)
-                .raceWith(new RunCommand(intake_::intake, intake_))
-            )
-            .andThen(new InstantCommand(intake_::stopIntake)),
+	public RedTwoBallTopTarmac() {
+		addCommands(
+				new PathResetOdometry("TarmacN-E", -45), (
+						new TrajectoryFollow("TarmacN-E").withTimeout(2)
+								.raceWith(new RunCommand(intake_::intake, intake_))
+				)
+						.andThen(new InstantCommand(intake_::stopIntake)),
 
-            new LimelightShoot(Constants.kWallShotVelocity, true, false)
-        );
-    }
-    
+				new LimelightShoot(Constants.kWallShotVelocity, true, false)
+		);
+	}
+
 }

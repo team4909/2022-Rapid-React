@@ -13,34 +13,34 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class RedThreeBallBottomTarmac extends SequentialCommandGroup {
 
-    IntakeFeeder intake_ = IntakeFeeder.getInstance();
-    Shooter shooter_ = Shooter.getInstance();
-    VisionSubsystem vision_ = VisionSubsystem.getInstance();
+	IntakeFeeder intake_ = IntakeFeeder.getInstance();
+	Shooter shooter_ = Shooter.getInstance();
+	VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-    public RedThreeBallBottomTarmac() {
-        addCommands( 
+	public RedThreeBallBottomTarmac() {
+		addCommands(
 
-        new PathResetOdometry("Tarmac-Almost-A", -180), (
-            new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
-            .raceWith(new RunCommand(intake_::intake, intake_))
-        )
-        
-        .andThen(new InstantCommand(intake_::stopIntake)),
+				new PathResetOdometry("Tarmac-Almost-A", -180), (
+						new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
+								.raceWith(new RunCommand(intake_::intake, intake_))
+				)
 
-        new LimelightShoot(Constants.kWallShotVelocity, true, false),
-        
-       (new TrajectoryFollow("Near-A-B").withTimeout(3)
-        .raceWith(new RunCommand(intake_::intake, intake_)))
-        .andThen(new InstantCommand(intake_::stopIntake)),
+						.andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(Constants.kLongShotVelocity, true, false),
+				new LimelightShoot(Constants.kWallShotVelocity, true, false),
 
-        new TrajectoryFollow("B-CD").withTimeout(2.3)
-        .raceWith(new RunCommand(intake_::intake, intake_))
-   
-        );
+				(new TrajectoryFollow("Near-A-B").withTimeout(3)
+						.raceWith(new RunCommand(intake_::intake, intake_)))
+						.andThen(new InstantCommand(intake_::stopIntake)),
+
+				new LimelightShoot(Constants.kLongShotVelocity, true, false),
+
+				new TrajectoryFollow("B-CD").withTimeout(2.3)
+						.raceWith(new RunCommand(intake_::intake, intake_))
+
+		);
 
 
-   }
-    
+	}
+
 }

@@ -13,7 +13,7 @@
 
 
 // public class AutoTest extends SequentialCommandGroup {
-    
+
 //     IntakeFeeder intake_ = IntakeFeeder.getInstance();
 //     Shooter shooter_ = Shooter.getInstance();
 //     VisionSubsystem vision_ = VisionSubsystem.getInstance();
@@ -30,6 +30,6 @@
 //                 .andThen(new InstantCommand(intake_::stopIntake))
 
 //         );
-        
+
 //     }
 // }

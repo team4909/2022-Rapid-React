@@ -13,22 +13,22 @@ import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class TwoBallBottomTarmac extends SequentialCommandGroup {
 
-    IntakeFeeder intake_ = IntakeFeeder.getInstance();
-    Shooter shooter_ = Shooter.getInstance();
-    VisionSubsystem vision_ = VisionSubsystem.getInstance();
+	IntakeFeeder intake_ = IntakeFeeder.getInstance();
+	Shooter shooter_ = Shooter.getInstance();
+	VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-    public TwoBallBottomTarmac() {
-        addCommands( 
+	public TwoBallBottomTarmac() {
+		addCommands(
 
-        new PathResetOdometry("Tarmac-Almost-A"), (
-            new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
-            .raceWith(new RunCommand(intake_::intake, intake_))
-        )
-        .andThen(new InstantCommand(intake_::stopIntake)),
+				new PathResetOdometry("Tarmac-Almost-A"), (
+						new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
+								.raceWith(new RunCommand(intake_::intake, intake_))
+				)
+						.andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(Constants.kWallShotVelocity, true, false)
-        );
+				new LimelightShoot(Constants.kWallShotVelocity, true, false)
+		);
 
-   }
-    
+	}
+
 }

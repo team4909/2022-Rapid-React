@@ -9,27 +9,27 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class TwoBallFender extends SequentialCommandGroup{
+public class TwoBallFender extends SequentialCommandGroup {
 
-    IntakeFeeder intake_ = IntakeFeeder.getInstance();
-    Shooter shooter_ = Shooter.getInstance();
-    VisionSubsystem vision_ = VisionSubsystem.getInstance();
-    
-    public TwoBallFender(){
-        addCommands( 
+	IntakeFeeder intake_ = IntakeFeeder.getInstance();
+	Shooter shooter_ = Shooter.getInstance();
+	VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-        new PathResetOdometry("Tarmac-A"), (
-            new TrajectoryFollow("Tarmac-A").withTimeout(2)
-            .raceWith(new RunCommand(intake_::intake, intake_))
-        )
-        .andThen(new InstantCommand(intake_::stopIntake)),
+	public TwoBallFender() {
+		addCommands(
 
-        
-        new TrajectoryFollow("Tarmac-A-Reverse").withTimeout(3)
-        .raceWith(new RunCommand(intake_::intake, intake_))
-        );
+				new PathResetOdometry("Tarmac-A"), (
+						new TrajectoryFollow("Tarmac-A").withTimeout(2)
+								.raceWith(new RunCommand(intake_::intake, intake_))
+				)
+						.andThen(new InstantCommand(intake_::stopIntake)),
 
-        
-    }
-   
+
+				new TrajectoryFollow("Tarmac-A-Reverse").withTimeout(3)
+						.raceWith(new RunCommand(intake_::intake, intake_))
+		);
+
+
+	}
+
 }

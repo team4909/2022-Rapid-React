@@ -29,7 +29,7 @@
 //         // Just reset the goal though in case
 //         timer_.stop();
 //         timer_.reset();
-        
+
 //     }
 
 //     @Override
@@ -46,7 +46,7 @@
 //         }
 
 //         SmartDashboard.putNumber("Timer time", timer_.get());
-        
+
 //     }
 
 //     @Override
@@ -56,5 +56,5 @@
 //         timer_.stop();
 //         timer_.reset();
 //     }
-    
+
 // }

@@ -11,7 +11,7 @@
 
 //     private final IntakeFeeder intake_ = IntakeFeeder.getInstance();
 //     private final Shooter shooter_ = Shooter.getInstance();
-    
+
 //     public FenderShot() {
 
 //         addCommands(
@@ -20,7 +20,7 @@
 //                 .perpetually()
 //                 .withInterrupt(() -> shooter_.spunUp()
 //             ),
-            
+
 //             new RunCommand(intake_::shoot).withTimeout(3)
 //             .andThen(new InstantCommand(intake_::stopIntake))
 //             .andThen(new InstantCommand(shooter_::stop))
