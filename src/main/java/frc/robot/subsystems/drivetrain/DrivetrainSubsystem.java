@@ -10,8 +10,8 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderFaults;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
-import com.swervedrivespecialties.swervelib.SwerveModule;
+import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import frc.lib.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -114,10 +115,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean lockInPlace_ = false;
 
-    private Vector<ErrorCode> canFR = new Vector<ErrorCode>(10);
-    private Vector<ErrorCode>  canFL= new Vector<ErrorCode>(10);
-    private Vector<ErrorCode>  canBR= new Vector<ErrorCode>(10);
-    private Vector<ErrorCode> canBL= new Vector<ErrorCode>(10);
 
     private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
@@ -142,61 +139,27 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_ENCODER);
         m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_ENCODER);
 
-        canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        canBL.add(m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        canBR.add(m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
 
-        canFL.add(m_frontLeftCanCoder.configSensorDirection(true));
-        canFR.add(m_frontRightCanCoder.configSensorDirection(true));
-        canBL.add(m_backLeftCanCoder.configSensorDirection(true));
-        canBR.add(m_backRightCanCoder.configSensorDirection(true));
+        m_frontLeftCanCoder.configSensorDirection(true);
+        m_frontRightCanCoder.configSensorDirection(true);
+        m_backLeftCanCoder.configSensorDirection(true);
+        m_backRightCanCoder.configSensorDirection(true);
 
-        canFL.add(m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        canFR.add(m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        canBL.add(m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        canBR.add(m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+        m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
-        SmartDashboard.putBoolean("CANFL", true);
-        for (ErrorCode e : canFL) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANFL", false);
-                break;
-            }
-
-        }
-        SmartDashboard.putBoolean("CANFR", true);
-        for (ErrorCode e : canFR) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANFR", false);
-                break;
-            }
-
-        }
-        SmartDashboard.putBoolean("CANBL", true);
-        for (ErrorCode e : canBL) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANBL", false);
-                break;
-            }
-            
-
-        }
-        SmartDashboard.putBoolean("CANBR", true);
-        for (ErrorCode e : canBR) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANBR", false);
-                break;
-            }
-            
-
-        }
-
+       
         m_pigeon.clearStickyFaults();
     }
 
     public void initializeMotors(){
-        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createModule(
             // Allows you to see the current state of the module on the dashboard.
             m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
@@ -213,9 +176,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_LEFT_MODULE_STEER_OFFSET
         );
 
+        Timer.delay(0.06);
 
 
-        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+
+        m_frontRightModule = Mk4iSwerveModuleHelper.createModule(
             m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(2, 0),
@@ -225,8 +190,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_RIGHT_MODULE_STEER_ENCODER,
             FRONT_RIGHT_MODULE_STEER_OFFSET
         );
+        Timer.delay(0.06);
 
-        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4iSwerveModuleHelper.createModule(
             m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(4, 0),
@@ -236,9 +202,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
+        Timer.delay(0.06);
         
 
-        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4iSwerveModuleHelper.createModule(
             m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(6, 0),
@@ -248,6 +215,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
+        Timer.delay(0.06);
     }
 
     /**
@@ -336,10 +304,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
         
         states[0].speedMetersPerSecond = Math.abs(m_frontLeftModule.getDriveVelocity());
-       states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
-       states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
-       states[3].speedMetersPerSecond = Math.abs(m_backRightModule.getDriveVelocity());
-       m_odometry.update(getGyroscopeRotation(), states);
+        states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
+        states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
+        states[3].speedMetersPerSecond = Math.abs(m_backRightModule.getDriveVelocity());
+        m_odometry.update(getGyroscopeRotation(), states);
     }
 
     /**

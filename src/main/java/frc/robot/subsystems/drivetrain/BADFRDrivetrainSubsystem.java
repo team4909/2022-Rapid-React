@@ -22,9 +22,9 @@ import frc.robot.Constants;
 import static frc.robot.Constants.*;
 
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.SwerveModule;
+import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import frc.lib.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import frc.lib.swervedrivespecialties.swervelib.SwerveModule;
 
 public class BADFRDrivetrainSubsystem extends SubsystemBase {
         
