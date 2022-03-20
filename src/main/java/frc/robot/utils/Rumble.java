@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -20,14 +21,13 @@ public class Rumble extends SubsystemBase {
     }
 
     /**
-     * 
      * @param controllerIdx 
      * @param rumbleStrength 0 for off, 1 for weak, 2 for medium, 3 for strong
      * @param duration the duration in seconds of the rumble. -1 will be an indefinite rumble
      * @return returns RunCommand MUST call .schedule for it to take effect.
      */
     public CommandGroupBase runRumble(int controllerIdx, int rumbleStrength, double duration) {
-        double[] strength = new double[2];
+        double[] strength = new double[2]; // [left, right]
         switch (rumbleStrength) {
             case 1: strength[0] = 1d; strength[1] = 0d; break;
             case 2: strength[0] = 0d; strength[1] = 1d; break;
@@ -37,7 +37,11 @@ public class Rumble extends SubsystemBase {
         return new RunCommand(() -> {
             m_controllers[controllerIdx].setRumble(GenericHID.RumbleType.kLeftRumble, strength[0]);
             m_controllers[controllerIdx].setRumble(GenericHID.RumbleType.kRightRumble, strength[1]);
-        }, this).withTimeout(duration);
+        }, this).withTimeout(duration).andThen(
+        new InstantCommand(() -> {
+                m_controllers[controllerIdx].setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+                m_controllers[controllerIdx].setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        }, this));
     }
 
     public static Rumble getInstance() {

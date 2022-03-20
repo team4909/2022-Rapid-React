@@ -1,11 +1,8 @@
 package frc.robot.subsystems.drivetrain.commands.auto_routines;
 
-import javax.sound.midi.Sequence;
-
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.commands.PathResetOdometry;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;

@@ -11,8 +11,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.MedianFilter;
@@ -113,7 +115,7 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setP(Constants.Shooter.kBackspinPIDGains.kP, 0);
         backSpinPID.setI(Constants.Shooter.kBackspinPIDGains.kI, 0);
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
-        
+        backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
         movingFilter_ = new MedianFilter(20);
@@ -170,7 +172,8 @@ public class Shooter extends SubsystemBase {
     private void setGoal(double g) {
         this.goalDemand_ = g;
         this.runningOpenLoop_ = false;
-        flywheel_.config_kF(0, 0.000002 * goalDemand_);
+        flywheel_.config_kF(0, MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.0075));
+        backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));
     }
 
     public InstantCommand setGoalDemand(double goal) {
@@ -189,7 +192,8 @@ public class Shooter extends SubsystemBase {
             // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
             // backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
-            backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
+            backSpinPID.setReference(goalDemand_ * 2, ControlType.kVelocity);
+            // backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
         } else {
 
             flywheel_.set(ControlMode.PercentOutput, goalDemand_);
@@ -249,6 +253,7 @@ public class Shooter extends SubsystemBase {
             m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity());
             
             if (m_setters.getBoolean(false)) {
+                setGoal(m_flywheelSetpointSpeed.getDouble(0));
                 // runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
                 // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
 

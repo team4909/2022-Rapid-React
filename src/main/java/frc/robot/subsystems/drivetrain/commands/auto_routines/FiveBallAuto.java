@@ -19,7 +19,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
     public FiveBallAuto() {
         addCommands( 
-        new InstantCommand(() -> shooter_.setVelocityGoal(3263)),
+        shooter_.setGoalDemand(4711),
         new PathResetOdometry("Tarmac-Almost-A"), 
         (
         new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
@@ -27,31 +27,32 @@ public class FiveBallAuto extends SequentialCommandGroup {
         )
         .andThen(vision_.LimelightAim())
         .andThen(new InstantCommand(intake_::stopIntake))
-        .andThen(() -> hood_.setHoodAngle(14)),
+        .andThen(() -> hood_.setHoodAngle(29.5)),
 
-        new RunCommand(intake_::shoot).withTimeout(2)
-        .andThen(new InstantCommand(shooter_::stop)),
+        new RunCommand(intake_::shoot).withTimeout(3),
 
        (new TrajectoryFollow("Near-A-B").withTimeout(2)
         .raceWith(new RunCommand(intake_::intake, intake_)))
         .andThen(new InstantCommand(intake_::stopIntake))
         .andThen(vision_.LimelightAim())
-        .andThen(() -> hood_.setHoodAngle(13.83)),
+        .andThen(() -> hood_.setHoodAngle(22)),
+        
 
-        new RunCommand(intake_::shoot).withTimeout(2)
+        new RunCommand(intake_::shoot).withTimeout(3)
+        .andThen(new InstantCommand(intake_::stopIntake))
         .andThen(new InstantCommand(shooter_::stop)),
 
         new TrajectoryFollow("B-CD").withTimeout(2.3)
             .raceWith(new RunCommand(intake_::intake, intake_))
-            .andThen(shooter_.setGoalDemand(3263)),
+            .andThen(shooter_.setGoalDemand(4711)),
 
         new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3),
         // shooter_.runShooter(3553)
-        shooter_.setGoalDemand(3553)
+        shooter_.setGoalDemand(5600)
         // new InstantCommand(() -> shooter_.setVelocityGoal(3553))
         .andThen(vision_.LimelightAim())
-        .andThen(() -> hood_.setHoodAngle(36)),
-        new RunCommand(intake_::shoot).withTimeout(2)
+        .andThen(() -> hood_.setHoodAngle(29.5)),
+        new RunCommand(intake_::shoot).withTimeout(3)
             .andThen(new InstantCommand(intake_::stopIntake))
             .andThen(new InstantCommand(shooter_::stop))
        

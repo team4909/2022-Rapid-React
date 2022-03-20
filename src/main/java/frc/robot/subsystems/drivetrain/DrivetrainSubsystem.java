@@ -7,6 +7,7 @@ package frc.robot.subsystems.drivetrain;
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.CANCoderFaults;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
@@ -21,6 +22,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -132,7 +134,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
-        // initilizeEncoders();
+        //  initilizeEncoders();
         initializeMotors();       
     }
 
@@ -142,55 +144,61 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_ENCODER);
         m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_ENCODER);
 
-        canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        canBL.add(m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        canBR.add(m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        // CANCoderConfiguration flConfig = new CANCoderConfiguration();
+        // m_frontLeftCanCoder.getAllConfigs(flConfig);
 
-        canFL.add(m_frontLeftCanCoder.configSensorDirection(true));
-        canFR.add(m_frontRightCanCoder.configSensorDirection(true));
-        canBL.add(m_backLeftCanCoder.configSensorDirection(true));
-        canBR.add(m_backRightCanCoder.configSensorDirection(true));
+        // Shuffleboard.getTab("Drivetrain").add("fl offset config", flConfig.magnetOffsetDegrees);
+        // flConfig.
 
-        canFL.add(m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        canFR.add(m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        canBL.add(m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        canBR.add(m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        // canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        // canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        // canBL.add(m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
+        // canBR.add(m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
 
-        SmartDashboard.putBoolean("CANFL", true);
-        for (ErrorCode e : canFL) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANFL", false);
-                break;
-            }
+        // canFL.add(m_frontLeftCanCoder.configSensorDirection(true));
+        // canFR.add(m_frontRightCanCoder.configSensorDirection(true));
+        // canBL.add(m_backLeftCanCoder.configSensorDirection(true));
+        // canBR.add(m_backRightCanCoder.configSensorDirection(true));
 
-        }
-        SmartDashboard.putBoolean("CANFR", true);
-        for (ErrorCode e : canFR) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANFR", false);
-                break;
-            }
+        // canFL.add(m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        // canFR.add(m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        // canBL.add(m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
+        // canBR.add(m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
 
-        }
-        SmartDashboard.putBoolean("CANBL", true);
-        for (ErrorCode e : canBL) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANBL", false);
-                break;
-            }
+        // SmartDashboard.putBoolean("CANFL", true);
+        // for (ErrorCode e : canFL) {
+        //     if (e != ErrorCode.OK) {
+        //         SmartDashboard.putBoolean("CANFL", false);
+        //         break;
+        //     }
+
+        // }
+        // SmartDashboard.putBoolean("CANFR", true);
+        // for (ErrorCode e : canFR) {
+        //     if (e != ErrorCode.OK) {
+        //         SmartDashboard.putBoolean("CANFR", false);
+        //         break;
+        //     }
+
+        // }
+        // SmartDashboard.putBoolean("CANBL", true);
+        // for (ErrorCode e : canBL) {
+        //     if (e != ErrorCode.OK) {
+        //         SmartDashboard.putBoolean("CANBL", false);
+        //         break;
+        //     }
             
 
-        }
-        SmartDashboard.putBoolean("CANBR", true);
-        for (ErrorCode e : canBR) {
-            if (e != ErrorCode.OK) {
-                SmartDashboard.putBoolean("CANBR", false);
-                break;
-            }
+        // }
+        // SmartDashboard.putBoolean("CANBR", true);
+        // for (ErrorCode e : canBR) {
+        //     if (e != ErrorCode.OK) {
+        //         SmartDashboard.putBoolean("CANBR", false);
+        //         break;
+        //     }
             
 
-        }
+        // }
 
         m_pigeon.clearStickyFaults();
     }
@@ -213,6 +221,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_LEFT_MODULE_STEER_OFFSET
         );
 
+        Timer.delay(0.06);
+
 
 
         m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
@@ -225,6 +235,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             FRONT_RIGHT_MODULE_STEER_ENCODER,
             FRONT_RIGHT_MODULE_STEER_OFFSET
         );
+        Timer.delay(0.06);
 
         m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
@@ -236,7 +247,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_LEFT_MODULE_STEER_ENCODER,
             BACK_LEFT_MODULE_STEER_OFFSET
         );
-        
+        Timer.delay(0.06);
+
 
         m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
             m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
@@ -248,6 +260,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_ENCODER,
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
+        Timer.delay(0.06);
+
+    }
+
+    public void retryMotors() {
+        initializeMotors();
     }
 
     /**
@@ -304,6 +322,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         
+        // Shuffleboard.getTab("Drivetrain").add("fl reading raw", m_frontLeftCanCoder.getAbsolutePosition());
 
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());

@@ -21,14 +21,15 @@ import frc.robot.Constants;
 
 import static frc.robot.Constants.*;
 
+import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
-public class BADFRDrivetrainSubsystem extends SubsystemBase {
+public class BADDrivetrainSubsystem extends SubsystemBase {
         
-        private static BADFRDrivetrainSubsystem instance = null;
+        private static BADDrivetrainSubsystem instance = null;
 
   /**
    * The maximum voltage that will be delivered to the drive motors.
@@ -86,7 +87,7 @@ public class BADFRDrivetrainSubsystem extends SubsystemBase {
 
   private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-  public BADFRDrivetrainSubsystem() {
+  public BADDrivetrainSubsystem() {
     ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
     // There are 4 methods you can call to create your swerve modules.
@@ -202,9 +203,9 @@ public class BADFRDrivetrainSubsystem extends SubsystemBase {
     m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
   }
 
-  public static BADFRDrivetrainSubsystem getInstance() {
+  public static BADDrivetrainSubsystem getInstance() {
         if (instance == null) {
-            instance = new BADFRDrivetrainSubsystem();
+            instance = new BADDrivetrainSubsystem();
         }
 
         return instance;

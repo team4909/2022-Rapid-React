@@ -46,6 +46,7 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.AutoTest;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueTwoBallTopTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.RedThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
@@ -114,7 +115,12 @@ public class RobotContainer {
             () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
             () -> ((-modifyAxis(m_driverController.getRightX()) + m_VisionSubsystem.getLimelightOffset()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * m_drivetrainSubsystem.getPreciseModeScale()
     ));
-
+    // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+    //         m_drivetrainSubsystem,
+    //         () -> -modifyAxis(m_driverController.getLeftY()),
+    //         () -> -modifyAxis(m_driverController.getLeftX()),
+    //         () -> -modifyAxis(m_driverController.getRightX())
+    // ));
         configureButtonBindings();
         configureSendableChooser();
 
@@ -124,7 +130,7 @@ public class RobotContainer {
         m_chooser.addOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
         m_chooser.addOption("Two Ball from Bottom of Tarmac", new TwoBallBottomTarmac());
         m_chooser.addOption("Fender Shot", new FenderShot());
-        m_chooser.addOption("Two Ball from Fender", new TwoBallFender());
+        m_chooser.addOption("Two Ball from Top Tarmac", new BlueTwoBallTopTarmac());
         m_chooser.addOption("Blue One Ball Taxi", new BlueOneBall());
         m_chooser.addOption("Blue? FIve Ball Auto", new FiveBallAuto());
         SmartDashboard.putData(m_chooser);
@@ -198,7 +204,7 @@ public class RobotContainer {
         new Button(m_operatorController::getXButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity + 200, false);});
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity)
-        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(15))));
+        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kLongShotVelocity, true);});
         
         new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kWallShotVelocity, true);});
@@ -300,5 +306,7 @@ public class RobotContainer {
 
         return value;
     }
+
+  
     
 }

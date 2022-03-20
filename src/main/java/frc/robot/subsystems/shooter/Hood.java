@@ -143,9 +143,10 @@ public class Hood extends SubsystemBase {
     // Telemetry Class
     private class HoodDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
-        private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList);
-        private boolean setters = true;
-        private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry;
+        private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList)
+        .withPosition(0, 0)
+        .withSize(2, 6);
+        private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry, m_setters;
 
         public HoodDisplay() {
             m_layout.add(Hood.this);
@@ -160,6 +161,7 @@ public class Hood extends SubsystemBase {
             m_hoodDEntry = m_layout.addPersistent("D", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_hoodFFEntry = m_layout.addPersistent("FF", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_layout.add(new InstantCommand(() -> Hood.this.zeroHood()));
+            m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
         }
 
         public void periodic() {
@@ -167,7 +169,7 @@ public class Hood extends SubsystemBase {
             m_current.setDouble(Hood.this.getHoodMotorCurrent());
             m_posAngleEntry.setDouble(Hood.this.getHoodAngle());
             m_posTicksEntry.setDouble(Hood.this.m_hood.getEncoder().getPosition());
-            if (setters) {
+            if (m_setters.getBoolean(false)) {
                 setHoodAngle(m_setpointEntry.getDouble(0));
                 m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
                 m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);

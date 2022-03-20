@@ -69,6 +69,8 @@ public class Climber extends SubsystemBase {
     private TrapezoidProfile.State m_beginRState;
     private TrapezoidProfile m_profileL;
     private TrapezoidProfile m_profileR;
+
+    boolean midClimb = true;
     
     private Timer m_trapTimer;
 
@@ -232,13 +234,13 @@ public class Climber extends SubsystemBase {
         SmartDashboard.putNumber("key2", m_leftPivot.getStatorCurrent());
         SmartDashboard.putNumber("posel", m_rightElevatorMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("piv pos", m_leftPivot.getSelectedSensorPosition());
-        SmartDashboard.putNumber("piv vol", m_rightPivot.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("piv vol", m_rightPivot.getMotorOutputVoltage());
         SmartDashboard.putString("Climber State", m_state.name());
 
         stateEntry.setString(m_state.toString());
         pivotPos.setDouble(m_rightPivot.getSelectedSensorPosition());
         elevatorPos.setDouble(m_rightElevatorMotor.getEncoder().getPosition());
-        pivotVoltage.setDouble(m_rightPivot.getMotorOutputVoltage());
+        // pivotVoltage.setDouble(m_rightPivot.getMotorOutputVoltage());
 
         runRoutine();
     }
@@ -279,6 +281,7 @@ public class Climber extends SubsystemBase {
                             .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
                 case MID_ALIGN:
+                    midClimb = true;
                     currentClimberCommand = 
                         new SequentialCommandGroup(pivotForward(), extendToMid())
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
@@ -290,8 +293,9 @@ public class Climber extends SubsystemBase {
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
                 case HIGHER_CLIMB:
+                     midClimb = false;
                     currentClimberCommand = 
-                        new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward(), extendToHigh(), pivotClimbingHold())
+                        new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward().withTimeout(0.5), extendToHigh())
                         .withTimeout(5.0);
                 default:
                     m_state = ClimberStates.IDLE;
@@ -339,20 +343,19 @@ public class Climber extends SubsystemBase {
     private final Command pivotClimbingHold() {
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(Constants.Climber.kMidPivotHold); }, 
-            () -> pivotTolerance(Constants.Climber.kMidPivotHold), 
+            () -> true, 
             this);
     }
 
     private final Command pivotBackward() {
-        System.out.println("pivoting backwords \n\n\n\n\n");
+        // System.out.println("pivoting backwords \n\n\n\n\n");
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(-500);}, 
             () -> pivotTolerance(-500), 
             this);
     }
 
-    private final Command 
-    extendToMid() {
+    private final Command extendToMid() {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionMidGoal); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
@@ -393,7 +396,8 @@ public class Climber extends SubsystemBase {
 
     private Command retractProfiledClimber() {
         return new ClimberCommandBuilder(
-            () -> { m_targetState = new TrapezoidProfile.State(Constants.Climber.kExtensionBottom, 0.0);
+            () -> { if (!midClimb) setPivotGoal(-500);
+                    m_targetState = new TrapezoidProfile.State(Constants.Climber.kExtensionBottom, 0.0);
 
                     m_beginLState = new TrapezoidProfile.State(m_leftElevatorMotor.getEncoder().getPosition(), 0.0);
                     m_beginRState = new TrapezoidProfile.State(m_rightElevatorMotor.getEncoder().getPosition(), 0.0);
@@ -420,6 +424,10 @@ public class Climber extends SubsystemBase {
                         currentLState.position, ControlType.kPosition, 0, leftFF);
                     m_rightElevatorController.setReference(
                         currentRState.position, ControlType.kPosition, 0, rightFF);
+
+                    if (!midClimb && m_leftElevatorMotor.getEncoder().getPosition() > -30) {
+                        setPivotGoal(0.0);
+                    }
                     },
             () -> false,
             null,

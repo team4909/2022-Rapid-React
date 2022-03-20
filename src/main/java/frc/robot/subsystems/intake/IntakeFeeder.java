@@ -161,6 +161,8 @@ public class IntakeFeeder extends SubsystemBase {
     @Override
     public void periodic() {
 
+        BallCount lastBallsHeld = ballsHeld_;
+
         // Get all the readings from the sensors each tick so we know what's changed
         boolean firstBallSeen = !lowSensor_.get();
         boolean feederBallSeen = !highSensor_.get();
@@ -190,11 +192,11 @@ public class IntakeFeeder extends SubsystemBase {
                 shot_timer_.stop();
                 rumble_ = false;
 
-                if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
-                    currentState_ = IntakeState.kAdjust;
-                    shot_timer_.reset();
-                    shot_timer_.start();
-                }      
+                // if (!adjusted_ && ballsHeld_ == BallCount.kTwo) {
+                //     currentState_ = IntakeState.kAdjust;
+                //     shot_timer_.reset();
+                //     shot_timer_.start();
+                // }      
                 break;
             case kAdjust:
                 intakeWheels_.set(0.0);
@@ -258,16 +260,13 @@ public class IntakeFeeder extends SubsystemBase {
             case kShootBalls:
                 intakeWheels_.set(0.0);
                 centeringWheel_.set(0.0);
-                if (shot_timer_.get() < 0.1 || shot_timer_.get() > 0.5) {
+                if (shot_timer_.get() < 0.25 || shot_timer_.get() > 0.75) {
                     feederWheel_.setVoltage(Constants.kFeederShootingVoltage);
                 } else {
                     feederWheel_.setVoltage(0.0);
                 }
 
                 // ballsHeld_ = BallCount.kZero;
-                rumble_ = false;
-                
-                
                 adjusted_ = false;
                 break;
             case kReverseWrongBall:
@@ -291,9 +290,12 @@ public class IntakeFeeder extends SubsystemBase {
         lastEdgeHigh = feederBallSeen;
 
 
-        if (getRumble()){
-            // Rumble.getInstance().runRumble().schedule();
+        if (!lastBallsHeld.equals(ballsHeld_)){
+            Rumble.getInstance().runRumble(0, 3, 1);
+            Rumble.getInstance().runRumble(1, 3, 1);
         }
+
+
     }
 
     private boolean ballShot(boolean seen) {

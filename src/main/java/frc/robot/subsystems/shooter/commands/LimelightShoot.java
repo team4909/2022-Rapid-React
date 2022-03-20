@@ -34,7 +34,7 @@ public class LimelightShoot extends SequentialCommandGroup{
             shooterCommand,
 
             
-            new RunCommand(intake_::shoot).withTimeout(2)
+            new RunCommand(intake_::shoot).withTimeout(3)
             .andThen(new InstantCommand(intake_::stopIntake))
             .andThen(new InstantCommand(shooter_::stop))
         );
