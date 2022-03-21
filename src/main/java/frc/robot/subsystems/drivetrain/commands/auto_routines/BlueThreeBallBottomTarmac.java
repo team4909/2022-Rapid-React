@@ -26,7 +26,7 @@ public class BlueThreeBallBottomTarmac extends SequentialCommandGroup {
         )
         
         .andThen(new InstantCommand(intake_::stopIntake)),
-
+        
         new LimelightShoot(Constants.kWallShotVelocity, true, false),
         
        (new TrajectoryFollow("Near-A-B").withTimeout(3)

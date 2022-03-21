@@ -144,62 +144,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_ENCODER);
         m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_ENCODER);
 
-        // CANCoderConfiguration flConfig = new CANCoderConfiguration();
-        // m_frontLeftCanCoder.getAllConfigs(flConfig);
-
-        // Shuffleboard.getTab("Drivetrain").add("fl offset config", flConfig.magnetOffsetDegrees);
-        // flConfig.
-
-        // canFL.add(m_frontLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        // canFR.add(m_frontRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        // canBL.add(m_backLeftCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-        // canBR.add(m_backRightCanCoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition));
-
-        // canFL.add(m_frontLeftCanCoder.configSensorDirection(true));
-        // canFR.add(m_frontRightCanCoder.configSensorDirection(true));
-        // canBL.add(m_backLeftCanCoder.configSensorDirection(true));
-        // canBR.add(m_backRightCanCoder.configSensorDirection(true));
-
-        // canFL.add(m_frontLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        // canFR.add(m_frontRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        // canBL.add(m_backLeftCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-        // canBR.add(m_backRightCanCoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180));
-
-        // SmartDashboard.putBoolean("CANFL", true);
-        // for (ErrorCode e : canFL) {
-        //     if (e != ErrorCode.OK) {
-        //         SmartDashboard.putBoolean("CANFL", false);
-        //         break;
-        //     }
-
-        // }
-        // SmartDashboard.putBoolean("CANFR", true);
-        // for (ErrorCode e : canFR) {
-        //     if (e != ErrorCode.OK) {
-        //         SmartDashboard.putBoolean("CANFR", false);
-        //         break;
-        //     }
-
-        // }
-        // SmartDashboard.putBoolean("CANBL", true);
-        // for (ErrorCode e : canBL) {
-        //     if (e != ErrorCode.OK) {
-        //         SmartDashboard.putBoolean("CANBL", false);
-        //         break;
-        //     }
-            
-
-        // }
-        // SmartDashboard.putBoolean("CANBR", true);
-        // for (ErrorCode e : canBR) {
-        //     if (e != ErrorCode.OK) {
-        //         SmartDashboard.putBoolean("CANBR", false);
-        //         break;
-        //     }
-            
-
-        // }
-
         m_pigeon.clearStickyFaults();
     }
 

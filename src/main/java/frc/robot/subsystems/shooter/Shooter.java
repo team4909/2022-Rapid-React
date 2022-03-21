@@ -1,10 +1,8 @@
 package frc.robot.subsystems.shooter;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import com.revrobotics.CANSparkMax;
@@ -12,31 +10,21 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
-import com.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.MedianFilter;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import java.util.ArrayList;
 import java.util.Map;
 
 public class Shooter extends SubsystemBase {
@@ -60,16 +48,12 @@ public class Shooter extends SubsystemBase {
     // State of the shooter
     private double goalDemand_ = 0.0;
     private static double acceleratorDemand_ = 0.0;
-    private boolean runningOpenLoop_ = true;
-    private static boolean hoodUp_ = false;
-
-    private TrapezoidProfile m_profile;
-    private TrapezoidProfile.State m_targetState;
-    private TrapezoidProfile.State m_beginState;
+    private boolean runningOpenLoop_ = false;
 
     private MedianFilter movingFilter_;
     private static double movingAverage_;
-    // private Timer m_shooterTimer;
+    private Timer m_shooterTimer;
+    private double m_lastTime;
 
 
     private Shooter() {
@@ -77,7 +61,6 @@ public class Shooter extends SubsystemBase {
         backSpinWheel_ = new CANSparkMax(24, MotorType.kBrushless);
         m_flywheelFF = Constants.Shooter.kFlywheelFFConstraints;
         m_backspinFF = Constants.Shooter.kBackspinFFConstraints;
-
 
         // General Motor Configuration for the TalonFXs
         flywheel_.clearStickyFaults(kTimeoutMs);
@@ -113,6 +96,8 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
         backSpinPID.setFF(0.00025);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
+        backSpinPID.setFF(0.00025);
+
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
         movingFilter_ = new MedianFilter(20);
@@ -129,33 +114,12 @@ public class Shooter extends SubsystemBase {
 
     public void stop() {
         setOpenLoopGoal(0.0);
-        hoodUp_ = false;
     }
 
     public void setOpenLoopGoal(double goal) {
         goalDemand_ = goal;
         acceleratorDemand_ = goal;
         runningOpenLoop_ = true;
-    }
-
-    public void setDiffVelocityGoal(double goal, double accelerator, boolean hoodUp) {
-        goalDemand_ = goal;
-        acceleratorDemand_ = accelerator;
-        runningOpenLoop_ = false;
-        hoodUp_ = hoodUp;
-    }
-
-    public void setVelocityGoal(double goal) {
-        goalDemand_ = goal;
-        acceleratorDemand_ = goal;
-        runningOpenLoop_ = false;
-    }
-    
-    public void setVelocityGoal(double goal, boolean hoodUp) {
-        goalDemand_ = goal;
-        acceleratorDemand_ = goal;
-        runningOpenLoop_ = false;
-        hoodUp_ = hoodUp;
     }
 
     public boolean spunUp() {
@@ -174,17 +138,11 @@ public class Shooter extends SubsystemBase {
     }
 
     public InstantCommand setGoalDemand(double goal) {
-
         return new InstantCommand(() -> {setGoal(goal);});
     }
 
     public void periodic() {
-        SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
         if (!runningOpenLoop_) {
-            // rpm * ticks / rpm
-            // double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_ / kFlywheelVelocityConversion, 0.2);
-            // flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
-
             flywheel_.set(ControlMode.Velocity,goalDemand_ / kFlywheelVelocityConversion);
             // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
@@ -192,35 +150,34 @@ public class Shooter extends SubsystemBase {
             backSpinPID.setReference(8000, ControlType.kVelocity);
             // backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
         } else {
-
             flywheel_.set(ControlMode.PercentOutput, goalDemand_);
-            backSpinPID.setReference(acceleratorDemand_, ControlType.kDutyCycle);
+            backSpinPID.setReference(goalDemand_, ControlType.kDutyCycle); 
         }
 
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
         if (m_shooterDebug) m_shooterDisplay.periodic();
 
-        SmartDashboard.putBoolean("Shooter At Speed", spunUp());
-        SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion); // ticks * rpm / ticks
-        SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
+        // SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
+        // SmartDashboard.putBoolean("Shooter At Speed", spunUp());
+        // SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion); // ticks * rpm / ticks
+        // SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
     }
 
-    private Timer m_shooterTimer;
-    private double m_lastTime;
-    public RunCommand runShooter(double goal) {
-        m_shooterTimer = new Timer();
-        m_shooterTimer.reset();
-        m_shooterTimer.start();
-        m_lastTime = 0;
+    
+    // public RunCommand runShooter(double goal) {
+    //     m_shooterTimer = new Timer();
+    //     m_shooterTimer.reset();
+    //     m_shooterTimer.start();
+    //     m_lastTime = 0;
 
-        return new RunCommand(() -> {
-            double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goal / kFlywheelVelocityConversion, m_shooterTimer.get() - m_lastTime);
-            flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
-            double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goal * 8, m_shooterTimer.get() - m_lastTime);
-            m_lastTime = m_shooterTimer.get();
-            backSpinPID.setReference(goal * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
-        }, this);
-    }
+    //     return new RunCommand(() -> {
+    //         double arbFFValue_f = m_flywheelFF.calculate(flywheel_.getSelectedSensorVelocity(), goal / kFlywheelVelocityConversion, m_shooterTimer.get() - m_lastTime);
+    //         flywheel_.set(ControlMode.Velocity, goal / kFlywheelVelocityConversion, DemandType.ArbitraryFeedForward, arbFFValue_f);
+    //         double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goal * 8, m_shooterTimer.get() - m_lastTime);
+    //         m_lastTime = m_shooterTimer.get();
+    //         backSpinPID.setReference(goal * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
+    //     }, this);
+    // }
 
     private class ShooterDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
