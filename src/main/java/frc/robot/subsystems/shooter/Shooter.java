@@ -48,7 +48,7 @@ public class Shooter extends SubsystemBase {
     // State of the shooter
     private double goalDemand_ = 0.0;
     private static double acceleratorDemand_ = 0.0;
-    private boolean runningOpenLoop_ = false;
+    private boolean runningOpenLoop_ = true;
 
     private MedianFilter movingFilter_;
     private static double movingAverage_;
@@ -94,9 +94,8 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setP(Constants.Shooter.kBackspinPIDGains.kP, 0);
         backSpinPID.setI(Constants.Shooter.kBackspinPIDGains.kI, 0);
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
-        backSpinPID.setFF(0.00025);
+        backSpinPID.setFF(0.0001);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
-        backSpinPID.setFF(0.00025);
 
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
