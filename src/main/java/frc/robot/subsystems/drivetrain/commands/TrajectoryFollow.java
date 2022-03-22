@@ -36,7 +36,6 @@ public class TrajectoryFollow extends CommandBase {
     public void initialize() {
         System.out.println("Trajectory begun");
 
-
         if (m_trajectory == null) {
             try {
                 m_trajectory = PathPlanner.loadPath(m_pathName, 8, 5); //2.9, 3
@@ -44,6 +43,7 @@ public class TrajectoryFollow extends CommandBase {
                 e.printStackTrace();
             }
         }
+        DrivetrainSubsystem.getInstance().m_field.getObject("traj").setTrajectory(m_trajectory);
 
         ProfiledPIDController thetaController = new ProfiledPIDController(5, 0, 0,
                 new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,

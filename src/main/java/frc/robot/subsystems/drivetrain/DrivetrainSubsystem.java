@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -113,13 +114,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds;
-
     private boolean lockInPlace_ = false;
-
-    private Vector<ErrorCode> canFR = new Vector<ErrorCode>(10);
-    private Vector<ErrorCode>  canFL= new Vector<ErrorCode>(10);
-    private Vector<ErrorCode>  canBR= new Vector<ErrorCode>(10);
-    private Vector<ErrorCode> canBL= new Vector<ErrorCode>(10);
+    
+    public final Field2d m_field = new Field2d();
 
     private DrivetrainSubsystem() {
         m_tab = Shuffleboard.getTab("Drivetrain");
@@ -136,6 +133,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         //  initilizeEncoders();
         initializeMotors();       
+        SmartDashboard.putData("Field", m_field);
     }
 
     public void initilizeEncoders(){
@@ -270,6 +268,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
+        m_field.setRobotPose(m_odometry.getPoseMeters());
         // if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
         //     m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
         //     m_backLeftCanCoder.getLastError() != ErrorCode.OK ||
