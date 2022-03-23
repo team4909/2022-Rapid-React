@@ -425,7 +425,7 @@ public class Climber extends SubsystemBase {
                     m_rightElevatorController.setReference(
                         currentRState.position, ControlType.kPosition, 0, rightFF);
 
-                    if (!midClimb && m_leftElevatorMotor.getEncoder().getPosition() > -30) {
+                    if (!midClimb && m_leftElevatorMotor.getEncoder().getPosition() > -15) {
                         setPivotGoal(0.0);
                     }
                     },

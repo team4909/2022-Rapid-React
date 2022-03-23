@@ -18,10 +18,10 @@ public class LimelightShoot extends SequentialCommandGroup{
     public LimelightShoot(double goal, boolean hoodUp, boolean keepShooterGoing) {
         
         CommandBase shooterCommand = keepShooterGoing 
-        ? shooter_.setGoalDemand(goal)
+        ? shooter_.setGoalCommand(goal)
             .perpetually()
             .withInterrupt(() -> shooter_.spunUp())
-        : shooter_.setGoalDemand(goal)
+        : shooter_.setGoalCommand(goal)
             .perpetually();
 
 
