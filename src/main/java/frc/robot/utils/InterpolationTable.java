@@ -13,7 +13,6 @@ public class InterpolationTable {
     }
 
     private double interpolate(Pair<Double, Double> l, Pair<Double, Double> h, double value) {
-        
         double ratio = (value - l.getFirst()) / (h.getFirst() - l.getFirst());
         return l.getSecond() + ratio * (h.getSecond() - l.getSecond());
     }
