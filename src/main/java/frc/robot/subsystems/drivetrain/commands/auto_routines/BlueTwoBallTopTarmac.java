@@ -20,6 +20,7 @@ public class BlueTwoBallTopTarmac extends SequentialCommandGroup {
     public BlueTwoBallTopTarmac() {
         addCommands(
             shooter_.setGoalDemand(4711),
+            new InstantCommand(intake_::resetBallCount),
             new PathResetOdometry("TarmacN-E"), 
             new TrajectoryFollow("TarmacN-E").withTimeout(2)
             .raceWith(new RunCommand(intake_::intake, intake_)),

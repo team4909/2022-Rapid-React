@@ -20,31 +20,28 @@ public class FiveBallAuto extends SequentialCommandGroup {
     public FiveBallAuto() {
         addCommands( 
         shooter_.setGoalDemand(4711),
-        new PathResetOdometry("Tarmac-Almost-A"), 
+        new PathResetOdometry("Tarmac-Almost-A", 90), 
         (
         new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
         .raceWith(new RunCommand(intake_::intake, intake_))
         )
         .andThen(vision_.LimelightAim())
         .andThen(new InstantCommand(intake_::stopIntake))
-        .andThen(() -> hood_.setHoodAngle(37)),
+        .andThen(() -> hood_.setHoodAngle(35.5)),
 
         new RunCommand(intake_::shoot).withTimeout(3),
 
        (new TrajectoryFollow("Near-A-B").withTimeout(2)
         .raceWith(new RunCommand(intake_::intake, intake_)))
-        .andThen(new InstantCommand(intake_::stopIntake))
         .andThen(vision_.LimelightAim())
         .andThen(() -> hood_.setHoodAngle(37)),
-        
-
         new RunCommand(intake_::shoot).withTimeout(3)
         .andThen(new InstantCommand(intake_::stopIntake))
         .andThen(new InstantCommand(shooter_::stop)),
 
         new TrajectoryFollow("B-CD").withTimeout(2.3)
             .raceWith(new RunCommand(intake_::intake, intake_))
-            .andThen(shooter_.setGoalDemand(5600)),
+            .andThen(shooter_.setGoalDemand(5500)),
 
         new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3)
         .andThen(vision_.LimelightAim())

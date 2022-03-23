@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
   
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-  private Compressor m_compressor;
+  // private Compressor m_compressor;
 
   // private Command llCommand;
   /**
@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
 
     m_robotContainer = new RobotContainer();
 
-    m_compressor = new Compressor(PneumaticsModuleType.REVPH);
+    // m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   }
 
   /**
@@ -112,7 +112,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
 
-    m_compressor.enableAnalog(90, 120);
+    // m_compressor.enableAnalog(90, 120);
 
 
   }

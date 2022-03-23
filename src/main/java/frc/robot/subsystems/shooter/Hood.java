@@ -80,12 +80,12 @@ public class Hood extends SubsystemBase {
     }
 
     public void zeroHood() {
-        new ParallelCommandGroup(
-            new RunCommand(() -> m_hoodController.setReference(-0.3, ControlType.kDutyCycle, 0), this),
-            new WaitCommand(0.75).andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);}))
+        new RunCommand(() -> m_hoodController.setReference(-0.3, ControlType.kDutyCycle, 0), this)
+        .withTimeout(1)
+        .andThen(new InstantCommand(() -> m_hoodController.setReference(0, ControlType.kDutyCycle, 0), this))
+        .andThen(new WaitCommand(1))
+        .andThen(new InstantCommand(() -> {m_hood.getEncoder().setPosition(0);})).schedule();
 
-        ).withTimeout(1)
-        .andThen(new InstantCommand(() -> m_hoodController.setReference(0, ControlType.kDutyCycle, 0), this)).schedule();
     }
 
     //For manual hood adjustment

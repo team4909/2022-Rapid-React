@@ -72,7 +72,7 @@ public class IntakeFeeder extends SubsystemBase {
     private static IntakeState currentState_;
     private static IntakeState lastState_;
 
-    private static BallCount ballsHeld_;
+    private BallCount ballsHeld_;
 
     private static int fallingEdges = 0;
     private static boolean lastEdgeHigh = false;
@@ -94,7 +94,7 @@ public class IntakeFeeder extends SubsystemBase {
 
         feederWheel_.setIdleMode(IdleMode.kBrake);
 
-        intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.REVPH, 0, 1);
+        intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     
         incomingSensor_ = new DigitalInput(2);
         lowSensor_ = new DigitalInput(1);
@@ -305,6 +305,10 @@ public class IntakeFeeder extends SubsystemBase {
         }
 
 
+    }
+
+    public void resetBallCount() {
+        this.ballsHeld_ = BallCount.kZero;
     }
 
     private boolean ballShot(boolean seen) {
