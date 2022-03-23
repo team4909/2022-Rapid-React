@@ -198,14 +198,14 @@ public class RobotContainer {
         // Fender shot
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
-        new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity + 200)
+        new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity + 200)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
-        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalDemand(Constants.kFenderShotVelocity)
+        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
         
-        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(m_shooterSubsystem.setGoalDemand(Constants.kWallShotVelocity));
+        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(m_shooterSubsystem.setGoalCommand(Constants.kWallShotVelocity));
 
 
         // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot

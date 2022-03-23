@@ -17,7 +17,7 @@ public class BlueOneBall extends SequentialCommandGroup{
     public BlueOneBall() {
         
         addCommands(
-            shooter_.setGoalDemand(Constants.kFenderShotVelocity),
+            shooter_.setGoalCommand(Constants.kFenderShotVelocity),
             
             new RunCommand(intake_::shoot).withTimeout(3)
             .andThen(new InstantCommand(intake_::stopIntake))

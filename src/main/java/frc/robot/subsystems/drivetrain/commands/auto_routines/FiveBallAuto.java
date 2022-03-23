@@ -19,7 +19,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
     public FiveBallAuto() {
         addCommands( 
-        shooter_.setGoalDemand(4711),
+        shooter_.setGoalCommand(4711),
         new PathResetOdometry("Tarmac-Almost-A"), 
         (
         new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
@@ -44,7 +44,7 @@ public class FiveBallAuto extends SequentialCommandGroup {
 
         new TrajectoryFollow("B-CD").withTimeout(2.3)
             .raceWith(new RunCommand(intake_::intake, intake_))
-            .andThen(shooter_.setGoalDemand(5600)),
+            .andThen(shooter_.setGoalCommand(5600)),
 
         new TrajectoryFollow("B-CD-Reverse").withTimeout(2.3)
         .andThen(vision_.LimelightAim())

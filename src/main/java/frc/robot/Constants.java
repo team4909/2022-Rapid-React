@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.utils.Conversion;
+import frc.robot.utils.InterpolationTable;
 import frc.robot.utils.PIDGains;
 
 /**
@@ -208,5 +209,21 @@ public final class Constants {
             new SimpleMotorFeedforward(kS_b, kV_b, kA_b);
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
+
+        public static InterpolationTable kHoodAngleLookupTable =
+            new InterpolationTable()
+            .add(172, 50)
+            .add(200, 50)
+            .add(230, 50)
+            .add(300, 43.7)
+            .add(400, 45);
+
+        public static InterpolationTable kShooterRPMLookupTable = 
+            new InterpolationTable()
+            .add(172, 3700)
+            .add(200, 4000)
+            .add(230, 4800)
+            .add(300, 5500)
+            .add(350, 10000);
     }
 }
