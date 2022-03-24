@@ -133,7 +133,7 @@ public class Shooter extends SubsystemBase {
     public void setGoalStatic(double g) {
         this.goalDemand_ = g;
         this.runningOpenLoop_ = false;
-        flywheel_.config_kF(0, MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.0075));
+        flywheel_.config_kF(0, MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.006));
         // backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));
     }
 

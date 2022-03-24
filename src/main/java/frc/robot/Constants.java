@@ -85,7 +85,7 @@ public final class Constants {
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(188.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(143.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -191,7 +191,7 @@ public final class Constants {
         private static final double kS_f = 0.51681;
         private static final double kV_f = 0.34371;
         private static final double kA_f = 0.047444;
-        private static final double kP_f = 0.0125;//0.19508; // 0.21785
+        private static final double kP_f = 0.0115;//0.19508; // 0.21785
         private static final double kI_f = 0.0;
         private static final double kD_f = 0.0;
         public static final SimpleMotorFeedforward kFlywheelFFConstraints = 
@@ -212,8 +212,29 @@ public final class Constants {
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
-            .add(155, 20.43)
-            .add(200, 30)
+            .add(155, 31.3)
+            .add(170, 33)
+            .add(200, 33)
+            .add(250, 45)
+            .add(300, 45)
+            .add(350, 45)
+            .add(400, 50);
+
+        public static InterpolationTable kShooterRPMLookupTable = 
+            new InterpolationTable()
+            .add(155, 1575)
+            .add(170, 1610)
+            .add(200, 1668)
+            .add(250, 1714)
+            .add(300, 1691)
+            .add(350, 1714)
+            .add(400, 1923);
+        /*
+          public static InterpolationTable kHoodAngleLookupTable =
+            new InterpolationTable()
+            .add(155, 31.3)
+            .add(170, 33)
+            .add(200, 33)
             .add(250, 35)
             .add(300, 40)
             .add(350, 45)
@@ -221,11 +242,13 @@ public final class Constants {
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(155, 1482)
-            .add(200, 1807)
-            .add(250, 1737)
+            .add(155, 1575)
+            .add(170, 1610)
+            .add(200, 1668)
+            .add(250, 1700)
             .add(300, 1691)
             .add(350, 1714)
-            .add(400, 1923);
-    }
+            .add(400, 1923); */
+    
+        }
 }

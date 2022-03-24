@@ -118,6 +118,9 @@ public class IntakeFeeder extends SubsystemBase {
 
     public void intake() {
         intakeSolenoidState_ = true;
+        if (currentState_.equals(IntakeState.kShootBalls)) {
+            return;
+        }
         switch (ballsHeld_) {
             case kZero:
                 currentState_ = IntakeState.kIntakeFirst; // Change back to intake first
