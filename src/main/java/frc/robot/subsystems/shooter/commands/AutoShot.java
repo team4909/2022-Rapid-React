@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.Constants;
@@ -22,7 +23,7 @@ public class AutoShot extends CommandBase {
         addRequirements(v);
         addRequirements(s);
         addRequirements(h);
-       
+        super.setName("AutoShot");
     }
 
     @Override
@@ -32,7 +33,8 @@ public class AutoShot extends CommandBase {
         double interpolatedAngle = Constants.Shooter.kHoodAngleLookupTable.get(m_distanceSeen);
         double interpolatedRPM = Constants.Shooter.kShooterRPMLookupTable.get(m_distanceSeen);
         m_hood.setHoodAngle(interpolatedAngle);
-        m_shooter.setGoalStatic(interpolatedRPM);
+        m_shooter.setGoalStatic(interpolatedRPM / Shooter.kFlywheelVelocityConversion);
+        SmartDashboard.putNumber("Interpolated RPM", interpolatedRPM);
     }
 
 }

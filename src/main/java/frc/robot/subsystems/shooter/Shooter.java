@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -42,7 +43,7 @@ public class Shooter extends SubsystemBase {
 
     // Constants
     private final static int kTimeoutMs = 100;
-    private static double kFlywheelVelocityConversion = 600.0 / 2048; // native units to rpm
+    public static double kFlywheelVelocityConversion = 600.0 / 2048; // native units to rpm
     private final static int kShooterTolerance = 100; //TODO bad tolerance cause bad PID
 
     // State of the shooter
@@ -137,12 +138,13 @@ public class Shooter extends SubsystemBase {
     }
 
     public InstantCommand setGoalCommand(double goal) {
-        return new InstantCommand(() -> {setGoalStatic(goal);});
+        return new InstantCommand(() -> {setGoalStatic(goal);}, this);
     }
 
     public void periodic() {
         if (!runningOpenLoop_) {
             // Convert to ticks to hand to the controller
+            // flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
             flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
             // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
@@ -157,8 +159,8 @@ public class Shooter extends SubsystemBase {
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
         if (m_shooterDebug) m_shooterDisplay.periodic();
 
-        // SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
-        // SmartDashboard.putBoolean("Shooter At Speed", spunUp());
+        SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
+        SmartDashboard.putNumber("Shooter goal demand", goalDemand_);
         // SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion); // ticks * rpm / ticks
         // SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
     }
@@ -192,7 +194,7 @@ public class Shooter extends SubsystemBase {
             m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
             
             if (m_setters.getBoolean(false)) {
-                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0));
+                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0) / kFlywheelVelocityConversion);
                 // runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
                 // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
 

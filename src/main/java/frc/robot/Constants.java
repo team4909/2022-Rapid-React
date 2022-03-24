@@ -67,25 +67,25 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 8;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 7;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(233.52539062499997); //,318.515  195 // FIXME Measure and set front left steer offset //192.205810546875
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(240.52539062499997); //,318.515  195 // FIXME Measure and set front left steer offset //192.205810546875
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 2;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 1;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 9;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(16.875); //25.4882,97 // FIXME Measure and set back left steer offset //9.3109130859375
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(12.875); //25.4882,97 // FIXME Measure and set back left steer offset //9.3109130859375
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 4;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 3;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(1); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(174+180); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(198.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(188.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -212,18 +212,20 @@ public final class Constants {
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
-            .add(172, 50)
-            .add(200, 50)
-            .add(230, 50)
-            .add(300, 43.7)
-            .add(400, 45);
+            .add(155, 20.43)
+            .add(200, 30)
+            .add(250, 35)
+            .add(300, 40)
+            .add(350, 45)
+            .add(400, 50);
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(172, 3700)
-            .add(200, 4000)
-            .add(230, 4800)
-            .add(300, 5500)
-            .add(350, 10000);
+            .add(155, 1482)
+            .add(200, 1807)
+            .add(250, 1737)
+            .add(300, 1691)
+            .add(350, 1714)
+            .add(400, 1923);
     }
 }

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 // import frc.robot.subsystems.climber.Climber;
 // import frc.robot.subsystems.climber.Climber.ClimberStates;
+import frc.robot.subsystems.shooter.Hood;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -101,6 +102,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
 
+    Hood.getInstance().zeroHood();
     // Climber.getInstance().setState(ClimberStates.IDLE);
 
   }
