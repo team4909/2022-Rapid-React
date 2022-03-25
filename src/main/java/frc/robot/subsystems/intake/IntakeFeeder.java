@@ -304,7 +304,7 @@ public class IntakeFeeder extends SubsystemBase {
 
 
         if (!lastBallsHeld.toString().equals(ballsHeld_.toString())){
-            Rumble.getInstance().runRumble(0, 3, 1, 0, 1).schedule();
+            Rumble.getInstance().runRumble(3, 1, 1, 0, 1).schedule();
         }
 
 

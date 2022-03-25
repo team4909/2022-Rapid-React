@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
+import frc.robot.utils.Rumble;
 
 import java.util.Map;
 
@@ -36,6 +37,7 @@ public class VisionSubsystem extends SubsystemBase{
     private UsbCamera m_frontCamera;
     private UsbCamera climberCamera_;
     private NetworkTableEntry cameraSelection;
+    private NetworkTableEntry inRange_;
     private VideoSource currentCamera_;
 
 private VisionSubsystem() {
@@ -57,6 +59,8 @@ private VisionSubsystem() {
     isAligned_ = false;
     lastDistance_ = 0.0;
     firstError = this.getXDegrees();
+
+    inRange_ = Shuffleboard.getTab("Driver").add("In Range", false).getEntry();
 
 
 }
@@ -214,6 +218,13 @@ public static VisionSubsystem instance_ = null;
         SmartDashboard.putBoolean("isAligned", isAligned_);
         SmartDashboard.putNumber("Distance", lastDistance_);
         SmartDashboard.putNumber("ofset speed", limelightOffset);
+
+        if(lastDistance_ > 155 && lastDistance_ < 200){
+            Rumble.getInstance().runRumble(1, 1, 0).schedule();
+            inRange_.setBoolean(true);
+        } else {
+            inRange_.setBoolean(false);
+        }
 
     }
 

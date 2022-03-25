@@ -85,7 +85,7 @@ public final class Constants {
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(99.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(77.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -210,7 +210,8 @@ public final class Constants {
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
 
-        public static InterpolationTable kHoodAngleLookupTable =
+        public static InterpolationTable 
+        kHoodAngleLookupTable =
             new InterpolationTable()
             .add(150, 36)
             .add(170, 40)

@@ -191,7 +191,8 @@ public class RobotContainer {
         .whenActive(new AutoShot(m_VisionSubsystem, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
         .whenInactive(new InstantCommand(() -> m_VisionSubsystem.setLimelightOffset(0), m_VisionSubsystem)
             .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0))));
-        /////////////////////////////////
+        ///////////////////////////
+        //////
         ///      Operator Buttons     ///
         /////////////////////////////////           
         // Fender shot
