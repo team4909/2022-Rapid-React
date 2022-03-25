@@ -251,7 +251,13 @@ public class IntakeFeeder extends SubsystemBase {
                     ballsHeld_ = BallCount.kOne;
                     // Not doing this yet, but for the future driver feedback
                     rumble_ = true;
-                }        
+                } 
+                if (feederBallSeen) {
+                    currentState_ = IntakeState.kIdleFeeder;
+                    ballsHeld_ = BallCount.kTwo;
+                    // Not doing this yet, but for the future driver feedback
+                    rumble_ = false;
+                }  
                 adjusted_ = false;
                 break;
             case kIntakeSecond:
