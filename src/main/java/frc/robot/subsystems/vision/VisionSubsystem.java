@@ -219,7 +219,7 @@ public static VisionSubsystem instance_ = null;
         SmartDashboard.putNumber("Distance", lastDistance_);
         SmartDashboard.putNumber("ofset speed", limelightOffset);
 
-        if(lastDistance_ > 155 && lastDistance_ < 200){
+        if(lastDistance_ > 200 && lastDistance_ < 350){
             Rumble.getInstance().runRumble(1, 1, 0).schedule();
             inRange_.setBoolean(true);
         } else {
