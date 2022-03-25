@@ -155,7 +155,8 @@ public final class Constants {
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 1700; //4300
+    public static final double kFenderShotVelocity = 700; //4300
+    public static final double kFenderLowShotVelocity = 500;
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 2300; 
     public static final double kWallShotVelocity = 3675;
@@ -209,6 +210,9 @@ public final class Constants {
             new SimpleMotorFeedforward(kS_b, kV_b, kA_b);
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
+
+        public static final double kBackSpinHighShotSpeed = 8000;
+        public static final double kBackSpinLowShotSpeed = 200;
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()

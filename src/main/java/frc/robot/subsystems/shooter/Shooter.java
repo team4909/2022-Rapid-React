@@ -48,7 +48,7 @@ public class Shooter extends SubsystemBase {
 
     // State of the shooter
     private double goalDemand_ = 0.0;
-    private static double acceleratorDemand_ = 0.0;
+    private double acceleratorDemand_ = 0.0;
     private boolean runningOpenLoop_ = true;
 
     private MedianFilter movingFilter_;
@@ -130,15 +130,20 @@ public class Shooter extends SubsystemBase {
         return false;
     }
 
-    public void setGoalStatic(double g) {
+    public void setGoalStatic(double g, boolean lowShot) {
         this.goalDemand_ = g;
+        this.acceleratorDemand_ = lowShot ? Constants.Shooter.kBackSpinLowShotSpeed : Constants.Shooter.kBackSpinHighShotSpeed;
         this.runningOpenLoop_ = false;
         flywheel_.config_kF(0, 0.04); //MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.006));
         // backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));
     }
 
+    public InstantCommand setLowGoalCommand(double goal) {
+        return new InstantCommand(() -> {setGoalStatic(goal, true);}, this);
+    }
+
     public InstantCommand setGoalCommand(double goal) {
-        return new InstantCommand(() -> {setGoalStatic(goal);}, this);
+        return new InstantCommand(() -> {setGoalStatic(goal, false);}, this);
     }
 
     public void periodic() {
@@ -149,7 +154,8 @@ public class Shooter extends SubsystemBase {
             // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
             // backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
-            backSpinPID.setReference(8000, ControlType.kVelocity);
+            
+            backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
             // backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
         } else {
             flywheel_.set(ControlMode.PercentOutput, goalDemand_);
@@ -196,7 +202,7 @@ public class Shooter extends SubsystemBase {
             m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
             
             if (m_setters.getBoolean(false)) {
-                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0));
+                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0), false);
                 // runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
                 // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
 
