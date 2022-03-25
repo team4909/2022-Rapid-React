@@ -85,7 +85,7 @@ public final class Constants {
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(143.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(99.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -147,15 +147,15 @@ public final class Constants {
     public static final double kIntakeForwardVoltage = -6.0;
     public static final double kIntakeReverseVoltage = 6.0;
     public static final double kFeederFeedingVoltage = 2.0;
-    public static final double kFeederShootingVoltage = 10.0;
+    public static final double kFeederShootingVoltage = 5.0;
     public static final double kFeederReverseVoltage = -6.0;
-    public static final double kFeederAdjustVoltage = -0.5;
+    public static final double kFeederAdjustVoltage = 0.0;
     // TODO to invert these properly
     public static final double kCenteringWheelForwardVoltage = -12.0;
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 2200; //4300
+    public static final double kFenderShotVelocity = 1700; //4300
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 2300; 
     public static final double kWallShotVelocity = 3675;
@@ -191,7 +191,7 @@ public final class Constants {
         private static final double kS_f = 0.51681;
         private static final double kV_f = 0.34371;
         private static final double kA_f = 0.047444;
-        private static final double kP_f = 0.0115;//0.19508; // 0.21785
+        private static final double kP_f = 0.15; //115;//0.19508; // 0.21785
         private static final double kI_f = 0.0;
         private static final double kD_f = 0.0;
         public static final SimpleMotorFeedforward kFlywheelFFConstraints = 
@@ -212,23 +212,25 @@ public final class Constants {
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
-            .add(155, 31.3)
-            .add(170, 33)
-            .add(200, 33)
+            .add(150, 36)
+            .add(170, 40)
+            .add(200, 45)
             .add(250, 45)
             .add(300, 45)
-            .add(350, 45)
-            .add(400, 50);
+            .add(370, 48)
+            .add(400, 52)
+            .add(450, 52);
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(155, 1575)
-            .add(170, 1610)
-            .add(200, 1668)
-            .add(250, 1714)
-            .add(300, 1691)
-            .add(350, 1714)
-            .add(400, 1923);
+            .add(150, 1545)
+            .add(170, 1570)
+            .add(200, 1600)
+            .add(250, 1661)
+            .add(300, 1714)
+            .add(370, 1760)
+            .add(400, 1850)
+            .add(450, 1923);
         /*
           public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()

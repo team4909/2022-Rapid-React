@@ -43,7 +43,7 @@ public class Shooter extends SubsystemBase {
 
     // Constants
     private final static int kTimeoutMs = 100;
-    public static double kFlywheelVelocityConversion = 600.0 / 2048; // native units to rpm
+    public final static double kFlywheelVelocityConversion = 600.0 / 2048; // native units to rpm
     private final static int kShooterTolerance = 100; //TODO bad tolerance cause bad PID
 
     // State of the shooter
@@ -133,7 +133,7 @@ public class Shooter extends SubsystemBase {
     public void setGoalStatic(double g) {
         this.goalDemand_ = g;
         this.runningOpenLoop_ = false;
-        flywheel_.config_kF(0, MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.006));
+        flywheel_.config_kF(0, 0.04); //MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.006));
         // backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));
     }
 
@@ -144,8 +144,8 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         if (!runningOpenLoop_) {
             // Convert to ticks to hand to the controller
-            // flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
             flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
+            // flywheel_.set(ControlMode.Velocity, goalDemand_ / kFlywheelVelocityConversion);
             // flywheel_.set(ControlMode.PercentOutput, bangBangController.calculate(flywheel_.getSelectedSensorVelocity(), goalDemand_) + 0.1);
             // double arbFFValue_b = m_backspinFF.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 8, 0.2);
             // backSpinPID.setReference(goalDemand_ * 4, CANSparkMax.ControlType.kVelocity, 0, arbFFValue_b);
@@ -161,8 +161,8 @@ public class Shooter extends SubsystemBase {
 
         SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
         SmartDashboard.putNumber("Shooter goal demand", goalDemand_);
-        // SmartDashboard.putNumber("Shooter speed", flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion); // ticks * rpm / ticks
-        // SmartDashboard.putNumber("BackSpinSHooterSPeed", backSpinWheel_.getEncoder().getVelocity());
+        SmartDashboard.putNumber("Shooter speed", goalDemand_ / kFlywheelVelocityConversion); // ticks * rpm / ticks
+        SmartDashboard.putNumber("Flywheel Ticks", flywheel_.getSelectedSensorVelocity());
     }
 
     private class ShooterDisplay {
@@ -188,13 +188,15 @@ public class Shooter extends SubsystemBase {
             m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
         }
 
+        
+
         public void periodic() {
             m_backSpeed.setDouble(backSpinWheel_.getEncoder().getVelocity());
             // This should show it as actual rpm 
             m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
             
             if (m_setters.getBoolean(false)) {
-                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0) / kFlywheelVelocityConversion);
+                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0));
                 // runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
                 // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
 

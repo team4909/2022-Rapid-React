@@ -188,21 +188,20 @@ public class RobotContainer {
                 .whenInactive(() -> { m_intakeSubsystem.stopIntake();} );
 
     new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis())) > 0.7)
-        .whenActive(new RunCommand(m_VisionSubsystem::setLimelightOffset)
-            .alongWith(new AutoShot(m_VisionSubsystem, m_shooterSubsystem, m_hoodSubsystem)))
-        .whenInactive(new InstantCommand(() -> m_VisionSubsystem.setLimelightOffset(0))
-            .andThen(m_shooterSubsystem.setGoalCommand(0)));
+        .whenActive(new AutoShot(m_VisionSubsystem, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
+        .whenInactive(new InstantCommand(() -> m_VisionSubsystem.setLimelightOffset(0), m_VisionSubsystem)
+            .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0))));
         /////////////////////////////////
         ///      Operator Buttons     ///
         /////////////////////////////////           
         // Fender shot
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
-        new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity + 200)
+        new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setGoalCommand(500)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
-        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
+        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(20))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
         
         // new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(m_shooterSubsystem.setGoalCommand(Constants.kWallShotVelocity));
