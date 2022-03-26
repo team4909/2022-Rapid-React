@@ -130,7 +130,7 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kTwo:
             default:
-                currentState_ = IntakeState.kIdle;
+                currentState_ = IntakeState.kIdleFeeder;
                 break;
         }
     }

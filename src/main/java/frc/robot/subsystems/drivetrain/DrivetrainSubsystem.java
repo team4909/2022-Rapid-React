@@ -219,6 +219,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.setYaw(0.0);
     }
 
+    public void setGyroscope(double deg) {
+        m_pigeon.setYaw(deg);
+    }
+
     /**
      * Gets the current rotation from the Gyroscope
      * @return

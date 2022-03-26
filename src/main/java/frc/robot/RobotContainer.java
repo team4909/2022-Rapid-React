@@ -43,12 +43,10 @@ import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueOneBall;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueThreeBallBottomTarmac;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.BlueTwoBallTopTarmac;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.RedThreeBallBottomTarmac;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallBottomTarmac;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.ThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallHanger;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
@@ -124,12 +122,11 @@ public class RobotContainer {
     }
 
     private void configureSendableChooser() {
-        m_chooser.addOption("Red Three Ball from Bottom of Tarmac", new RedThreeBallBottomTarmac());
-        m_chooser.addOption("Two Ball from Bottom of Tarmac", new TwoBallBottomTarmac());
+        m_chooser.addOption("Three Ball from Bottom of Tarmac", new ThreeBallBottomTarmac());
+        m_chooser.addOption("Two Ball from Hanger Side", new TwoBallHanger(135));
         m_chooser.addOption("Fender Shot", new FenderShot());
-        m_chooser.addOption("Two Ball from Top Tarmac", new BlueTwoBallTopTarmac());
-        m_chooser.addOption("Blue One Ball Taxi", new BlueOneBall());
-        m_chooser.addOption("Blue? FIve Ball Auto", new FiveBallAuto());
+        m_chooser.addOption("Blue One Ball Taxi", new OneBall());
+        m_chooser.addOption("Five Ball Auto", new FiveBallAuto(90));
         SmartDashboard.putData(m_chooser);
     }
 

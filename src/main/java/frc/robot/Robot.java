@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 // import frc.robot.subsystems.climber.Climber;
 // import frc.robot.subsystems.climber.Climber.ClimberStates;
 import frc.robot.subsystems.shooter.Hood;
+import frc.robot.utils.Rumble;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -67,6 +68,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
+    Rumble.getInstance().runRumble(0, 0.1, 0, 1).schedule(); //Kill Rumble
     // m_robotContainer.retryMotors();
   }
 

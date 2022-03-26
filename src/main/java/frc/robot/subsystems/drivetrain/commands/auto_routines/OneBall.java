@@ -9,12 +9,12 @@ import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Shooter;
 
-public class BlueOneBall extends SequentialCommandGroup{
+public class OneBall extends SequentialCommandGroup{
 
     private final Shooter shooter_ = Shooter.getInstance();
     private final IntakeFeeder intake_ = IntakeFeeder.getInstance();
 
-    public BlueOneBall() {
+    public OneBall() {
         
         addCommands(
             shooter_.setGoalCommand(Constants.kFenderShotVelocity), 

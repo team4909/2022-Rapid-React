@@ -97,6 +97,7 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
         backSpinPID.setFF(0.0001);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
+        backSpinWheel_.setSmartCurrentLimit(30);
 
 
         m_shooterDisplay = new Shooter.ShooterDisplay();

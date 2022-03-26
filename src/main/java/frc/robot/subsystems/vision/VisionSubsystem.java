@@ -43,12 +43,11 @@ public class VisionSubsystem extends SubsystemBase{
 private VisionSubsystem() {
 
     
-    m_frontCamera = CameraServer.startAutomaticCapture(0);
-    // m_frontCamera.setResolution(160, 90); //256 144
-    m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
-    m_frontCamera.setExposureManual(10);
-    cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
-    switchCamera("Front Camera");
+    // m_frontCamera = CameraServer.startAutomaticCapture(0);
+    // m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
+    // m_frontCamera.setExposureManual(10);
+    // cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+    // switchCamera("Front Camera");
 
     // Shuffleboard.getTab("Driver").add(currentCamera_)
     //     .withPosition(8, 0)
@@ -68,7 +67,7 @@ private VisionSubsystem() {
 public void switchCamera(String camName) {
     switch (camName) {
         case "Front Camera":
-            cameraSelection.setString(m_frontCamera.getName());
+            // cameraSelection.setString(m_frontCamera.getName());
             break;
         case "Climber Camera":
             // currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);
