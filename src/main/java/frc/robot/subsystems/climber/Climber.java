@@ -84,7 +84,9 @@ public class Climber extends SubsystemBase {
         CALIBRATE("CALIBRATE"),
         MID_ALIGN("ALIGNMENT TO MID BAR"),
         RESET_HIGH("RESET_HIGH"),
+        HIGH_DETACH("HIGH DETACH"),
         RETRACTION("RETRACTION"),
+        TRAVERSAL("TRAVERSAL"),
         HIGHER_CLIMB("CLIMB HIGHER");
 
         String state_name;
@@ -227,6 +229,14 @@ public class Climber extends SubsystemBase {
         }
     }
 
+    public void setDoubleState(ClimberStates firstState, ClimberStates secondState) {
+        if (!m_state.equals(firstState)) {
+           m_state = firstState;    
+        } else if (m_state.equals(firstState)) {
+            m_state = secondState;
+        }
+    }
+
     public void setState(ClimberStates state) {
         m_state = state;
     }
@@ -302,11 +312,19 @@ public class Climber extends SubsystemBase {
                         new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward().withTimeout(0.5), extendToHigh())
                         .withTimeout(5.0);
                     break;
+                case HIGH_DETACH:
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(resetHigh().withTimeout(1.0), pivotForward().withTimeout(0.5));
+                    break;
                 case RESET_HIGH:
                     midClimb = true;
                     currentClimberCommand = 
-                        new SequentialCommandGroup(resetHigh().withTimeout(1.0), pivotForward().withTimeout(0.5), 
-                            retractProfiledClimber(Constants.Climber.kExtensionHighReset));
+                        new SequentialCommandGroup(retractProfiledClimber(-30));
+                    break;
+                case TRAVERSAL:
+                    midClimb = false;
+                    currentClimberCommand =
+                        new SequentialCommandGroup(pivotForward().withTimeout(0.25), extendToTraversal().withTimeout(1.0), pivotBackward());
                     break;
                 default:
                     m_state = ClimberStates.IDLE;
@@ -363,7 +381,7 @@ public class Climber extends SubsystemBase {
     private final Command pivotClimbingHold() {
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(Constants.Climber.kMidPivotHold); }, 
-            () -> true, 
+            () -> pivotTolerance(Constants.Climber.kMidPivotHold), 
             this);
     }
 
@@ -387,6 +405,15 @@ public class Climber extends SubsystemBase {
     private final Command extendToHigh() {
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionHighGoal); }, 
+            () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
+                              Constants.Climber.kExtensionHighGoal + 1, 
+                              Constants.Climber.kExtensionHighGoal - 1), 
+            this);
+    }
+
+    private final Command extendToTraversal() {
+        return new ClimberCommandBuilder(
+            () -> { setElevatorGoal(Constants.Climber.kTraversal); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
                               Constants.Climber.kExtensionHighGoal + 1, 
                               Constants.Climber.kExtensionHighGoal - 1), 
@@ -434,10 +461,10 @@ public class Climber extends SubsystemBase {
             this);
     }
 
-    private Command retractProfiledClimber(double goal) {
+    private Command retractProfiledClimber(double target) {
         return new ClimberCommandBuilder(
-            () -> { if (!midClimb) setPivotGoal(-500);
-                    m_targetState = new TrapezoidProfile.State(Constants.Climber.kExtensionBottom, 0.0);
+            () -> { if (!midClimb) setPivotGoal(-1000);
+                    m_targetState = new TrapezoidProfile.State(target, 0.0);
 
                     m_beginLState = new TrapezoidProfile.State(m_leftElevatorMotor.getEncoder().getPosition(), 0.0);
                     m_beginRState = new TrapezoidProfile.State(m_rightElevatorMotor.getEncoder().getPosition(), 0.0);

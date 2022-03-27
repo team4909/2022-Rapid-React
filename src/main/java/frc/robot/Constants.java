@@ -175,10 +175,11 @@ public final class Constants {
         public static final int kElevatorPIDSlot = 0;
         public static final int kPivotPIDSlot = 0;
         public static final double kPivotForward = -4200; //-3800
-        public static final double kMidPivotHold = -4000;
+        public static final double kMidPivotHold = -1000;
         public static final double kExtensionMidGoal = -71;
         public static final double kExtensionHighGoal = -90;
-        public static final double kExtensionHighReset = -94;
+        public static final double kExtensionHighReset = -96;
+        public static final double kTraversal = -96;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
 
@@ -212,30 +213,32 @@ public final class Constants {
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
 
-        public static final double kBackSpinHighShotSpeed = 7000;
+        public static final double kBackSpinHighShotSpeed = 6700;
         public static final double kBackSpinLowShotSpeed = 4000;
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
-            .add(150, 36)
-            .add(170, 40)
-            .add(200, 45)
-            .add(250, 45)
-            .add(300, 45)
-            .add(370, 48)
-            .add(400, 52)
-            .add(450, 52);
+            .add(150, 34)
+            .add(170, 36)
+            .add(200, 38)
+            .add(250, 40)
+            .add(300, 43)
+            .add(370, 44)
+            .add(400, 46)
+            .add(450, 49)
+            .add(500, 52);
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(150, 1545)
-            .add(170, 1570)
+            .add(150, 1430)
+            .add(170, 1500)
             .add(200, 1600)
-            .add(250, 1661)
-            .add(300, 1714)
-            .add(370, 1760)
-            .add(400, 1850)
-            .add(450, 1923);
+            .add(250, 1651)
+            .add(300, 1705)
+            .add(370, 1740)
+            .add(400, 1780)
+            .add(450, 1900)
+            .add(500, 1900);
         /*
           public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()

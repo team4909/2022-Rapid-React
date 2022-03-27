@@ -41,6 +41,9 @@ public class AutoShot extends CommandBase {
 
         double interpolatedAngle = Constants.Shooter.kHoodAngleLookupTable.get(m_distanceSeen);
         double interpolatedRPM = Constants.Shooter.kShooterRPMLookupTable.get(m_distanceSeen);
+        if (interpolatedRPM == 0) {
+            interpolatedRPM = 1500;
+        }
         m_hood.setHoodAngle(interpolatedAngle);
         m_shooter.setGoalStatic(interpolatedRPM, false);
         SmartDashboard.putNumber("Interpolated RPM", interpolatedRPM);

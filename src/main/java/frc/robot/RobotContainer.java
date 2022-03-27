@@ -6,6 +6,7 @@
 package frc.robot;
 
 import java.io.IOException;
+import java.sql.ClientInfoStatus;
 import java.time.Instant;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -161,7 +162,7 @@ public class RobotContainer {
     new Button(m_driverController::getLeftBumper)
                 .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
                 .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
-    new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
+    // new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
     
 
     //Fender Shot Angles
@@ -195,7 +196,7 @@ public class RobotContainer {
         // new ConditionalCommand(() -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 1.0);}, () -> {m_operatorController.setRumble(GenericHID.RumbleType.kRightRumble, 0.0);}, m_shooterSubsystem::spunUp);
         // new ConditionalCommand(() -> {m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, () -> { m_operatorController.setRumble(RumbleType.kRightRumble, 1.0); m_operator.setRumble(RumbleType.kLeftRumble, 1.0); }, m_shooterSubsystem::spunUp);
         new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setLowGoalCommand(Constants.kFenderLowShotVelocity)
-        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(20))));
+        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(21))));
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
@@ -208,7 +209,7 @@ public class RobotContainer {
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
-        new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.RESET_HIGH));
+        new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setDoubleState(ClimberStates.HIGH_DETACH, ClimberStates.RESET_HIGH));
 
         
     // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))
@@ -225,7 +226,7 @@ public class RobotContainer {
                     .whenActive(m_intakeSubsystem::reverseIntake)
                     .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(() -> climber_.setState(ClimberStates.IDLE));
+        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(() -> climber_.setState(ClimberStates.TRAVERSAL));
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
         new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
