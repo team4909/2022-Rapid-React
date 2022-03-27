@@ -21,11 +21,11 @@ public class FiveBallAuto extends SequentialCommandGroup {
     public FiveBallAuto(double offset) {
         addCommands( 
         new PathResetOdometry("Tarmac-Almost-A", offset), 
-        (
+        
+        new RunCommand(intake_::intake, intake_).withTimeout(0.3),
         new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
         .raceWith(new RunCommand(intake_::intake, intake_))
-        )
-        .andThen(new AutoShot(vision_, shooter_, hood_).withTimeout(0.8)),
+        .andThen(new AutoShot(vision_, shooter_, hood_).withTimeout(0.5)),
 
         new RunCommand(intake_::shoot).withTimeout(1.5)
         .andThen(new InstantCommand(intake_::stopIntake)),

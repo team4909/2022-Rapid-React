@@ -176,8 +176,8 @@ public final class Constants {
         public static final int kPivotPIDSlot = 0;
         public static final double kPivotForward = -4200; //-3800
         public static final double kMidPivotHold = -4000;
-        public static final double kExtensionMidGoal = -69;
-        public static final double kExtensionHighGoal = -92;
+        public static final double kExtensionMidGoal = -71;
+        public static final double kExtensionHighGoal = -90;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
 
