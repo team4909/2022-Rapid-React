@@ -211,7 +211,7 @@ public class RobotContainer {
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
-        new Button(m_operatorController::getYButton).whenPressed(new RunCommand(m_intakeSubsystem::compressBalls).withTimeout(1));
+        new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.RESET_HIGH));
 
         
     // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))

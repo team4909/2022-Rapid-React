@@ -81,7 +81,8 @@ public class Climber extends SubsystemBase {
         CALIBRATE("CALIBRATE"),
         MID_ALIGN("ALIGNMENT TO MID BAR"),
         MID_CLIMB("CLIMB TO MID"),
-        HIGHER_CLIMB("CLIMB HIGHER");
+        HIGHER_CLIMB("CLIMB HIGHER"),
+        RESET_HIGH("RESET_HIGH");
 
         String state_name;
 
@@ -289,14 +290,21 @@ public class Climber extends SubsystemBase {
                 case MID_CLIMB:
                     // Doesn't currently "hold" the pivot but could
                     currentClimberCommand = 
-                        new SequentialCommandGroup(retractProfiledClimber())
+                        new SequentialCommandGroup(retractProfiledClimber(Constants.Climber.kExtensionBottom))
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
                 case HIGHER_CLIMB:
-                     midClimb = false;
+                    midClimb = false;
                     currentClimberCommand = 
                         new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward().withTimeout(0.5), extendToHigh())
                         .withTimeout(5.0);
+                    break;
+                case RESET_HIGH:
+                    midClimb = true;
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(resetHigh().withTimeout(1.0), pivotForward().withTimeout(0.5), 
+                            retractProfiledClimber(Constants.Climber.kExtensionHighReset));
+                    break;
                 default:
                     m_state = ClimberStates.IDLE;
                     break;
@@ -322,6 +330,15 @@ public class Climber extends SubsystemBase {
             () -> true,
             this);
     } 
+
+    private final Command resetHigh() {
+        return new ClimberCommandBuilder(
+        () -> { setElevatorGoal(Constants.Climber.kExtensionHighReset); }, 
+        () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
+                            Constants.Climber.kExtensionHighReset + 1, 
+                            Constants.Climber.kExtensionHighReset - 1), 
+        this);
+    }
 
     private final Command calibrateClimber() {
         return new ClimberCommandBuilder(
@@ -394,7 +411,7 @@ public class Climber extends SubsystemBase {
             this);
     }
 
-    private Command retractProfiledClimber() {
+    private Command retractProfiledClimber(double goal) {
         return new ClimberCommandBuilder(
             () -> { if (!midClimb) setPivotGoal(-500);
                     m_targetState = new TrapezoidProfile.State(Constants.Climber.kExtensionBottom, 0.0);

@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
@@ -233,7 +234,7 @@ public class IntakeFeeder extends SubsystemBase {
                 // Continue running the intaking and centering wheels until there's another ball seen
                 intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
-                if (incomingSeen && (ballsHeld_ != BallCount.kTwo)) {
+                if (incomingSeen && !feederBallSeen) {
                     // Set state to get the next ball
                     currentState_ = IntakeState.kIntakeSecond;
                 }
@@ -269,7 +270,7 @@ public class IntakeFeeder extends SubsystemBase {
                 // Stop feeder if either two balls reach the position
                 // Might need more complex logic, depends on the geometry but should be fine for testing
                 if (feederBallSeen ) {
-                    currentState_ = IntakeState.kIdleFeeder;
+                    currentState_ = IntakeState.kIdle;
                     ballsHeld_ = BallCount.kTwo;
                     // Not doing this yet, but for the future driver feedback
                     rumble_ = false;
