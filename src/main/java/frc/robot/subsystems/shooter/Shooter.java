@@ -97,6 +97,7 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
         backSpinPID.setFF(0.0001);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
+        backSpinWheel_.setSmartCurrentLimit(30);
 
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
@@ -192,6 +193,7 @@ public class Shooter extends SubsystemBase {
             m_flywheelP = m_layout.addPersistent("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
             m_flywheelF = m_layout.addPersistent("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+
         }
 
         

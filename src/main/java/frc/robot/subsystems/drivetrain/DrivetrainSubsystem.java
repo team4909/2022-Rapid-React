@@ -217,6 +217,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void zeroGyroscope() {
         // m_pigeon.zeroGyroBiasNow();
         m_pigeon.setYaw(0.0);
+        
+    }
+
+    public void setGyroscope(double deg) {
+        m_pigeon.setYaw(deg);
     }
 
     /**
@@ -230,9 +235,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         
     }
 
-    public double getGyroPitch() {
-        return m_pigeon.getPitch();
+    public double getGyroRoll() {
+        return m_pigeon.getRoll();
     }
+
+
 
     /**
      * Sets the chassisSpeeds object in drivetrain
@@ -269,6 +276,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         // System.out.println(getGyroscopeRotation());
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
         m_field.setRobotPose(m_odometry.getPoseMeters());
+        SmartDashboard.putNumber("roll", this.getGyroRoll());
         // if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
         //     m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
         //     m_backLeftCanCoder.getLastError() != ErrorCode.OK ||

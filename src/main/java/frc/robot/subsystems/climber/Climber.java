@@ -18,6 +18,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -33,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.utils.PIDGains;
 
 
@@ -80,9 +83,9 @@ public class Climber extends SubsystemBase {
         IDLE("IDLE"), 
         CALIBRATE("CALIBRATE"),
         MID_ALIGN("ALIGNMENT TO MID BAR"),
-        MID_CLIMB("CLIMB TO MID"),
-        HIGHER_CLIMB("CLIMB HIGHER"),
-        RESET_HIGH("RESET_HIGH");
+        RESET_HIGH("RESET_HIGH"),
+        RETRACTION("RETRACTION"),
+        HIGHER_CLIMB("CLIMB HIGHER");
 
         String state_name;
 
@@ -287,7 +290,7 @@ public class Climber extends SubsystemBase {
                         new SequentialCommandGroup(pivotForward(), extendToMid())
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
-                case MID_CLIMB:
+                case RETRACTION:
                     // Doesn't currently "hold" the pivot but could
                     currentClimberCommand = 
                         new SequentialCommandGroup(retractProfiledClimber(Constants.Climber.kExtensionBottom))
@@ -367,8 +370,8 @@ public class Climber extends SubsystemBase {
     private final Command pivotBackward() {
         // System.out.println("pivoting backwords \n\n\n\n\n");
         return new ClimberCommandBuilder(
-            () -> { setPivotGoal(-500);}, 
-            () -> pivotTolerance(-500), 
+            () -> { setPivotGoal(-800);}, 
+            () -> pivotTolerance(-800), 
             this);
     }
 
@@ -391,6 +394,7 @@ public class Climber extends SubsystemBase {
     }
 
     private final Command detach() {
+
         return new ClimberCommandBuilder(
             () -> { setElevatorGoal(Constants.Climber.kExtensionDetach); }, 
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
@@ -398,6 +402,25 @@ public class Climber extends SubsystemBase {
                               Constants.Climber.kExtensionDetach - 1), 
             this);
 
+    }
+
+    //TODO move later
+    double m_roll = 0;
+    Debouncer m_debouncer = new Debouncer(2);
+    private final Command stabilize() {
+        return new ClimberCommandBuilder(
+            () -> {
+                m_roll = DrivetrainSubsystem.getInstance().getGyroRoll();
+                if (m_roll < -5)
+                    setPivotGoal(-2500);
+                else if (m_roll > 5)
+                    setPivotGoal(0);
+                else setPivotGoal(0);
+                
+            }, 
+
+            () -> m_debouncer.calculate(inTolerance(m_roll, -5, 5)) ,
+            this);
     }
 
     // Non-profiled retraction, unused
@@ -481,6 +504,9 @@ public class Climber extends SubsystemBase {
  
         return value < min && value > max;
     }
+
+
+
     private class ClimberDisplay {
         
     }

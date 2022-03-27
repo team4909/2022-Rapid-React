@@ -11,24 +11,33 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.LimelightShoot;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class TwoBallBottomTarmac extends SequentialCommandGroup {
+public class ThreeBallBottomTarmac extends SequentialCommandGroup {
 
     IntakeFeeder intake_ = IntakeFeeder.getInstance();
     Shooter shooter_ = Shooter.getInstance();
     VisionSubsystem vision_ = VisionSubsystem.getInstance();
 
-    public TwoBallBottomTarmac() {
+    public ThreeBallBottomTarmac() {
         addCommands( 
 
         new PathResetOdometry("Tarmac-Almost-A"), (
             new TrajectoryFollow("Tarmac-Almost-A").withTimeout(2)
             .raceWith(new RunCommand(intake_::intake, intake_))
         )
+        
+        .andThen(new InstantCommand(intake_::stopIntake)),        
+        new LimelightShoot(Constants.kWallShotVelocity, true, false),
+        
+       (new TrajectoryFollow("Near-A-B").withTimeout(3)
+        .raceWith(new RunCommand(intake_::intake, intake_)))
         .andThen(new InstantCommand(intake_::stopIntake)),
 
-        new LimelightShoot(Constants.kWallShotVelocity, true, false)
-        );
+        new LimelightShoot(Constants.kLongShotVelocity, true, false),
 
+        new TrajectoryFollow("B-CD").withTimeout(2.3)
+            .raceWith(new RunCommand(intake_::intake, intake_))
+       
+        );
    }
     
 }

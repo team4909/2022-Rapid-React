@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.BionicController;
+import frc.robot.utils.Rumble;
 
 import java.util.Map;
 
@@ -36,17 +37,17 @@ public class VisionSubsystem extends SubsystemBase{
     private UsbCamera m_frontCamera;
     private UsbCamera climberCamera_;
     private NetworkTableEntry cameraSelection;
+    private NetworkTableEntry inRange_;
     private VideoSource currentCamera_;
 
 private VisionSubsystem() {
 
     
-    m_frontCamera = CameraServer.startAutomaticCapture(0);
-    // m_frontCamera.setResolution(160, 90); //256 144
-    m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
-    m_frontCamera.setExposureManual(10);
-    cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
-    switchCamera("Front Camera");
+    // m_frontCamera = CameraServer.startAutomaticCapture(0);
+    // m_frontCamera.setVideoMode(PixelFormat.kMJPEG, 640, 480, 30);
+    // m_frontCamera.setExposureManual(10);
+    // cameraSelection = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+    // switchCamera("Front Camera");
 
     // Shuffleboard.getTab("Driver").add(currentCamera_)
     //     .withPosition(8, 0)
@@ -58,13 +59,15 @@ private VisionSubsystem() {
     lastDistance_ = 0.0;
     firstError = this.getXDegrees();
 
+    inRange_ = Shuffleboard.getTab("Driver").add("In Range", false).getEntry();
+
 
 }
 
 public void switchCamera(String camName) {
     switch (camName) {
         case "Front Camera":
-            cameraSelection.setString(m_frontCamera.getName());
+            // cameraSelection.setString(m_frontCamera.getName());
             break;
         case "Climber Camera":
             // currentCamera_ = CameraServer.startAutomaticCapture("Climber Camera", 1);
@@ -214,6 +217,13 @@ public static VisionSubsystem instance_ = null;
         SmartDashboard.putBoolean("isAligned", isAligned_);
         SmartDashboard.putNumber("Distance", lastDistance_);
         SmartDashboard.putNumber("ofset speed", limelightOffset);
+
+        if(lastDistance_ > 200 && lastDistance_ < 350){
+            Rumble.getInstance().runRumble(1, 1, 0).schedule();
+            inRange_.setBoolean(true);
+        } else {
+            inRange_.setBoolean(false);
+        }
 
     }
 

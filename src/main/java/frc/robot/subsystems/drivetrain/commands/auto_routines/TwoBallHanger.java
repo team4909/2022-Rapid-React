@@ -8,26 +8,25 @@ import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.commands.AutoShot;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-public class BlueTwoBallTopTarmac extends SequentialCommandGroup {
+public class TwoBallHanger extends SequentialCommandGroup {
 
     IntakeFeeder intake_ = IntakeFeeder.getInstance();
     Shooter shooter_ = Shooter.getInstance();
     VisionSubsystem vision_ = VisionSubsystem.getInstance();
     Hood hood_ = Hood.getInstance();
 
-    public BlueTwoBallTopTarmac() {
+    public TwoBallHanger(double offset) {
         addCommands(
-            shooter_.setGoalCommand(4711),
+            new RunCommand(intake_::intake, intake_).withTimeout(1.5),
             new InstantCommand(intake_::resetBallCount),
             new PathResetOdometry("TarmacN-E"), 
-            new TrajectoryFollow("TarmacN-E").withTimeout(2)
-            .raceWith(new RunCommand(intake_::intake, intake_)),
+            new TrajectoryFollow("TarmacN-E").withTimeout(1.7),
 
             new InstantCommand(intake_::stopIntake)
-            .andThen(vision_.LimelightAim())
-            .andThen(() -> hood_.setHoodAngle(22)),
+            .andThen(new AutoShot(vision_, shooter_, hood_).withTimeout(2)),
         
 
         new RunCommand(intake_::shoot).withTimeout(3)

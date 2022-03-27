@@ -67,25 +67,25 @@ public final class Constants {
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR = 8;
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR = 7;
     public static final int FRONT_LEFT_MODULE_STEER_ENCODER = 12;
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(240.52539062499997); //,318.515  195 // FIXME Measure and set front left steer offset //192.205810546875
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(66.61757812500001); //,318.515  195 // FIXME Measure and set front left steer offset //192.205810546875
 
     // FRONT RIGHT : France
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR = 2;
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR = 1;
     public static final int FRONT_RIGHT_MODULE_STEER_ENCODER = 9;
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(12.875); //25.4882,97 // FIXME Measure and set back left steer offset //9.3109130859375
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(58.27148437499999); //25.4882,97 // FIXME Measure and set back left steer offset //9.3109130859375
 
     // BACK RIGHT : Railroad
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR = 4;
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR = 3;
     public static final int BACK_RIGHT_MODULE_STEER_ENCODER = 10;
-    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(174+180); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
+    public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(324.92578125); //41.484, 181 // FIXME Measure and set back right steer offset //305.419921875
 
     // BACK LEFT : Real Life
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR = 6;
     public static final int BACK_LEFT_MODULE_STEER_MOTOR = 5;
     public static final int BACK_LEFT_MODULE_STEER_ENCODER = 11;
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(99.36796875000002d); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(346.19648437500007); //111.086718, 272 // FIXME Measure and set back left steer offset //126.28784179687499
     
     // The Max Velocity for the robot [only in AUTO]
     public static final double T_MAX_VEL = 2.9;
@@ -155,8 +155,8 @@ public final class Constants {
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 700; //4300
-    public static final double kFenderLowShotVelocity = 500;
+    public static final double kFenderShotVelocity = 500; //4300
+    public static final double kFenderLowShotVelocity = 600;
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 2300; 
     public static final double kWallShotVelocity = 3675;
@@ -177,7 +177,7 @@ public final class Constants {
         public static final double kPivotForward = -4200; //-3800
         public static final double kMidPivotHold = -4000;
         public static final double kExtensionMidGoal = -69;
-        public static final double kExtensionHighGoal = -94;
+        public static final double kExtensionHighGoal = -92;
         public static final double kExtensionHighReset = -95;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
@@ -212,8 +212,8 @@ public final class Constants {
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
 
-        public static final double kBackSpinHighShotSpeed = 8000;
-        public static final double kBackSpinLowShotSpeed = 200;
+        public static final double kBackSpinHighShotSpeed = 7000;
+        public static final double kBackSpinLowShotSpeed = 4000;
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()

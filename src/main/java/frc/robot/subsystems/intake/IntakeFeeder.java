@@ -131,7 +131,7 @@ public class IntakeFeeder extends SubsystemBase {
                 break;
             case kTwo:
             default:
-                currentState_ = IntakeState.kIdle;
+                currentState_ = IntakeState.kIdleFeeder;
                 break;
         }
     }
@@ -311,7 +311,7 @@ public class IntakeFeeder extends SubsystemBase {
 
 
         if (!lastBallsHeld.toString().equals(ballsHeld_.toString())){
-            Rumble.getInstance().runRumble(0, 3, 1, 0, 1).schedule();
+            Rumble.getInstance().runRumble(3, 1, 1, 0, 1).schedule();
         }
 
 
