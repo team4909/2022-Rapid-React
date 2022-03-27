@@ -231,7 +231,7 @@ public class RobotContainer {
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);
         // new Button(m_operatorController::getRightBumper).whenPressed(climber_::StopRoutine); //Only do in case of emergency, has to be manually reset :(
         //driver controller
-        new Button(m_operatorController::getLeftBumper).whenPressed(() -> climber_.setState(ClimberStates.MID_CLIMB));
+        new Button(m_operatorController::getLeftBumper).whenPressed(() -> climber_.setState(ClimberStates.RETRACTION));
 
         new Button(m_operatorController::getRightBumper).whenPressed(() -> climber_.setState(ClimberStates.HIGHER_CLIMB));
         // new Button(m_operatorController::getRightStickButton).whenPressed(climber_.ExtendClimberHigh());
