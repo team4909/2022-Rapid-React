@@ -8,6 +8,7 @@ package frc.robot;
 import java.io.IOException;
 import java.time.Instant;
 
+import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
@@ -92,6 +93,10 @@ public class RobotContainer {
    */
   public RobotContainer() {
     // PDH.clearStickyFaults();
+
+    //Allows access to photon vision client when tethered via USB cable
+    PortForwarder.add(5800, "photonvision.local", 5800);
+    
     // Create the driver tab
     Shuffleboard.getTab("Driver");
     PDH = new PowerDistribution(1, ModuleType.kRev);
