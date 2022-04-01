@@ -176,10 +176,11 @@ public final class Constants {
         public static final int kPivotPIDSlot = 0;
         public static final double kPivotForward = -4200; //-3800
         public static final double kMidPivotHold = -1000;
+        public static final double kPivotBar = -3800;
         public static final double kExtensionMidGoal = -71;
         public static final double kExtensionHighGoal = -90;
         public static final double kExtensionHighReset = -96;
-        public static final double kTraversal = -96;
+        public static final double kAlign = -80;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
 
