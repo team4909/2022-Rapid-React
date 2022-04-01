@@ -231,7 +231,6 @@ public class RobotContainer {
                     .whenActive(m_intakeSubsystem::reverseIntake)
                     .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(() -> climber_.setState(ClimberStates.TRAVERSAL));
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
         new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));
         // new Button(m_operatorController::getLeftBumper).whenPressed(climber_::StartRoutine);

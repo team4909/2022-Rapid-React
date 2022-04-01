@@ -312,20 +312,6 @@ public class Climber extends SubsystemBase {
                         new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward().withTimeout(0.5), extendToHigh())
                         .withTimeout(5.0);
                     break;
-                case HIGH_DETACH:
-                    currentClimberCommand = 
-                        new SequentialCommandGroup(resetHigh().withTimeout(1.0), pivotForward().withTimeout(0.5));
-                    break;
-                case RESET_HIGH:
-                    midClimb = true;
-                    currentClimberCommand = 
-                        new SequentialCommandGroup(retractProfiledClimber(-30));
-                    break;
-                case TRAVERSAL:
-                    midClimb = false;
-                    currentClimberCommand =
-                        new SequentialCommandGroup(pivotForward().withTimeout(0.25), extendToTraversal().withTimeout(1.0), pivotBackward());
-                    break;
                 default:
                     m_state = ClimberStates.IDLE;
                     break;
