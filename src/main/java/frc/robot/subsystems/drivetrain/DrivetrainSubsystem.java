@@ -11,7 +11,10 @@ import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.CANCoderFaults;
 import com.ctre.phoenix.sensors.Pigeon2;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import frc.lib.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
+
 import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import frc.lib.swervedrivespecialties.swervelib.ModuleConfiguration;
 import frc.lib.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -145,12 +148,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.clearStickyFaults();
     }
 
-    public void initializeMotors(){
+    public void initializeMotors() {
+        Mk4ModuleConfiguration config = new Mk4ModuleConfiguration();
+        config.setCanivoreName("Drivetrain-CANivore");
         m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
             // Allows you to see the current state of the module on the dashboard.
             m_tab.getLayout("Front Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(0, 0),
+            // Module Config
+            config,
             // L1 - L4 Change in Constants
             GEAR_RATIO,
             // This is the ID of the drive motor
@@ -171,6 +178,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_tab.getLayout("Front Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(2, 0),
+            config,
             GEAR_RATIO,
             FRONT_RIGHT_MODULE_DRIVE_MOTOR, 
             FRONT_RIGHT_MODULE_STEER_MOTOR,
@@ -183,6 +191,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_tab.getLayout("Back Left Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(4, 0),
+            config,
             GEAR_RATIO,
             BACK_LEFT_MODULE_DRIVE_MOTOR,
             BACK_LEFT_MODULE_STEER_MOTOR,
@@ -196,6 +205,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_tab.getLayout("Back Right Module", BuiltInLayouts.kGrid).withProperties(Map.of("Number of columns", 1, "Number of rows", 0))
                     .withSize(1, 4)
                     .withPosition(6, 0),
+            config,
             GEAR_RATIO,
             BACK_RIGHT_MODULE_DRIVE_MOTOR,
             BACK_RIGHT_MODULE_STEER_MOTOR,
