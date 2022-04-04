@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
-import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
+import frc.lib.swervedrivespecialties.swervelib.ModuleConfiguration;
+import frc.lib.swervedrivespecialties.swervelib.SdsModuleConfigurations;
+import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -224,10 +224,11 @@ public final class Constants {
             .add(200, 38)
             .add(250, 40)
             .add(300, 43)
-            .add(370, 44)
-            .add(400, 46)
-            .add(450, 49)
-            .add(500, 52);
+            .add(350, 44)
+            .add(400, 48)
+            .add(450, 48)
+            .add(505, 48)
+            .add(567, 50);
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
@@ -236,10 +237,11 @@ public final class Constants {
             .add(200, 1600)
             .add(250, 1651)
             .add(300, 1705)
-            .add(370, 1740)
-            .add(400, 1780)
-            .add(450, 1900)
-            .add(500, 1900);
+            .add(350, 1740)
+            .add(400, 2084)
+            .add(450, 2084) // ROBOTS BY THE C
+            .add(505, 2084) // ROBOTS BY THE C
+            .add(567, 2340);
         /*
           public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()

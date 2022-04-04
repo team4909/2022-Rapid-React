@@ -56,6 +56,7 @@ import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.AutoShot;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.utils.Rumble;
 
@@ -78,6 +79,7 @@ public class RobotContainer {
     private final Climber climber_ = Climber.getInstance();
     private final Rumble rumble_ = Rumble.getInstance(m_driverController, m_operatorController);
     
+    private final Vision m_vision = Vision.getInstance();
     private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
 
@@ -96,7 +98,7 @@ public class RobotContainer {
     // PDH.clearStickyFaults();
 
     //Allows access to photon vision client when tethered via USB cable
-    PortForwarder.add(5800, "photonvision.local", 5800);
+    PortForwarder.add(5800, "gloworm.local", 5800);
     
     // Create the driver tab
     Shuffleboard.getTab("Driver");

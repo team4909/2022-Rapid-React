@@ -1,9 +1,10 @@
 ﻿# This script does not work at all after the ssh :(
 echo "Connecting..."
-$PORT = 5800
+$limelightIP = "10.49.9.42"
 $jarpath = $PSScriptRoot + "\photonvision-v2022.1.6.jar"
-scp -P $PORT $jarpath pi@gloworm.local
-ssh pi@gloworm.local -p $PORT
+scp -P 5800 $jarpath pi@gloworm.local
+echo "SSHing"
+ssh pi@gloworm.local
 sudo systemctl stop photonvision.service
 sudo mv $jarpath /opt/photonvision/photonvision.jar
 sudo systemctl start photonvision.service
