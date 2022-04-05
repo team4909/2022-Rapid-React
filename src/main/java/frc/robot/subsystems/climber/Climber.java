@@ -82,7 +82,7 @@ public class Climber extends SubsystemBase {
         IDLE("IDLE"), 
         CALIBRATE("CALIBRATE"),
         MID_ALIGN("ALIGNMENT TO MID BAR"),
-        RESET_HIGH("RESET_HIGH"),
+        PREPARE_HIGH("PREPARE_HIGH"),
         HIGH_DETACH("HIGH DETACH"),
         RETRACTION("RETRACTION"),
         TRAVERSAL("TRAVERSAL"),
@@ -305,12 +305,17 @@ public class Climber extends SubsystemBase {
                         new SequentialCommandGroup(retractProfiledClimber(Constants.Climber.kExtensionBottom), pivotBackward().withTimeout(0.25), extendToAlign())
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
-                case HIGHER_CLIMB:
+                case PREPARE_HIGH:
                     midClimb = false;
-                    currentClimberCommand = 
-                        new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward().withTimeout(0.5), extendToHigh(), pivotToBar())
+                    currentClimberCommand = new SequentialCommandGroup(detach().withTimeout(0.5), pivotBackward().withTimeout(0.5), extendToAlign())
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
+                case HIGHER_CLIMB:
+                    currentClimberCommand = 
+                        new SequentialCommandGroup(extendToHigh(), pivotToBar())
+                        .withTimeout(Constants.Climber.kClimberTimeoutLong);
+                    break;
+                
                 default:
                     m_state = ClimberStates.IDLE;
                     break;
@@ -457,7 +462,8 @@ public class Climber extends SubsystemBase {
 
     private Command retractProfiledClimber(double target) {
         return new ClimberCommandBuilder(
-            () -> { if (!midClimb) setPivotGoal(-1000);
+            () -> { 
+                // if (!midClimb) setPivotGoal(-1000);
                     m_targetState = new TrapezoidProfile.State(target, 0.0);
 
                     m_beginLState = new TrapezoidProfile.State(m_leftElevatorMotor.getEncoder().getPosition(), 0.0);
