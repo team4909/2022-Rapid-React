@@ -91,7 +91,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * The important thing about how you configure your gyroscope is that rotating the robot counter-clockwise should
      * cause the angle reading to increase until it wraps back over to zero.
      */
-    private final Pigeon2 m_pigeon = new Pigeon2(DRIVETRAIN_PIGEON_ID);
+    private final Pigeon2 m_pigeon = new Pigeon2(DRIVETRAIN_PIGEON_ID, "Drivetrain-CANivore");
 
     // These are our modules. We initialize them in the initializeMotors method.
     private SwerveModule m_frontLeftModule;

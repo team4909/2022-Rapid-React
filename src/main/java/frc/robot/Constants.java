@@ -134,7 +134,7 @@ public final class Constants {
 
 
     // The PID Values for the Limelight driven alignment to the goal.
-    public static final double GOAL_ALIGN_KP = 0.008;
+    public static final double GOAL_ALIGN_KP = 0.005;
     public static final double GOAL_ALIGN_KD = 0.0008;
 
     // Shooter Constants 
@@ -180,7 +180,7 @@ public final class Constants {
         public static final double kExtensionMidGoal = -71;
         public static final double kExtensionHighGoal = -90;
         public static final double kExtensionHighReset = -96;
-        public static final double kAlign = -80;
+        public static final double kAlign = -65;
         public static final double kExtensionBottom = 0;
         public static final double kExtensionDetach = -20;
 
@@ -219,29 +219,29 @@ public final class Constants {
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
-            .add(150, 34)
-            .add(170, 36)
-            .add(200, 38)
-            .add(250, 40)
-            .add(300, 43)
-            .add(350, 44)
-            .add(400, 48)
-            .add(450, 48)
-            .add(505, 48)
-            .add(567, 50);
+            .add(3, 20)
+            .add(3.55, 30)
+            .add(4, 40)
+            .add(4.55, 45)
+            .add(5, 55)
+            .add(6, 55);
+            // .add(400, 48)
+            // .add(450, 48)
+            // .add(505, 48)
+            // .add(567, 50);
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(150, 1430)
-            .add(170, 1500)
-            .add(200, 1600)
-            .add(250, 1651)
-            .add(300, 1705)
-            .add(350, 1740)
-            .add(400, 2084)
-            .add(450, 2084) // ROBOTS BY THE C
-            .add(505, 2084) // ROBOTS BY THE C
-            .add(567, 2340);
+            .add(3, 1853)
+            .add(3.55, 1853)
+            .add(4, 1949)
+            .add(4.55, 1928)
+            .add(5, 2164)
+            .add(6, 2488);
+            // .add(400, 2084)
+            // .add(450, 2084) // ROBOTS BY THE C
+            // .add(505, 2084) // ROBOTS BY THE C
+            // .add(567, 2340);
         /*
           public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()

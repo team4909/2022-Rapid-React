@@ -80,7 +80,7 @@ public class RobotContainer {
     private final Rumble rumble_ = Rumble.getInstance(m_driverController, m_operatorController);
     
     private final Vision m_vision = Vision.getInstance();
-    private final VisionSubsystem m_VisionSubsystem = VisionSubsystem.getInstance();
+    // private final VisionSubsystem m_vision = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
 
     private final PowerDistribution PDH;
@@ -116,7 +116,7 @@ public class RobotContainer {
             m_drivetrainSubsystem,
             () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
             () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
-            () -> ((-modifyAxis(m_driverController.getRightX()) + m_VisionSubsystem.getLimelightOffset()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * m_drivetrainSubsystem.getPreciseModeScale()
+            () -> ((-modifyAxis(m_driverController.getRightX()) + m_vision.getLimelightOffset()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * m_drivetrainSubsystem.getPreciseModeScale()
     ));
     // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
     //         m_drivetrainSubsystem,
@@ -156,9 +156,9 @@ public class RobotContainer {
         // new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setElevatorGains(1, 0, 0, 0)); //up
         // new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.sete//down
         new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-        new Button(m_driverController::getStartButton)
-        .toggleWhenPressed(new InstantCommand(() -> m_VisionSubsystem.switchCamera("Climber Camera"))
-        .andThen(new InstantCommand(() -> m_VisionSubsystem.switchCamera("Front Camera"))));
+        new Button(m_driverController::getStartButton);
+        // .toggleWhenPressed(new InstantCommand(() -> m_vision.switchCamera("Climber Camera"))
+        // .andThen(new InstantCommand(() -> m_vision.switchCamera("Front Camera"))));
     
     // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
     // Switch Pipelines
@@ -173,11 +173,11 @@ public class RobotContainer {
     
 
     //Fender Shot Angles
-    new Button(m_driverController::getAButton).whenPressed(new SnapToAngle(m_driverController, 201, m_drivetrainSubsystem));
-    new Button(m_driverController::getBButton).whenPressed(new SnapToAngle(m_driverController, 111, m_drivetrainSubsystem));
-    new Button(m_driverController::getXButton).whenPressed(new SnapToAngle(m_driverController, 291, m_drivetrainSubsystem));
-    new Button(m_driverController::getYButton).whenPressed(new SnapToAngle(m_driverController, 21, m_drivetrainSubsystem));
-    new Button(() -> (m_driverController.getPOV()  != -1)).whenPressed(new SnapToAngle(m_driverController, m_drivetrainSubsystem), false);
+    // new Button(m_driverController::getAButton).whenPressed(new SnapToAngle(m_driverController, 201, m_drivetrainSubsystem));
+    // new Button(m_driverController::getBButton).whenPressed(new SnapToAngle(m_driverController, 111, m_drivetrainSubsystem));
+    // new Button(m_driverController::getXButton).whenPressed(new SnapToAngle(m_driverController, 291, m_drivetrainSubsystem));
+    // new Button(m_driverController::getYButton).whenPressed(new SnapToAngle(m_driverController, 21, m_drivetrainSubsystem));
+    // new Button(() -> (m_driverController.getPOV()  != -1)).whenPressed(new SnapToAngle(m_driverController, m_drivetrainSubsystem), false);
 
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
     // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
@@ -193,8 +193,8 @@ public class RobotContainer {
                 .whenInactive(() -> { m_intakeSubsystem.stopIntake();} );
 
     new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis())) > 0.7)
-        .whenActive(new AutoShot(m_VisionSubsystem, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
-        .whenInactive(new InstantCommand(() -> m_VisionSubsystem.setLimelightOffset(0), m_VisionSubsystem)
+        .whenActive(new AutoShot(m_vision, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
+        .whenInactive(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
             .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0, false))));
         /////////////////////////////////
         ///      Operator Buttons     ///
@@ -216,7 +216,7 @@ public class RobotContainer {
         // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
         // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
-        new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setDoubleState(ClimberStates.HIGH_DETACH, ClimberStates.RESET_HIGH));
+        new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.PREPARE_HIGH));
 
         
     // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))

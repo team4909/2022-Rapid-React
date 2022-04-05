@@ -9,13 +9,14 @@ import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.AutoShot;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class TwoBallHanger extends SequentialCommandGroup {
 
     IntakeFeeder intake_ = IntakeFeeder.getInstance();
     Shooter shooter_ = Shooter.getInstance();
-    VisionSubsystem vision_ = VisionSubsystem.getInstance();
+    Vision vision_ = Vision.getInstance();
     Hood hood_ = Hood.getInstance();
 
     public TwoBallHanger(double offset) {
