@@ -230,14 +230,17 @@ public class RobotContainer {
     // .whenActive(climber_.RetractClimber(m_operatorController.getRightTriggerAxis()));
     
 
-        // Run intake: Operator right trigger
+ // Run intake: Operator right trigger
         new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
-                    .whenActive(m_intake::intakeOut);
+            .whenActive(m_intakeSubsystem::intake)
+            .whenInactive(m_intakeSubsystem::stopIntake);
+
         // Reverse intake: Operator left trigger
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
-                    .whenActive(m_intake::intakeIn);
+            .whenActive(m_intakeSubsystem::reverseIntake)
+            .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::zeroIntake);
+        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
 
 
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));

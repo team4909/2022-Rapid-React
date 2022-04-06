@@ -5,7 +5,6 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -19,6 +18,7 @@ public class Intake extends SubsystemBase {
 
         IN("IN"),
         OUT("OUT"),
+        CALIBRATE("CALIBRATE"),
         IDLE("IDLE");
 
         String stateName;
@@ -67,6 +67,9 @@ public class Intake extends SubsystemBase {
                 case IN:
                     positionController_.setReference(0, ControlType.kPosition);
                     break;
+                case CALIBRATE:
+                    zeroIntake();
+                    break;
                 default:
                     currentState_ = IntakeStates.IDLE;
                     break;
@@ -79,7 +82,7 @@ public class Intake extends SubsystemBase {
 
     }
 
-    public void zeroIntake(){
+    private void zeroIntake(){
         new RunCommand(() -> positionController_.setReference(-0.2, ControlType.kDutyCycle), this)
         .withTimeout(0.75)
         .andThen(new InstantCommand(() -> positionController_.setReference(0, ControlType.kDutyCycle, 0), this))
@@ -93,6 +96,10 @@ public class Intake extends SubsystemBase {
 
     public void intakeIn(){
         currentState_ = IntakeStates.IN;
+    }
+
+    public void intakeZero(){
+        currentState_ = IntakeStates.CALIBRATE;
     }
 
     public static Intake getInstance(){
