@@ -179,10 +179,8 @@ public final class Constants {
         public static double POSITION_KD = 0;
         public static double POSITION_KF = 0.0005;
 
-        public static double MAX_VOLTAGE = 8;
-        public static double HOLD_VOLTAGE = 3;
-
-        public static double GEAR_RATIO = (1/7) * (1/7);
+        public static double MAX_VOLTAGE = 6.5;
+        public static int CURRENT_LIMIT = 20;
 
         public static double OUT_SETPOINT = 30;
     }

@@ -32,6 +32,7 @@ public class IntakeFeeder extends SubsystemBase {
 
         public String name;
 
+
         private IntakeState(String n) {
             this.name = n;
         }
@@ -82,7 +83,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     private static Timer shot_timer_;
 
-
+    private final Intake m_intake = Intake.getInstance();
 
     private IntakeFeeder() {
         intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
@@ -124,7 +125,7 @@ public class IntakeFeeder extends SubsystemBase {
             return;
         }
 
-        Intake.getInstance().intakeOut();
+        m_intake.intakeOut();
 
         switch (ballsHeld_) {
             case kZero:
@@ -143,7 +144,7 @@ public class IntakeFeeder extends SubsystemBase {
     // Stop all rollers in the intake
     public void stopIntake() {
         currentState_ = IntakeState.kIdle;
-        Intake.getInstance().intakeIn();
+        m_intake.intakeIn();
         // intakeSolenoidState_ = false; // intake in
 
     }
@@ -157,7 +158,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     // Manually toggle the intake moving in and out (might not be needed, but nice to have)
     public void toggleIntakeExtension() {
-        Intake.getInstance().intakeOut();
+        m_intake.intakeOut();
         // intakeSolenoidState_ = !intakeSolenoidState_;
     }
 
@@ -165,7 +166,7 @@ public class IntakeFeeder extends SubsystemBase {
     // Just want to test that reversing works
     public void reverseIntake() {
         currentState_ = IntakeState.kReverseWrongBall;
-        Intake.getInstance().intakeOut();
+        m_intake.intakeOut();
         // intakeSolenoidState_ = !intakeSolenoidState_; // intake in
 
     }

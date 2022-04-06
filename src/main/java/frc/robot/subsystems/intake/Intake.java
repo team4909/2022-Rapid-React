@@ -18,8 +18,7 @@ public class Intake extends SubsystemBase {
 
         IN("IN"),
         OUT("OUT"),
-        CALIBRATE("CALIBRATE"),
-        IDLE("IDLE");
+        CALIBRATE("CALIBRATE");
 
         String stateName;
 
@@ -42,7 +41,7 @@ public class Intake extends SubsystemBase {
 
     private Intake(){
         intakeMotor_ = new CANSparkMax(Constants.Intake.INTAKE_MOTOR, MotorType.kBrushless);
-        intakeMotor_.setSmartCurrentLimit(20);
+        intakeMotor_.setSmartCurrentLimit(Constants.Intake.CURRENT_LIMIT);
 
         positionController_ = intakeMotor_.getPIDController();
 
@@ -51,7 +50,7 @@ public class Intake extends SubsystemBase {
         positionController_.setD(Constants.Intake.POSITION_KD);
         positionController_.setFF(Constants.Intake.POSITION_KF);
 
-        positionController_.setOutputRange(-6.5, 6.5);
+        positionController_.setOutputRange(-Constants.Intake.MAX_VOLTAGE, Constants.Intake.MAX_VOLTAGE);
 
         currentState_ = lastState_ = IntakeStates.IN;
 
@@ -67,8 +66,8 @@ public class Intake extends SubsystemBase {
                 case IN:
                     positionController_.setReference(0, ControlType.kPosition);
                     break;
-                default:
-                    currentState_ = IntakeStates.IDLE;
+                case CALIBRATE:
+                    calibrateIntake();
                     break;
             }
         }
@@ -79,7 +78,7 @@ public class Intake extends SubsystemBase {
 
     }
 
-    public void zeroIntake(){
+    private void calibrateIntake(){
         new RunCommand(() -> positionController_.setReference(-0.2, ControlType.kDutyCycle), this)
         .withTimeout(0.75)
         .andThen(new InstantCommand(() -> {intakeMotor_.getEncoder().setPosition(0);})).schedule();
@@ -91,6 +90,10 @@ public class Intake extends SubsystemBase {
 
     public void intakeIn(){
         currentState_ = IntakeStates.IN;
+    }
+
+    public void intakeZero(){
+        currentState_ = IntakeStates.CALIBRATE;
     }
 
     public static Intake getInstance(){
