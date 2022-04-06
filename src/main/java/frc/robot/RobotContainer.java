@@ -240,7 +240,7 @@ public class RobotContainer {
             .whenActive(m_intakeSubsystem::reverseIntake)
             .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
+        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::zeroIntake);
 
 
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));

@@ -67,9 +67,6 @@ public class Intake extends SubsystemBase {
                 case IN:
                     positionController_.setReference(0, ControlType.kPosition);
                     break;
-                case CALIBRATE:
-                    zeroIntake();
-                    break;
                 default:
                     currentState_ = IntakeStates.IDLE;
                     break;
@@ -82,11 +79,9 @@ public class Intake extends SubsystemBase {
 
     }
 
-    private void zeroIntake(){
+    public void zeroIntake(){
         new RunCommand(() -> positionController_.setReference(-0.2, ControlType.kDutyCycle), this)
         .withTimeout(0.75)
-        .andThen(new InstantCommand(() -> positionController_.setReference(0, ControlType.kDutyCycle, 0), this))
-        .andThen(new WaitCommand(1))
         .andThen(new InstantCommand(() -> {intakeMotor_.getEncoder().setPosition(0);})).schedule();
     }
 
@@ -98,12 +93,8 @@ public class Intake extends SubsystemBase {
         currentState_ = IntakeStates.IN;
     }
 
-    public void intakeZero(){
-        currentState_ = IntakeStates.CALIBRATE;
-    }
-
     public static Intake getInstance(){
-        if(instance_ == null) return new Intake();
+        if(instance_ == null) instance_ = new Intake();
         return instance_;
     }
 
