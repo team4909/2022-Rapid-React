@@ -165,7 +165,7 @@ public class IntakeFeeder extends SubsystemBase {
     // Just want to test that reversing works
     public void reverseIntake() {
         currentState_ = IntakeState.kReverseWrongBall;
-        Intake.getInstance().intakeIn();
+        Intake.getInstance().intakeOut();
         // intakeSolenoidState_ = !intakeSolenoidState_; // intake in
 
     }
