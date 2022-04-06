@@ -174,16 +174,17 @@ public final class Constants {
     public static final class Intake{
         public static final int INTAKE_MOTOR = 30;
 
-        public static double POSITION_KP = 1;
+        public static double POSITION_KP = 0.03;
         public static double POSITION_KI = 0;
         public static double POSITION_KD = 0;
+        public static double POSITION_KF = 0.0005;
 
         public static double MAX_VOLTAGE = 8;
         public static double HOLD_VOLTAGE = 3;
 
         public static double GEAR_RATIO = (1/7) * (1/7);
 
-        public static double OUT_SETPOINT = NEO_UNITS_PER_REV * (1 / GEAR_RATIO) * 65;
+        public static double OUT_SETPOINT = 30;
     }
 
     // Climber stuff

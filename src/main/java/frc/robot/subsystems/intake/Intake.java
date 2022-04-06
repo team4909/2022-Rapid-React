@@ -5,8 +5,12 @@ import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 
 public class Intake extends SubsystemBase {
@@ -15,7 +19,7 @@ public class Intake extends SubsystemBase {
 
         IN("IN"),
         OUT("OUT"),
-        HOLD("HOLD");
+        IDLE("IDLE");
 
         String stateName;
 
@@ -35,16 +39,19 @@ public class Intake extends SubsystemBase {
 
     private IntakeStates currentState_;
     private IntakeStates lastState_;
-    
+
     private Intake(){
         intakeMotor_ = new CANSparkMax(Constants.Intake.INTAKE_MOTOR, MotorType.kBrushless);
+        intakeMotor_.setSmartCurrentLimit(20);
+
         positionController_ = intakeMotor_.getPIDController();
 
         positionController_.setP(Constants.Intake.POSITION_KP);
         positionController_.setI(Constants.Intake.POSITION_KI);
         positionController_.setD(Constants.Intake.POSITION_KD);
+        positionController_.setFF(Constants.Intake.POSITION_KF);
 
-        positionController_.setOutputRange(0, 8);
+        positionController_.setOutputRange(0, 6.5);
 
         currentState_ = lastState_ = IntakeStates.IN;
 
@@ -58,19 +65,34 @@ public class Intake extends SubsystemBase {
                     positionController_.setReference(Constants.Intake.OUT_SETPOINT, ControlType.kPosition);
                     break;
                 case IN:
-                    positionController_.setReference(0, ControlType.kPosition);
-                    break;
-                case HOLD:
-                    positionController_.setReference(Constants.Intake.HOLD_VOLTAGE, ControlType.kVoltage);
+                    positionController_.setReference(0.0, ControlType.kPosition);
                     break;
                 default:
-                    currentState_ = IntakeStates.IN;
+                    currentState_ = IntakeStates.IDLE;
                     break;
             }
         }
 
+        SmartDashboard.putString("State", currentState_.stateName);
+
         lastState_ = currentState_;
 
+    }
+
+    public void zeroIntake(){
+        new RunCommand(() -> positionController_.setReference(-0.2, ControlType.kDutyCycle), this)
+        .withTimeout(0.75)
+        .andThen(new InstantCommand(() -> positionController_.setReference(0, ControlType.kDutyCycle, 0), this))
+        .andThen(new WaitCommand(1))
+        .andThen(new InstantCommand(() -> {intakeMotor_.getEncoder().setPosition(0);})).schedule();
+    }
+
+    public void intakeOut(){
+        currentState_ = IntakeStates.OUT;
+    }
+
+    public void intakeIn(){
+        currentState_ = IntakeStates.IN;
     }
 
     public static Intake getInstance(){
