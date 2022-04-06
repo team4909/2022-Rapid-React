@@ -51,7 +51,7 @@ public class Intake extends SubsystemBase {
         positionController_.setD(Constants.Intake.POSITION_KD);
         positionController_.setFF(Constants.Intake.POSITION_KF);
 
-        positionController_.setOutputRange(0, 6.5);
+        positionController_.setOutputRange(-6.5, 6.5);
 
         currentState_ = lastState_ = IntakeStates.IN;
 
@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase {
                     positionController_.setReference(Constants.Intake.OUT_SETPOINT, ControlType.kPosition);
                     break;
                 case IN:
-                    positionController_.setReference(0.0, ControlType.kPosition);
+                    positionController_.setReference(0, ControlType.kPosition);
                     break;
                 default:
                     currentState_ = IntakeStates.IDLE;
