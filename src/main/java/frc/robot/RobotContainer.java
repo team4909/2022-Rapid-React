@@ -89,6 +89,7 @@ public class RobotContainer {
     private final Hood m_hoodSubsystem  = Hood.getInstance();
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
+    private final Intake m_intake = Intake.getInstance();
 
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
  
@@ -239,7 +240,7 @@ public class RobotContainer {
             .whenActive(m_intakeSubsystem::reverseIntake)
             .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(Intake.getInstance()::intakeZero);
+        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
 
 
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
