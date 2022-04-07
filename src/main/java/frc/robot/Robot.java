@@ -106,7 +106,7 @@ public class Robot extends TimedRobot {
     }
 
     Hood.getInstance().zeroHood();
-    // Intake.getInstance().zeroIntake();
+    Intake.getInstance().intakeZero();
     // Climber.getInstance().setState(ClimberStates.IDLE);
 
   }

@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -48,6 +49,9 @@ public class Intake extends SubsystemBase {
     private Intake(){
         // Neo 550
         intakeMotor_ = new CANSparkMax(Constants.Intake.INTAKE_MOTOR, MotorType.kBrushless);
+
+        intakeMotor_.setIdleMode(IdleMode.kBrake);
+
         // Sets current limit from constants
         intakeMotor_.setSmartCurrentLimit(Constants.Intake.CURRENT_LIMIT);
 

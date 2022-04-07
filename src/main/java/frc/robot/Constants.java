@@ -182,7 +182,7 @@ public final class Constants {
         public static double MAX_VOLTAGE = 6.5;
         public static int CURRENT_LIMIT = 20;
 
-        public static double OUT_SETPOINT = 30;
+        public static double OUT_SETPOINT = 25;
     }
 
     // Climber stuff
