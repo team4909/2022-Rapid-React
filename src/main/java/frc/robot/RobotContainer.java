@@ -48,6 +48,7 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.ThreeBallBottomTarmac;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallFender;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallHanger;
+import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
@@ -87,7 +88,8 @@ public class RobotContainer {
     private final Hood m_hoodSubsystem  = Hood.getInstance();
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
-    
+    private final Intake m_intake = Intake.getInstance();
+
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
  
   /**
@@ -105,6 +107,7 @@ public class RobotContainer {
     PDH.clearStickyFaults(); 
     LiveWindow.disableTelemetry(PDH);
     System.out.println(PDH.getCurrent(1));
+
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
     // Left stick Y axis -> forward and backwards movement
@@ -113,8 +116,8 @@ public class RobotContainer {
 
     m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
             m_drivetrainSubsystem,
-            () -> -modifyAxis(m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
-            () -> -modifyAxis(m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
+            () -> -modifyAxis(-m_driverController.getLeftY()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
+            () -> -modifyAxis(-m_driverController.getLeftX()) * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND * m_drivetrainSubsystem.getPreciseModeScale(),
             () -> ((-modifyAxis(m_driverController.getRightX()) + m_vision.getLimelightOffset()) * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND) * m_drivetrainSubsystem.getPreciseModeScale()
     ));
     // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
@@ -218,19 +221,24 @@ public class RobotContainer {
         new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.PREPARE_HIGH));
 
         
+
+        
     // new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.1))
     // .whenActive(climber_.RetractClimber(m_operatorController.getRightTriggerAxis()));
     
 
-        // Run intake: Operator right trigger
+ // Run intake: Operator right trigger
         new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
-                    .whenActive(m_intakeSubsystem::intake)
-                    .whenInactive(m_intakeSubsystem::stopIntake);
+            .whenActive(m_intakeSubsystem::intake)
+            .whenInactive(m_intakeSubsystem::stopIntake);
 
         // Reverse intake: Operator left trigger
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
-                    .whenActive(m_intakeSubsystem::reverseIntake)
-                    .whenInactive(m_intakeSubsystem::stopIntake);
+            .whenActive(m_intakeSubsystem::reverseIntake)
+            .whenInactive(m_intakeSubsystem::stopIntake);
+
+        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
+
 
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
         new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));

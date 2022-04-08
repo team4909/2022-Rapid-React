@@ -142,6 +142,8 @@ public final class Constants {
  
     // Superstructure Constants
     // TODO Change if needed
+
+
     public static final double kIntakeForwardVoltage = -6.0;
     public static final double kIntakeReverseVoltage = 6.0;
     public static final double kFeederFeedingVoltage = 2.0;
