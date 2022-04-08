@@ -32,6 +32,7 @@ public class IntakeFeeder extends SubsystemBase {
 
         public String name;
 
+
         private IntakeState(String n) {
             this.name = n;
         }
@@ -62,13 +63,13 @@ public class IntakeFeeder extends SubsystemBase {
     private CANSparkMax centeringWheel_;
     private CANSparkMax feederWheel_;
 
-    private final DoubleSolenoid intakeExtension_;
+    // private final DoubleSolenoid intakeExtension_;
 
     private final DigitalInput lowSensor_; // One closest to intake
     private final DigitalInput highSensor_; // One closes to shooter
     private final DigitalInput incomingSensor_; // To know when to run feader
 
-    private static boolean intakeSolenoidState_ = false; // Assuming false is the default state (intact retracted)
+    // private static boolean intakeSolenoidState_ = false; // Assuming false is the default state (intact retracted)
 
     private static IntakeState currentState_;
     private static IntakeState lastState_;
@@ -82,7 +83,7 @@ public class IntakeFeeder extends SubsystemBase {
 
     private static Timer shot_timer_;
 
-
+    private final Intake m_intake = Intake.getInstance();
 
     private IntakeFeeder() {
         intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
@@ -95,7 +96,7 @@ public class IntakeFeeder extends SubsystemBase {
 
         feederWheel_.setIdleMode(IdleMode.kBrake);
 
-        intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
+        // intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     
         incomingSensor_ = new DigitalInput(2);
         lowSensor_ = new DigitalInput(1);
@@ -118,10 +119,14 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     public void intake() {
-        intakeSolenoidState_ = true;
+        // intakeSolenoidState_ = true;
+
         if (currentState_.equals(IntakeState.kShootBalls)) {
             return;
         }
+
+        m_intake.intakeOut();
+
         switch (ballsHeld_) {
             case kZero:
                 currentState_ = IntakeState.kIntakeFirst; // Change back to intake first
@@ -139,7 +144,8 @@ public class IntakeFeeder extends SubsystemBase {
     // Stop all rollers in the intake
     public void stopIntake() {
         currentState_ = IntakeState.kIdle;
-        intakeSolenoidState_ = false; // intake in
+        m_intake.intakeIn();
+        // intakeSolenoidState_ = false; // intake in
 
     }
 
@@ -152,14 +158,16 @@ public class IntakeFeeder extends SubsystemBase {
 
     // Manually toggle the intake moving in and out (might not be needed, but nice to have)
     public void toggleIntakeExtension() {
-        intakeSolenoidState_ = !intakeSolenoidState_;
+        m_intake.intakeOut();
+        // intakeSolenoidState_ = !intakeSolenoidState_;
     }
 
     // Right now map this to a command/button. can make automatic with the color sensor later
     // Just want to test that reversing works
     public void reverseIntake() {
         currentState_ = IntakeState.kReverseWrongBall;
-        intakeSolenoidState_ = !intakeSolenoidState_; // intake in
+        m_intake.intakeOut();
+        // intakeSolenoidState_ = !intakeSolenoidState_; // intake in
 
     }
 
@@ -190,7 +198,7 @@ public class IntakeFeeder extends SubsystemBase {
         // Set the solenoid to be in it's state
         // Because it's a single acting solenoid it needs to be continously set
         // otherwise it reverts to the default state
-        intakeExtension_.set(intakeSolenoidState_ ? Value.kReverse : Value.kForward);
+        // intakeExtension_.set(intakeSolenoidState_ ? Value.kReverse : Value.kForward);
         
         if (ballShot(feederBallSeen)) {
             ballsHeld_ = (ballsHeld_ == BallCount.kTwo) ? BallCount.kOne : BallCount.kZero;
