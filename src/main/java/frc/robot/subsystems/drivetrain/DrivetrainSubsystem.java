@@ -240,7 +240,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      *  Degreess from the Pigeon (NOT ROTATION2D)
      */
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(m_pigeon.getYaw());
+        return Rotation2d.fromDegrees(-m_pigeon.getYaw());
         
         
     }

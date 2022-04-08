@@ -40,7 +40,6 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.Taxi;
-import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
@@ -158,7 +157,7 @@ public class RobotContainer {
        
         // new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setElevatorGains(1, 0, 0, 0)); //up
         // new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.sete//down
-        // new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
+        new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
         new Button(m_driverController::getStartButton);
         // .toggleWhenPressed(new InstantCommand(() -> m_vision.switchCamera("Climber Camera"))
         // .andThen(new InstantCommand(() -> m_vision.switchCamera("Front Camera"))));
