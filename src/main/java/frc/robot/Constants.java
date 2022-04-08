@@ -133,9 +133,7 @@ public final class Constants {
     public static final double BAR_THETA = 90 - Math.toDegrees(Math.atan(BAR_DIST_Y / BAR_DIST_X)); //We may not need this because of a mechanical hardstop but we have it
 
 
-    // The PID Values for the Limelight driven alignment to the goal.
-    public static final double GOAL_ALIGN_KP = 0.005;
-    public static final double GOAL_ALIGN_KD = 0.0008;
+
 
     // Shooter Constants 
     public static final double tapeHeight = 103.0; // Height of the reflective tape off the ground in INCHES
@@ -167,6 +165,29 @@ public final class Constants {
     public static final double kShooterFF = 0.05;
 
     public static final int kTimeoutMs = 100;
+
+    // Intake stuff
+    public static final class Intake{
+        public static final int INTAKE_MOTOR = 30;
+
+        public static double POSITION_KP = 0.03;
+        public static double POSITION_KI = 0;
+        public static double POSITION_KD = 0;
+        public static double POSITION_KF = 0.0005;
+
+        public static double MAX_VOLTAGE = 6.5;
+        public static int CURRENT_LIMIT = 20;
+
+        public static double OUT_SETPOINT = 24;
+    }
+
+    public static final class VisionConstants {
+        // The PID Values for the Limelight driven alignment to the goal.
+        public static final PIDGains kVisionPIDGains =
+            new PIDGains(0.011d, 0d, 0.0011d); 
+        public static final double GOAL_ALIGN_KP = 0.01;
+        public static final double GOAL_ALIGN_KD = 0.000;
+    }
 
     // Climber stuff
     public static final class Climber {

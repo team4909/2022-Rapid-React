@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.utils.BionicController;
 import frc.robot.utils.Rumble;
 
@@ -134,7 +135,7 @@ public static VisionSubsystem instance_ = null;
     public void setLimelightOffset() {
 
         double offset = -this.getXDegrees();
-        double angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * Constants.GOAL_ALIGN_KD) * 2; //TODO make this a constant pls
+        double angularSpeed = (offset * VisionConstants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * VisionConstants.GOAL_ALIGN_KD) * 2; //TODO make this a constant pls
 
         if (this.isAligned() == true) {
             limelightOffset = 0;
@@ -214,7 +215,7 @@ public static VisionSubsystem instance_ = null;
         } else {
             isAligned_ = false;
         }
-        SmartDashboard.putBoolean("isAligned", isAligned_);
+        // SmartDashboard.putBoolean("isAligned", isAligned_);
         SmartDashboard.putNumber("Distance", lastDistance_);
         SmartDashboard.putNumber("ofset speed", limelightOffset);
 

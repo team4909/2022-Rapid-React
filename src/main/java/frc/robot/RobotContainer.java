@@ -40,7 +40,6 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.Taxi;
-import frc.robot.subsystems.drivetrain.commands.AlignWithGoal;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
