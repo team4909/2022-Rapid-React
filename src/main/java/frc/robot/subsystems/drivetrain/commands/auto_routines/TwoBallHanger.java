@@ -10,7 +10,6 @@ import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.AutoShot;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class TwoBallHanger extends SequentialCommandGroup {
 

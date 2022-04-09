@@ -27,6 +27,7 @@ public class Vision extends SubsystemBase {
     private boolean m_isAligned;
     private double m_xOffset;
     private double m_distance;
+    private double m_avgDistance;
 
     private double limelightOffset;
     private double firstError;
@@ -34,7 +35,8 @@ public class Vision extends SubsystemBase {
 
     PhotonCamera limelight;
 
-    LinearFilter filter;
+    LinearFilter m_distanceFilter;
+    LinearFilter m_offsetFilter;
 
     private Vision() {
         limelight = new PhotonCamera(NetworkTableInstance.getDefault(), "Limelight");
@@ -42,13 +44,17 @@ public class Vision extends SubsystemBase {
         m_turnPID = 
             new PIDController(VisionConstants.kVisionPIDGains.kP, VisionConstants.kVisionPIDGains.kI, VisionConstants.kVisionPIDGains.kD);
 
-        filter = LinearFilter.singlePoleIIR(1.5, 0.02);
+        m_distanceFilter = LinearFilter.singlePoleIIR(1.5, 0.02);
+        m_offsetFilter = LinearFilter.singlePoleIIR(.1, 0.02);
+        SmartDashboard.putData(m_turnPID);
     }
 
 
     @Override
     public void periodic() {
         m_pipelineResult = limelight.getLatestResult();
+
+        // SmartDashboard.putNumber("error", m_turnPID.getVelocityError());
 
         if (m_pipelineResult.hasTargets()) {
             double targetPitch = Units.degreesToRadians(m_pipelineResult.getBestTarget().getPitch());
@@ -59,12 +65,14 @@ public class Vision extends SubsystemBase {
                 LIMELIGHT_PITCH_RADIANS,
                 targetPitch);
 
-            m_xOffset = m_pipelineResult.getBestTarget().getYaw();
+            m_xOffset = m_offsetFilter.calculate(m_pipelineResult.getBestTarget().getYaw());
             SmartDashboard.putBoolean("Is Aligned", m_isAligned);
 
             SmartDashboard.putNumber("Photon Distance", m_distance);
-            m_distance = filter.calculate(m_distance);
-            SmartDashboard.putNumber("Photon Distance avg", m_distance);
+            m_avgDistance = m_distanceFilter.calculate(m_distance);
+
+            
+            SmartDashboard.putNumber("Photon Distance avg", m_avgDistance);
 
         } else {
             m_xOffset = 0;
@@ -81,18 +89,20 @@ public class Vision extends SubsystemBase {
     public void setLimelightOffset() {
 
 
+
         double offset = -this.m_xOffset;
         double angularSpeed = -m_turnPID.calculate(offset, 0);
         // double angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * Constants.GOAL_ALIGN_KD) * 2;
         SmartDashboard.putNumber("Angular Speed", angularSpeed);
+        SmartDashboard.putNumber("Offset", offset);
         if (this.m_isAligned == true) {
             limelightOffset = 0;
         } else {
             if (this.m_xOffset <= 0)
-                limelightOffset = angularSpeed + 0.06;
+                limelightOffset = angularSpeed + VisionConstants.kVisionPIDGains.kF;
 
             if (this.m_xOffset >= 0) 
-                limelightOffset = angularSpeed - 0.06;
+                limelightOffset = angularSpeed - VisionConstants.kVisionPIDGains.kF;
         }
 
     }
@@ -115,6 +125,10 @@ public class Vision extends SubsystemBase {
 
     public double getDistance() {
         return m_distance;
+    }
+
+    public double getAverageDistance(){
+        return m_avgDistance;
     }
 
     public double getLimelightOffset() {

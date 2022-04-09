@@ -186,7 +186,7 @@ public final class Constants {
     public static final class VisionConstants {
         // The PID Values for the Limelight driven alignment to the goal.
         public static final PIDGains kVisionPIDGains =
-            new PIDGains(0.011d, 0d, 0.0011d); 
+            new PIDGains(0.009, 0.00006d, 0.0009d, 0.03d); 
         public static final double GOAL_ALIGN_KP = 0.01;
         public static final double GOAL_ALIGN_KD = 0.000;
     }
@@ -265,7 +265,26 @@ public final class Constants {
             // .add(450, 2084) // ROBOTS BY THE C
             // .add(505, 2084) // ROBOTS BY THE C
             // .add(567, 2340);
+        
         /*
+        CHANGED 4/8/2022
+             .add(3, 20)
+            .add(3.55, 30)
+            .add(4, 40)
+            .add(4.55, 45)
+            .add(5, 55)
+            .add(6, 55);
+
+            .add(3, 1853)
+            .add(3.55, 1853)
+            .add(4, 1949)
+            .add(4.55, 1928)
+            .add(5, 2164)
+            .add(6, 2488);
+        */
+        
+        
+            /*
           public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
             .add(155, 31.3)

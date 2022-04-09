@@ -5,7 +5,6 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.subsystems.vision.VisionSubsystem;
 import frc.robot.Constants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
@@ -37,7 +36,8 @@ public class AutoShot extends CommandBase {
 
     @Override
     public void execute() {
-        m_distanceSeen = m_vision.getDistance();
+        // m_distanceSeen = m_vision.getDistance();
+        m_distanceSeen = m_vision.getAverageDistance();
         m_vision.setLimelightOffset();
 
         double interpolatedAngle = Constants.Shooter.kHoodAngleLookupTable.get(m_distanceSeen);

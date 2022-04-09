@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class Hood extends SubsystemBase {
     
@@ -130,18 +129,6 @@ public class Hood extends SubsystemBase {
      */
     public InstantCommand setSpeed(double speed) {
         return new InstantCommand(() -> this.setHoodSpeed(speed), this);
-    }
-
-    public RunCommand autoAdjustHood(VisionSubsystem vision) {
-        return new RunCommand(() -> {
-            double distance = vision.getDistance(); 
-            //TODO get distance from Limelight (verify this method works at all)
-            //TODO find a quadratic regression line for a function Angle(Distance)
-            // Uncomment this to use the interpolation table instead
-            // double outputAngle = Constants.Shooter.kHoodAngleLookupTable.get(distance);
-            double outputAngle = kAimCoeffA * Math.pow(distance, 2) + kAimCoeffB * distance + kAimCoeffC; 
-            this.setHoodAngle(outputAngle);
-        }, this);
     }
 
     // Telemetry Class
