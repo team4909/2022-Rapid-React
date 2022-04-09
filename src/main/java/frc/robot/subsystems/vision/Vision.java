@@ -40,12 +40,16 @@ public class Vision extends SubsystemBase {
 
     private Vision() {
         limelight = new PhotonCamera(NetworkTableInstance.getDefault(), "Limelight");
-        SmartDashboard.putNumber("Photon Distance", 0);
+        // SmartDashboard.putNumber("Photon Distance", 0);
         m_turnPID = 
             new PIDController(VisionConstants.kVisionPIDGains.kP, VisionConstants.kVisionPIDGains.kI, VisionConstants.kVisionPIDGains.kD);
 
-        m_distanceFilter = LinearFilter.singlePoleIIR(1.5, 0.02);
-        m_offsetFilter = LinearFilter.singlePoleIIR(.1, 0.02);
+        // m_distanceFilter = LinearFilter.singlePoleIIR(.1, 0.02);
+        // m_offsetFilter = LinearFilter.singlePoleIIR(.1, 0.02);
+ 
+        // BB Try this
+        m_distanceFilter = LinearFilter.movingAverage(10);
+        m_offsetFilter = LinearFilter.movingAverage(10);
         SmartDashboard.putData(m_turnPID);
     }
 
@@ -88,9 +92,9 @@ public class Vision extends SubsystemBase {
 
     public void setLimelightOffset() {
 
-
-
         double offset = -this.m_xOffset;
+
+        // Use a PID to convert between a offset yaw degrees to an angular speed for robot rotation
         double angularSpeed = -m_turnPID.calculate(offset, 0);
         // double angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * Constants.GOAL_ALIGN_KD) * 2;
         SmartDashboard.putNumber("Angular Speed", angularSpeed);
