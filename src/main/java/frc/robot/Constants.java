@@ -147,7 +147,7 @@ public final class Constants {
     public static final double kIntakeForwardVoltage = -6.0;
     public static final double kIntakeReverseVoltage = 6.0;
     public static final double kFeederFeedingVoltage = 2.0;
-    public static final double kFeederShootingVoltage = 5.0;
+    public static final double kFeederShootingVoltage = 4.0;
     public static final double kFeederReverseVoltage = -6.0;
     public static final double kFeederAdjustVoltage = 0.0;
     // TODO to invert these properly
@@ -199,9 +199,9 @@ public final class Constants {
         public static final int kPivotPIDSlot = 0;
         public static final double kPivotForward = -4200; //-3800
         public static final double kMidPivotHold = -1000;
-        public static final double kPivotBar = -3800;
+        public static final double kPivotBar = -2500;
         public static final double kExtensionMidGoal = -71;
-        public static final double kExtensionHighGoal = -90;
+        public static final double kExtensionHighGoal = -95;
         public static final double kExtensionHighReset = -96;
         public static final double kAlign = -65;
         public static final double kExtensionBottom = 0;
@@ -229,7 +229,7 @@ public final class Constants {
         private static final double kS_b = 0.25412;
         private static final double kV_b = 0.41051;
         private static final double kA_b = 0.031141;
-        private static final double kP_b = 4.7165E-05; // 0.21785
+        private static final double kP_b = 0.0; // 4.7165E-05
         private static final double kI_b = 0.0;
         private static final double kD_b = 0.0;
         public static final SimpleMotorFeedforward kBackspinFFConstraints = 
@@ -237,17 +237,18 @@ public final class Constants {
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
 
-        public static final double kBackSpinHighShotSpeed = 6700;
+        public static final double kBackSpinHighShotSpeed = 4500;
         public static final double kBackSpinLowShotSpeed = 4000;
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
-            .add(3, 20)
-            .add(3.55, 30)
-            .add(4, 40)
-            .add(4.55, 45)
-            .add(5, 55)
-            .add(6, 55);
+            .add(3, 45.13)
+            .add(3.5, 40)
+            .add(3.75, 45)
+            .add(4, 55)
+            .add(4.5, 55)
+            .add(5, 2488)
+            .add(5.5, 2488);
             // .add(400, 48)
             // .add(450, 48)
             // .add(505, 48)
@@ -255,12 +256,13 @@ public final class Constants {
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(3, 1853)
-            .add(3.55, 1853)
-            .add(4, 1949)
-            .add(4.55, 1928)
-            .add(5, 2164)
-            .add(6, 2488);
+            .add(3, 1614)
+            .add(3.5, 1949)
+            .add(3.75, 1928)
+            .add(4, 2164)
+            .add(4.5, 2488)
+            .add(5, 2488)
+            .add(5.5, 2488);
             // .add(400, 2084)
             // .add(450, 2084) // ROBOTS BY THE C
             // .add(505, 2084) // ROBOTS BY THE C

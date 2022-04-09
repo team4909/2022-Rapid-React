@@ -95,7 +95,7 @@ public class Shooter extends SubsystemBase {
         backSpinPID.setP(Constants.Shooter.kBackspinPIDGains.kP, 0);
         backSpinPID.setI(Constants.Shooter.kBackspinPIDGains.kI, 0);
         backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
-        backSpinPID.setFF(0.0001);
+        backSpinPID.setFF(0.000091);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
         backSpinWheel_.setSmartCurrentLimit(30);
 
@@ -184,14 +184,14 @@ public class Shooter extends SubsystemBase {
             m_backSpeed = m_layout.add("Backspin speed", 0).withWidget(BuiltInWidgets.kDial).getEntry();
             m_backSetpointSpeed = m_layout.add("Backspin Setpoint speed", 0d).withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
-            m_backSpinP = m_layout.addPersistent("P backspin", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_backSpinF = m_layout.addPersistent("FF backspin", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_backSpinP = m_layout.add("P backspin", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_backSpinF = m_layout.add("FF backspin", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_flywheelSpeed = m_layout.add("Flywheel RPM", 0).withWidget(BuiltInWidgets.kDial).getEntry();
             m_flywheelSetpointSpeed = m_layout.add("Flywheel Setpoint RPM", 0d).withWidget(BuiltInWidgets.kNumberSlider)
                 .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
             
-            m_flywheelP = m_layout.addPersistent("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
-            m_flywheelF = m_layout.addPersistent("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
+            m_flywheelP = m_layout.add("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
+            m_flywheelF = m_layout.add("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
         }

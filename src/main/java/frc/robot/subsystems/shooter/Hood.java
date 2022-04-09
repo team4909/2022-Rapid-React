@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.lib.bioniclib.ShuffleboardDebugBoard;
 import frc.robot.Constants;
 
 public class Hood extends SubsystemBase {
@@ -50,7 +51,7 @@ public class Hood extends SubsystemBase {
     private final Hood.HoodDisplay m_hoodDisplay;
 
     private Hood() {
-        System.out.println("HOOD MOTOR INIT");
+        this.setName("Hood");
         m_hood = new CANSparkMax(HOOD_MOTOR_ID, MotorType.kBrushless);
         m_hoodController = m_hood.getPIDController();
         m_hoodDisplay = this.new HoodDisplay();
@@ -70,6 +71,7 @@ public class Hood extends SubsystemBase {
         //#endregion
                 
         m_hood.getEncoder().setPosition(0);
+
     }
 
     @Override
@@ -131,6 +133,17 @@ public class Hood extends SubsystemBase {
         return new InstantCommand(() -> this.setHoodSpeed(speed), this);
     }
 
+    // private class HoodDisplay extends ShuffleboardDebugBoard {
+    //     public HoodDisplay() {
+    //         super("Debug", Hood.getInstance().getName(), 2, 7);
+    //     }
+
+    //     @Override
+    //     protected void createObjects() {
+            
+    //     }   
+    // }
+
     // Telemetry Class
     private class HoodDisplay {
         private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
@@ -147,7 +160,7 @@ public class Hood extends SubsystemBase {
             m_posTicksEntry = m_layout.add("Position (Ticks)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
             
             m_setpointEntry =  m_layout.add("Setpoint", 0d).withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("Min", 0, "Max", 50)).getEntry();
+                .withProperties(Map.of("Min", 0, "Max", 60)).getEntry();
             m_hoodPEntry = m_layout.addPersistent("P", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_hoodDEntry = m_layout.addPersistent("D", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
             m_hoodFFEntry = m_layout.addPersistent("FF", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();

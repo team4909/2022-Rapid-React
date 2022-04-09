@@ -47,7 +47,8 @@ public class PathResetOdometry extends CommandBase {
             offsetRot
         );
 
-        DrivetrainSubsystem.getInstance().setGyroscope(offsetRot.getDegrees());
+        // DrivetrainSubsystem.getInstance().setGyroscope(offsetRot.getDegrees());
+        DrivetrainSubsystem.getInstance().setGyroscope(initialPose.getRotation().getDegrees());
         
         DrivetrainSubsystem.getInstance().resetOdometry(offsetPose);
         
