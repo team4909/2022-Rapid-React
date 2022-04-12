@@ -213,7 +213,7 @@ public final class Constants {
             new ElevatorFeedforward(0.1, -0.16, 1 / 5880.0); // TODO calculate empirically 
     }
 
-    public static final class Shooter {
+    public static final class ShooterConstants {
         // SVA-PID gains
         private static final double kS_f = 0.51681;
         private static final double kV_f = 0.34371;
@@ -229,7 +229,7 @@ public final class Constants {
         private static final double kS_b = 0.25412;
         private static final double kV_b = 0.41051;
         private static final double kA_b = 0.031141;
-        private static final double kP_b = 0.0; // 4.7165E-05
+        private static final double kP_b = 4.7165E-04; // 4.7165E-05
         private static final double kI_b = 0.0;
         private static final double kD_b = 0.0;
         public static final SimpleMotorFeedforward kBackspinFFConstraints = 
@@ -237,9 +237,37 @@ public final class Constants {
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
 
-        public static final double kBackSpinHighShotSpeed = 4500;
+        public static final double kBackSpinHighShotSpeed = 5200;
         public static final double kBackSpinLowShotSpeed = 4000;
 
+        public static InterpolationTable kHoodAngleLookupTable =
+            new InterpolationTable()
+            .add(3, 45.13)
+            .add(3.5, 40)
+            .add(3.75, 45)
+            .add(4, 55)
+            .add(4.5, 55);
+
+            // .add(400, 48)
+            // .add(450, 48)
+            // .add(505, 48)
+            // .add(567, 50);
+
+        public static InterpolationTable kShooterRPMLookupTable = 
+            new InterpolationTable()
+            .add(3, 1614)
+            .add(3.5, 1949)
+            .add(3.75, 1928)
+            .add(4, 2164)
+            .add(4.5, 2488)
+            .add(5, 2488)
+            .add(5.5, 2488);
+            // .add(400, 2084)
+            // .add(450, 2084) // ROBOTS BY THE C
+            // .add(505, 2084) // ROBOTS BY THE C
+            // .add(567, 2340);
+        
+        /* CHANGED ON 4/11/2022
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
             .add(3, 45.13)
@@ -263,11 +291,8 @@ public final class Constants {
             .add(4.5, 2488)
             .add(5, 2488)
             .add(5.5, 2488);
-            // .add(400, 2084)
-            // .add(450, 2084) // ROBOTS BY THE C
-            // .add(505, 2084) // ROBOTS BY THE C
-            // .add(567, 2340);
-        
+        */
+
         /*
         CHANGED 4/8/2022
              .add(3, 20)

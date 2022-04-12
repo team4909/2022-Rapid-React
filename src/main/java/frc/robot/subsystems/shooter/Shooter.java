@@ -60,8 +60,8 @@ public class Shooter extends SubsystemBase {
     private Shooter() {
         flywheel_ = new TalonFX(13);
         backSpinWheel_ = new CANSparkMax(24, MotorType.kBrushless);
-        m_flywheelFF = Constants.Shooter.kFlywheelFFConstraints;
-        m_backspinFF = Constants.Shooter.kBackspinFFConstraints;
+        m_flywheelFF = Constants.ShooterConstants.kFlywheelFFConstraints;
+        m_backspinFF = Constants.ShooterConstants.kBackspinFFConstraints;
 
         // General Motor Configuration for the TalonFXs
         flywheel_.clearStickyFaults(kTimeoutMs);
@@ -77,9 +77,9 @@ public class Shooter extends SubsystemBase {
         flywheel_.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 200);
 
         // Control Loop Configuration
-        flywheel_.config_kP(0, Constants.Shooter.kFlywheelPIDGains.kP, kTimeoutMs);
-        flywheel_.config_kI(0, Constants.Shooter.kFlywheelPIDGains.kI, kTimeoutMs);
-        flywheel_.config_kD(0, Constants.Shooter.kFlywheelPIDGains.kD, kTimeoutMs);
+        flywheel_.config_kP(0, Constants.ShooterConstants.kFlywheelPIDGains.kP, kTimeoutMs);
+        flywheel_.config_kI(0, Constants.ShooterConstants.kFlywheelPIDGains.kI, kTimeoutMs);
+        flywheel_.config_kD(0, Constants.ShooterConstants.kFlywheelPIDGains.kD, kTimeoutMs);
         flywheel_.config_kF(0, 0.005);
         flywheel_.config_IntegralZone(0, (int) (200.0 / kFlywheelVelocityConversion));
         flywheel_.selectProfileSlot(0, 0);
@@ -92,9 +92,9 @@ public class Shooter extends SubsystemBase {
         backSpinWheel_.setInverted(true);
         backSpinWheel_.setClosedLoopRampRate(0.2);
         backSpinPID = backSpinWheel_.getPIDController();
-        backSpinPID.setP(Constants.Shooter.kBackspinPIDGains.kP, 0);
-        backSpinPID.setI(Constants.Shooter.kBackspinPIDGains.kI, 0);
-        backSpinPID.setD(Constants.Shooter.kBackspinPIDGains.kD, 0);
+        backSpinPID.setP(Constants.ShooterConstants.kBackspinPIDGains.kP, 0);
+        backSpinPID.setI(Constants.ShooterConstants.kBackspinPIDGains.kI, 0);
+        backSpinPID.setD(Constants.ShooterConstants.kBackspinPIDGains.kD, 0);
         backSpinPID.setFF(0.000091);
         backSpinWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, Constants.kTimeoutMs);
         backSpinWheel_.setSmartCurrentLimit(30);
@@ -133,7 +133,7 @@ public class Shooter extends SubsystemBase {
 
     public void setGoalStatic(double g, boolean lowShot) {
         this.goalDemand_ = g;
-        this.acceleratorDemand_ = lowShot ? Constants.Shooter.kBackSpinLowShotSpeed : Constants.Shooter.kBackSpinHighShotSpeed;
+        this.acceleratorDemand_ = lowShot ? Constants.ShooterConstants.kBackSpinLowShotSpeed : Constants.ShooterConstants.kBackSpinHighShotSpeed;
         this.runningOpenLoop_ = false;
         flywheel_.config_kF(0, 0.04); //MathUtil.clamp(0.000002 * goalDemand_, 0.0025, 0.006));
         // backSpinPID.setFF(MathUtil.clamp(0.0000002 * goalDemand_, 0.00025, 0.00075));

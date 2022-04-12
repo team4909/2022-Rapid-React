@@ -18,12 +18,9 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.lib.bioniclib.ShuffleboardDebugBoard;
-import frc.robot.Constants;
 
 public class Hood extends SubsystemBase {
     
@@ -41,9 +38,6 @@ public class Hood extends SubsystemBase {
     private static double kHoodFF = 0.005D;
     private static float kHoodUpperLimit = 50F;
     private static float kHoodLowerLimit = 0F;
-    private static double kAimCoeffA = 1D;
-    private static double kAimCoeffB = 1D;
-    private static double kAimCoeffC = 1D;
     //#endregion
 
     private final CANSparkMax m_hood;

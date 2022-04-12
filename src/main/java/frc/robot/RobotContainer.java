@@ -45,6 +45,7 @@ import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBallDisrupt;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallHanger;
 import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
@@ -133,7 +134,8 @@ public class RobotContainer {
         m_chooser.addOption("Two Ball from Hanger Side", new TwoBallHanger(135));
         m_chooser.addOption("Fender Shot", new FenderShot());
         m_chooser.addOption("Blue One Ball Taxi", new OneBall());
-        m_chooser.addOption("Five Ball Auto", new FiveBallAuto(90));
+        m_chooser.addOption("Five Ball Auto", new FiveBallAuto());
+        m_chooser.addOption("One Ball Disrupt", new OneBallDisrupt());
         SmartDashboard.putData(m_chooser);
     }
 

@@ -40,8 +40,8 @@ public class AutoShot extends CommandBase {
         m_distanceSeen = m_vision.getAverageDistance();
         m_vision.setLimelightOffset();
 
-        double interpolatedAngle = Constants.Shooter.kHoodAngleLookupTable.get(m_distanceSeen);
-        double interpolatedRPM = Constants.Shooter.kShooterRPMLookupTable.get(m_distanceSeen);
+        double interpolatedAngle = Constants.ShooterConstants.kHoodAngleLookupTable.get(m_distanceSeen);
+        double interpolatedRPM = Constants.ShooterConstants.kShooterRPMLookupTable.get(m_distanceSeen);
         if (interpolatedRPM == 0) {
             interpolatedRPM = 1500;
         }
