@@ -303,7 +303,6 @@ public class IntakeFeeder extends SubsystemBase {
                 intakeWheels_.setVoltage(Constants.kIntakeReverseVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelReverseVoltage);
                 feederWheel_.setVoltage(Constants.kFeederReverseVoltage);
-                rumble_ = false;
                 adjusted_ = false;
                 break;
             default:
