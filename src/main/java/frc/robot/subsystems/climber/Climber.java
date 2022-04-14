@@ -498,6 +498,9 @@ public class Climber extends SubsystemBase {
                     },
             () -> inTolerance(m_rightElevatorMotor.getEncoder().getPosition(), 
                             Constants.Climber.kExtensionBottom - 1, 
+                            Constants.Climber.kExtensionBottom + 1) &&
+                inTolerance(m_leftElevatorMotor.getEncoder().getPosition(), 
+                            Constants.Climber.kExtensionBottom - 1, 
                             Constants.Climber.kExtensionBottom + 1),
             null,
             this);

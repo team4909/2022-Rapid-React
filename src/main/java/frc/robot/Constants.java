@@ -155,8 +155,9 @@ public final class Constants {
     public static final double kCenteringWheelReverseVoltage = 6.0;
 
     // Shooter Velocity Goal Constants
-    public static final double kFenderShotVelocity = 500; //4300
-    public static final double kFenderLowShotVelocity = 600;
+    public static final double kFenderShotVelocity = 1962; //4300
+    public static final double kFenderShotHoodAngle = 21;
+    public static final double kFenderLowShotVelocity = 800;
     // public static final double kTarmacShotVelocity = 5000;
     public static final double kLongShotVelocity = 2300; 
     public static final double kWallShotVelocity = 3675;
@@ -194,7 +195,7 @@ public final class Constants {
     // Climber stuff
     public static final class Climber {
         public static final double kClimberVelocityConversion = 600 / 2048d;
-        public static final double kClimberTimeoutLong = 5.0;
+        public static final double kClimberTimeoutLong = 10.0;
         public static final int kElevatorPIDSlot = 0;
         public static final int kPivotPIDSlot = 0;
         public static final double kPivotForward = -4200; //-3800
@@ -237,13 +238,13 @@ public final class Constants {
         public static final PIDGains kBackspinPIDGains = 
             new PIDGains(kP_b, kI_b, kD_b);
 
-        public static final double kBackSpinHighShotSpeed = 5200;
-        public static final double kBackSpinLowShotSpeed = 4000;
+        public static final double kBackSpinHighShotSpeed = 4909; //5200
+        public static final double kBackSpinLowShotSpeed = 2000;
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
             .add(3, 50.09)
-            .add(3.5, 53.22)
+            .add(3.5, 53.22) //54.52
             .add(4, 54)
             .add(4.5, 55.3)
             .add(5, 55.3)

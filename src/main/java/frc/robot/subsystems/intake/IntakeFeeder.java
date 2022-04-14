@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intake;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
@@ -62,6 +64,7 @@ public class IntakeFeeder extends SubsystemBase {
     private CANSparkMax intakeWheels_;
     private CANSparkMax centeringWheel_;
     private CANSparkMax feederWheel_;
+    private SparkMaxPIDController feederPID_;
 
     // private final DoubleSolenoid intakeExtension_;
 
@@ -89,6 +92,10 @@ public class IntakeFeeder extends SubsystemBase {
         intakeWheels_ = new CANSparkMax(18, MotorType.kBrushless);
         centeringWheel_ = new CANSparkMax(16, MotorType.kBrushless);
         feederWheel_ = new CANSparkMax(17, MotorType.kBrushless);
+
+        feederPID_ = feederWheel_.getPIDController();
+        feederPID_.setP(0.05);
+
 
         intakeWheels_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
         centeringWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
@@ -193,6 +200,7 @@ public class IntakeFeeder extends SubsystemBase {
         SmartDashboard.putBoolean("First Ball Seen", firstBallSeen);
         SmartDashboard.putBoolean("Feeder Ball Seen", feederBallSeen);
         SmartDashboard.putBoolean("Incoming Seen", incomingSeen);
+        SmartDashboard.putNumber("Feeder Speed", feederWheel_.getEncoder().getVelocity());
 
         SmartDashboard.putString("State", currentState_.toString());
         // Set the solenoid to be in it's state
@@ -253,6 +261,7 @@ public class IntakeFeeder extends SubsystemBase {
                 // Run everything to get first ball into position
                 intakeWheels_.setVoltage(Constants.kIntakeForwardVoltage);
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
+                // feederPID_.setReference(Constants.kCenteringWheelForwardVoltage, ControlType.kVoltage);
                 feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
                 if (firstBallSeen) {
                     // Want to keep running the intake, but not the feeder
@@ -275,6 +284,7 @@ public class IntakeFeeder extends SubsystemBase {
                 centeringWheel_.setVoltage(Constants.kCenteringWheelForwardVoltage);
                 // Have already checked to make sure that the fender wheel should be running                
                 feederWheel_.setVoltage(Constants.kFeederFeedingVoltage);
+                // feederPID_.setReference(Constants.kCenteringWheelForwardVoltage, ControlType.kVoltage);
                 // Stop feeder if either two balls reach the position
                 // Might need more complex logic, depends on the geometry but should be fine for testing
                 if (feederBallSeen ) {

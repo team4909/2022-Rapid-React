@@ -132,7 +132,7 @@ public class RobotContainer {
     private void configureSendableChooser() {
         // m_chooser.addOption("Three Ball from Bottom of Tarmac", new ThreeBallBottomTarmac());
         m_chooser.addOption("Two Ball from Hanger Side", new TwoBallHanger(135));
-        m_chooser.addOption("Fender Shot", new FenderShot());
+        m_chooser.addOption("One Ball", new OneBall());
         m_chooser.addOption("Blue One Ball Taxi", new OneBall());
         m_chooser.addOption("Five Ball Auto", new FiveBallAuto());
         m_chooser.addOption("One Ball Disrupt", new OneBallDisrupt());
@@ -207,7 +207,7 @@ public class RobotContainer {
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(21))));
         // new Button(m_operatorController::getAButton).whenPressed(() -> { m_shooterSubsystem.setVelocityGoal(Constants.kFenderShotVelocity, false);
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
-        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(13))));
+        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(Constants.kFenderShotHoodAngle))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
         
         // new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(m_shooterSubsystem.setGoalCommand(Constants.kWallShotVelocity));
