@@ -37,7 +37,7 @@ public class AutoShot extends CommandBase {
     @Override
     public void execute() {
         // m_distanceSeen = m_vision.getDistance();
-        m_distanceSeen = m_vision.getAverageDistance();
+        m_distanceSeen = m_vision.getDistance();
         m_vision.setLimelightOffset();
 
         double interpolatedAngle = Constants.ShooterConstants.kHoodAngleLookupTable.get(m_distanceSeen);

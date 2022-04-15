@@ -18,7 +18,7 @@ public class Vision extends SubsystemBase {
     //#region Constants
     private final double LIMELIGHT_HEIGHT_METERS = Units.inchesToMeters(42.5);
     private final double GOAL_HEIGHT_METERS = Units.inchesToMeters(103);
-    private final double LIMELIGHT_PITCH_RADIANS = Units.degreesToRadians(16);
+    private final double LIMELIGHT_PITCH_RADIANS = Units.degreesToRadians(15);
     //#endregion
 
     private static Vision m_instance = null; 

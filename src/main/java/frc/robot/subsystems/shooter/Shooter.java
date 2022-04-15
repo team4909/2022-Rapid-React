@@ -170,6 +170,10 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Shooter goal demand", goalDemand_);
         SmartDashboard.putNumber("Shooter speed", goalDemand_ / kFlywheelVelocityConversion); // ticks * rpm / ticks
         SmartDashboard.putNumber("Flywheel Ticks", flywheel_.getSelectedSensorVelocity());
+        SmartDashboard.putNumber("Average Speed", movingAverage_ * kFlywheelVelocityConversion);
+        
+        SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
+        SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
     }
 
     private class ShooterDisplay {
