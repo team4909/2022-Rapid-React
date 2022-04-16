@@ -245,7 +245,9 @@ public class Climber extends SubsystemBase {
                                             Constants.Climber.kPivotForward + 200, 
                                             Constants.Climber.kPivotForward - 200));
         SmartDashboard.putNumber("key2", m_leftPivot.getStatorCurrent());
-        SmartDashboard.putNumber("posel", m_rightElevatorMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("posel_left", m_leftElevatorMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("posel_right", m_rightElevatorMotor.getEncoder().getPosition());
+
         SmartDashboard.putNumber("piv pos", m_leftPivot.getSelectedSensorPosition());
         // SmartDashboard.putNumber("piv vol", m_rightPivot.getMotorOutputVoltage());
         SmartDashboard.putString("Climber State", m_state.name());
@@ -302,7 +304,7 @@ public class Climber extends SubsystemBase {
                 case RETRACTION:
                     // Doesn't currently "hold" the pivot but could
                     currentClimberCommand = 
-                        new SequentialCommandGroup(retractProfiledClimber(Constants.Climber.kExtensionBottom), pivotBackward().withTimeout(0.25), extendToAlign())
+                        new SequentialCommandGroup(retractProfiledClimber(Constants.Climber.kExtensionBottom))
                         .withTimeout(Constants.Climber.kClimberTimeoutLong);
                     break;
                 case PREPARE_HIGH:

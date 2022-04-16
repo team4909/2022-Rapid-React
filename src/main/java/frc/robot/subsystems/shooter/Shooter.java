@@ -11,7 +11,6 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -25,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.LEDS;
 
 import java.util.Map;
 
@@ -40,6 +40,7 @@ public class Shooter extends SubsystemBase {
     private final SparkMaxPIDController backSpinPID;
     private final SimpleMotorFeedforward m_flywheelFF;
     private final SimpleMotorFeedforward m_backspinFF;
+    private final LEDS leds;
 
     // Constants
     private final static int kTimeoutMs = 100;
@@ -103,6 +104,7 @@ public class Shooter extends SubsystemBase {
         m_shooterDisplay = new Shooter.ShooterDisplay();
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
+        leds = LEDS.getInstance();
 
     }
 
@@ -174,6 +176,11 @@ public class Shooter extends SubsystemBase {
         
         SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
         SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
+
+        if (SmartDashboard.getBoolean("Ready", false))
+            leds.setLEDsRed();
+        else
+            leds.setLEDsGreen();
     }
 
     private class ShooterDisplay {

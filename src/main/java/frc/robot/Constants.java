@@ -258,10 +258,10 @@ public final class Constants {
             new InterpolationTable()
             .add(3, 1904)
             .add(3.5, 2444)
-            .add(4, 2608)
-            .add(4.5, 2993)
-            .add(5, 3012)
-            .add(5.7, 3150);
+            .add(4, 2708)
+            .add(4.5, 2950)
+            .add(5, 3112)
+            .add(5.7, 3250);
             // .add(400, 2084)
             // .add(450, 2084) // ROBOTS BY THE C
             // .add(505, 2084) // ROBOTS BY THE C
