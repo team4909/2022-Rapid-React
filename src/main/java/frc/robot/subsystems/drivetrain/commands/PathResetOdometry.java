@@ -19,8 +19,9 @@ public class PathResetOdometry extends CommandBase {
     public PathResetOdometry(String pathName) {
         try {
             trajectory = PathPlanner.loadPath(pathName, 8, 5);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (NullPointerException e) {
+            //If you spell the path name wrong stay still.
+            trajectory = PathPlanner.loadPath("Stay Still", 8, 5);
         }
         offset_ = 0;
         
