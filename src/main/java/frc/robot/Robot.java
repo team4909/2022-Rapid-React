@@ -69,8 +69,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    Rumble.getInstance().runRumble(0, 0.1, 0, 1).schedule(); //Kill Rumble
-    // m_robotContainer.retryMotors();
+    
   }
 
   @Override

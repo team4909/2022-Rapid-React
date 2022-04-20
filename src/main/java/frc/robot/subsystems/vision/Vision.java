@@ -4,13 +4,16 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
@@ -30,24 +33,23 @@ public class Vision extends SubsystemBase {
     private double m_avgDistance;
 
     private double limelightOffset;
-    private double firstError;
     private PIDController m_turnPID;
 
-    PhotonCamera limelight;
+    private PhotonCamera limelight;
+    private UsbCamera driverCam;
 
-    LinearFilter m_distanceFilter;
-    LinearFilter m_offsetFilter;
+    private LinearFilter m_distanceFilter;
+    private LinearFilter m_offsetFilter;
 
     private Vision() {
         limelight = new PhotonCamera(NetworkTableInstance.getDefault(), "Limelight");
-        // SmartDashboard.putNumber("Photon Distance", 0);
+        driverCam = CameraServer.startAutomaticCapture();
+        driverCam.setVideoMode(PixelFormat.kMJPEG, 640, 480, 15);
+        Shuffleboard.getTab("Driver Info").add(driverCam).withPosition(0, 0).withSize(8, 6);
+
         m_turnPID = 
             new PIDController(VisionConstants.kVisionPIDGains.kP, VisionConstants.kVisionPIDGains.kI, VisionConstants.kVisionPIDGains.kD);
 
-        // m_distanceFilter = LinearFilter.singlePoleIIR(.1, 0.02);
-        // m_offsetFilter = LinearFilter.singlePoleIIR(.1, 0.02);
- 
-        // BB Try this
         m_distanceFilter = LinearFilter.movingAverage(10);
         m_offsetFilter = LinearFilter.movingAverage(10);
         SmartDashboard.putData(m_turnPID);
@@ -57,8 +59,6 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
         m_pipelineResult = limelight.getLatestResult();
-
-        // SmartDashboard.putNumber("error", m_turnPID.getVelocityError());
 
         if (m_pipelineResult.hasTargets()) {
             double targetPitch = Units.degreesToRadians(m_pipelineResult.getBestTarget().getPitch());
@@ -93,10 +93,7 @@ public class Vision extends SubsystemBase {
     public void setLimelightOffset() {
 
         double offset = -this.m_xOffset;
-
-        // Use a PID to convert between a offset yaw degrees to an angular speed for robot rotation
         double angularSpeed = -m_turnPID.calculate(offset, 0);
-        // double angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * Constants.GOAL_ALIGN_KD) * 2;
         SmartDashboard.putNumber("Angular Speed", angularSpeed);
         SmartDashboard.putNumber("Offset", offset);
         if (this.m_isAligned == true) {

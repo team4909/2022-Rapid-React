@@ -75,8 +75,6 @@ public class RobotContainer {
 
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final Climber climber_ = Climber.getInstance();
-    private final Rumble rumble_ = Rumble.getInstance(m_driverController, m_operatorController);
-    
     private final Vision m_vision = Vision.getInstance();
     // private final VisionSubsystem m_vision = VisionSubsystem.getInstance();
     // private final BionicController m_controller = new BionicController(2);
@@ -161,42 +159,45 @@ public class RobotContainer {
         // .toggleWhenPressed(new InstantCommand(() -> m_vision.switchCamera("Climber Camera"))
         // .andThen(new InstantCommand(() -> m_vision.switchCamera("Front Camera"))));
     
-    // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
-    // Switch Pipelines
-    new Button(m_driverController::getRightBumper)
+        // new Button(m_controller::getBButton).whenPressed(m_VisionSubsystem::getDistance);
+        // Switch Pipelines
+        new Button(m_driverController::getRightBumper)
 
-                .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
-                .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
-    new Button(m_driverController::getLeftBumper)
-                .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
-                .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
-    // new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
-    
+                    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
+                    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
+        new Button(m_driverController::getLeftBumper)
+                    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
+                    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
+        // new Button(m_driverController::getRightStickButton).whenPressed(m_VisionSubsystem::setPipeline);
+        
 
-    //Fender Shot Angles
-    // new Button(m_driverController::getAButton).whenPressed(new SnapToAngle(m_driverController, 201, m_drivetrainSubsystem));
-    // new Button(m_driverController::getBButton).whenPressed(new SnapToAngle(m_driverController, 111, m_drivetrainSubsystem));
-    // new Button(m_driverController::getXButton).whenPressed(new SnapToAngle(m_driverController, 291, m_drivetrainSubsystem));
-    // new Button(m_driverController::getYButton).whenPressed(new SnapToAngle(m_driverController, 21, m_drivetrainSubsystem));
-    // new Button(() -> (m_driverController.getPOV()  != -1)).whenPressed(new SnapToAngle(m_driverController, m_drivetrainSubsystem), false);
+        //Fender Shot Angles
+        // new Button(m_driverController::getAButton).whenPressed(new SnapToAngle(m_driverController, 201, m_drivetrainSubsystem));
+        // new Button(m_driverController::getBButton).whenPressed(new SnapToAngle(m_driverController, 111, m_drivetrainSubsystem));
+        // new Button(m_driverController::getXButton).whenPressed(new SnapToAngle(m_driverController, 291, m_drivetrainSubsystem));
+        // new Button(m_driverController::getYButton).whenPressed(new SnapToAngle(m_driverController, 21, m_drivetrainSubsystem));
+        // new Button(() -> (m_driverController.getPOV()  != -1)).whenPressed(new SnapToAngle(m_driverController, m_drivetrainSubsystem), false);
 
-    // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
-    // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
-    // new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
-    // new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
-    //.whenHeld(getLimelightCommand()
-    //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
+        // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(() -> m_controller.getLeftBumperReleased()).andThen(new RunCommand(() -> m_VisionSubsystem.endRumble(m_controller))));
+        // new Button(m_controller::getLeftBumper).whenPressed(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller, true)).withInterrupt(m_controller::getLeftBumperReleased));
+        // new Button(m_controller::getRightBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getRightBumper));
+        // new Button(m_controller::getLeftBumper).whileActiveContinuous(new RunCommand( () -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumper));
+        //.whenHeld(getLimelightCommand()
+        //.alongWith(new RunCommand(() -> m_VisionSubsystem.checkRumble(m_controller)).withInterrupt(m_controller::getLeftBumperPressed)));
 
 
-    // Shoot the shot
-    new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
-                .whenActive(() -> { m_intakeSubsystem.shoot(); } )
-                .whenInactive(() -> { m_intakeSubsystem.stopIntake();} );
+        // Shoot the shot
+        new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
+                    .whenActive(() -> { m_intakeSubsystem.shoot(); } )
+                    .whenInactive(() -> { m_intakeSubsystem.stopIntake();} );
 
-    new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis())) > 0.7)
-        .whenActive(new AutoShot(m_vision, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
-        .whenInactive(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
-            .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0, false))));
+        new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis())) > 0.7)
+            .whenActive(new AutoShot(m_vision, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
+            .whenInactive(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
+                .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0, false))));
+
+        new Trigger(() -> m_driverController.getPOV() == 0).whenActive(m_vision::takeSnapshot);
+        
         /////////////////////////////////
         ///      Operator Buttons     ///
         /////////////////////////////////           

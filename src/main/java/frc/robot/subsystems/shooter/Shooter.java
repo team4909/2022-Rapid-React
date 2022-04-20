@@ -57,6 +57,7 @@ public class Shooter extends SubsystemBase {
     private Timer m_shooterTimer;
     private double m_lastTime;
 
+    private NetworkTableEntry readyToShoot_;
 
     private Shooter() {
         flywheel_ = new TalonFX(13);
@@ -105,7 +106,8 @@ public class Shooter extends SubsystemBase {
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
         leds = LEDS.getInstance();
-
+        readyToShoot_ = Shuffleboard.getTab("Driver Info").add("Ready to Shoot", false).withPosition(8, 0).withSize(5, 6).getEntry();
+        
     }
 
     public static Shooter getInstance() {
@@ -174,8 +176,11 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Ticks", flywheel_.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Average Speed", movingAverage_ * kFlywheelVelocityConversion);
         
-        SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
-        SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
+        readyToShoot_.setBoolean(
+            SmartDashboard.getNumber("Average Speed", 0) >= SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false
+        );
+        // SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
+        // SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
 
         if (SmartDashboard.getBoolean("Ready", false))
             leds.setLEDsRed();
