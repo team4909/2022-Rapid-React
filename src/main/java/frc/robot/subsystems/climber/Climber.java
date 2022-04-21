@@ -365,7 +365,8 @@ public class Climber extends SubsystemBase {
                                                      m_rightPivot.setSelectedSensorPosition(0); }));
     }
 
-    private final Command pivotForward() {
+    private final Command 
+    pivotForward() {
         return new ClimberCommandBuilder(
             () -> { setPivotGoal(Constants.Climber.kPivotForward); }, 
             () -> pivotTolerance(Constants.Climber.kPivotForward), 

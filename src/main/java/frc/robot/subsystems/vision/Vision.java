@@ -43,9 +43,9 @@ public class Vision extends SubsystemBase {
 
     private Vision() {
         limelight = new PhotonCamera(NetworkTableInstance.getDefault(), "Limelight");
-        driverCam = CameraServer.startAutomaticCapture();
-        driverCam.setVideoMode(PixelFormat.kMJPEG, 640, 480, 15);
-        Shuffleboard.getTab("Driver Info").add(driverCam).withPosition(0, 0).withSize(8, 6);
+        // driverCam = CameraServer.startAutomaticCapture();
+        // driverCam.setVideoMode(PixelFormat.kMJPEG, 640, 480, 15);
+        // Shuffleboard.getTab("Driver Info").add(driverCam).withPosition(0, 0).withSize(8, 6);
 
         m_turnPID = 
             new PIDController(VisionConstants.kVisionPIDGains.kP, VisionConstants.kVisionPIDGains.kI, VisionConstants.kVisionPIDGains.kD);
