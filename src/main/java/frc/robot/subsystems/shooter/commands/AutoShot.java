@@ -5,7 +5,9 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.utils.InterpolationTable;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -15,6 +17,8 @@ public class AutoShot extends CommandBase {
     private final Shooter m_shooter;
     private final Hood m_hood;
     private final BooleanSupplier m_shooting;
+
+
 
     private static double m_distanceSeen = 0;
 
@@ -41,7 +45,7 @@ public class AutoShot extends CommandBase {
         m_vision.setLimelightOffset();
 
         double interpolatedAngle = Constants.ShooterConstants.kHoodAngleLookupTable.get(m_distanceSeen);
-        double interpolatedRPM = Constants.ShooterConstants.kShooterRPMLookupTable.get(m_distanceSeen);
+        double interpolatedRPM = m_shooter.getRPMInterpolationTable().get(m_distanceSeen);
         if (interpolatedRPM == 0) {
             interpolatedRPM = 1500;
         }
@@ -49,6 +53,8 @@ public class AutoShot extends CommandBase {
         m_shooter.setGoalStatic(interpolatedRPM, false);
         SmartDashboard.putNumber("Interpolated RPM", interpolatedRPM);
     }
+
+
 
     @Override
     public void end(boolean interrupted) {

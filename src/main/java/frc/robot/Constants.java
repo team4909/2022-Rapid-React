@@ -262,6 +262,15 @@ public final class Constants {
             .add(4.5, 2950)
             .add(5, 3112)
             .add(5.7, 3250);
+
+        public static InterpolationTable kShooterRPMLookupTableSlow = 
+            new InterpolationTable()
+            .add(3, 1904 * 0.8)
+            .add(3.5, 2444 * 0.8)
+            .add(4, 2708 * 0.8)
+            .add(4.5, 2950 * 0.8)
+            .add(5, 3112 * 0.8)
+            .add(5.7, 3250 * 0.8);
             // .add(400, 2084)
             // .add(450, 2084) // ROBOTS BY THE C
             // .add(505, 2084) // ROBOTS BY THE C
@@ -333,4 +342,6 @@ public final class Constants {
             .add(400, 1923); */
     
         }
+
+
 }

@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -196,7 +197,12 @@ public class RobotContainer {
             .whenInactive(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
                 .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0, false))));
 
-        new Trigger(() -> m_driverController.getPOV() == 0).whenActive(m_vision::takeSnapshot);
+        new Trigger(() -> m_driverController.getPOV() == 90).whenActive(m_vision::takeSnapshot);
+
+        new Trigger(() -> m_driverController.getPOV() == 0).whenActive(() -> m_shooterSubsystem.setRPMInterpolationTable(ShooterConstants.kShooterRPMLookupTable));
+        new Trigger(() -> m_driverController.getPOV() == 180).whenActive(() -> m_shooterSubsystem.setRPMInterpolationTable(ShooterConstants.kShooterRPMLookupTableSlow));
+        
+        // new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(});
         
         /////////////////////////////////
         ///      Operator Buttons     ///
