@@ -6,57 +6,34 @@
 package frc.robot;
 
 import java.io.IOException;
-import java.sql.ClientInfoStatus;
-import java.time.Instant;
 
 import edu.wpi.first.util.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
-import edu.wpi.first.wpilibj2.command.button.Button;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.Climber.ClimberStates;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.climber.Climber.ClimberStates;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
-import frc.robot.subsystems.drivetrain.Taxi;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
-import frc.robot.subsystems.drivetrain.commands.SnapToAngle;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBallDisrupt;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallHanger;
 import frc.robot.subsystems.intake.Intake;
-// import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
 import frc.robot.subsystems.intake.IntakeFeeder;
-import frc.robot.subsystems.intake.commands.ReverseIntakeCmd;
-import frc.robot.subsystems.intake.commands.RunIntakeCmd;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.AutoShot;
 import frc.robot.subsystems.vision.Vision;
-import frc.robot.utils.Rumble;
 
 
 /**
@@ -75,7 +52,6 @@ public class RobotContainer {
 
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final Climber climber_ = Climber.getInstance();
-    private final Rumble rumble_ = Rumble.getInstance(m_driverController, m_operatorController);
     
     private final Vision m_vision = Vision.getInstance();
     // private final VisionSubsystem m_vision = VisionSubsystem.getInstance();

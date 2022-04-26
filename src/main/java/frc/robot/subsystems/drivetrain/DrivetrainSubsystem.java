@@ -4,18 +4,31 @@
 
 package frc.robot.subsystems.drivetrain;
 
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.ctre.phoenix.sensors.CANCoderFaults;
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
-import frc.lib.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
+import static frc.robot.Constants.BACK_LEFT_MODULE_DRIVE_MOTOR;
+import static frc.robot.Constants.BACK_LEFT_MODULE_STEER_ENCODER;
+import static frc.robot.Constants.BACK_LEFT_MODULE_STEER_MOTOR;
+import static frc.robot.Constants.BACK_LEFT_MODULE_STEER_OFFSET;
+import static frc.robot.Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR;
+import static frc.robot.Constants.BACK_RIGHT_MODULE_STEER_ENCODER;
+import static frc.robot.Constants.BACK_RIGHT_MODULE_STEER_MOTOR;
+import static frc.robot.Constants.BACK_RIGHT_MODULE_STEER_OFFSET;
+import static frc.robot.Constants.DRIVETRAIN_PIGEON_ID;
+import static frc.robot.Constants.DRIVETRAIN_TRACKWIDTH_METERS;
+import static frc.robot.Constants.DRIVETRAIN_WHEELBASE_METERS;
+import static frc.robot.Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR;
+import static frc.robot.Constants.FRONT_LEFT_MODULE_STEER_ENCODER;
+import static frc.robot.Constants.FRONT_LEFT_MODULE_STEER_MOTOR;
+import static frc.robot.Constants.FRONT_LEFT_MODULE_STEER_OFFSET;
+import static frc.robot.Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR;
+import static frc.robot.Constants.FRONT_RIGHT_MODULE_STEER_ENCODER;
+import static frc.robot.Constants.FRONT_RIGHT_MODULE_STEER_MOTOR;
+import static frc.robot.Constants.FRONT_RIGHT_MODULE_STEER_OFFSET;
+import static frc.robot.Constants.GEAR_RATIO;
+import static frc.robot.Constants.MODULE_CONFIGURATION;
 
-import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
-import frc.lib.swervedrivespecialties.swervelib.ModuleConfiguration;
-import frc.lib.swervedrivespecialties.swervelib.SwerveModule;
+import java.util.Map;
+
+import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,12 +45,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
+import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
+import frc.lib.swervedrivespecialties.swervelib.SwerveModule;
 import frc.robot.Constants;
-
-import static frc.robot.Constants.*;
-
-import java.util.Map;
-import java.util.Vector;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -98,12 +109,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private SwerveModule m_frontRightModule;
     private SwerveModule m_backLeftModule;
     private SwerveModule m_backRightModule;
-
-    // Absolute Cancoders (1 per module)
-    private CANCoder m_frontLeftCanCoder;
-    private CANCoder m_frontRightCanCoder;
-    private CANCoder m_backLeftCanCoder;
-    private CANCoder m_backRightCanCoder;
     
     // Odometry for storing the position of the robot
     private SwerveDriveOdometry m_odometry;
@@ -134,19 +139,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
 
-        //  initilizeEncoders();
         initializeMotors();       
         SmartDashboard.putData("Field", m_field);
     }
 
-    public void initilizeEncoders(){
-        m_frontLeftCanCoder = new CANCoder(Constants.FRONT_LEFT_MODULE_STEER_ENCODER);
-        m_frontRightCanCoder = new CANCoder(Constants.FRONT_RIGHT_MODULE_STEER_ENCODER);
-        m_backLeftCanCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_ENCODER);
-        m_backRightCanCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_ENCODER);
-
-        m_pigeon.clearStickyFaults();
-    }
 
     public void initializeMotors() {
         Mk4ModuleConfiguration config = new Mk4ModuleConfiguration();
@@ -213,7 +209,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             BACK_RIGHT_MODULE_STEER_OFFSET
         );
         Timer.delay(0.06);
-
+        m_pigeon.clearStickyFaults();
     }
 
     public void retryMotors() {

@@ -10,7 +10,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
@@ -30,7 +29,6 @@ public class Vision extends SubsystemBase {
     private double m_avgDistance;
 
     private double limelightOffset;
-    private double firstError;
     private PIDController m_turnPID;
 
     PhotonCamera limelight;

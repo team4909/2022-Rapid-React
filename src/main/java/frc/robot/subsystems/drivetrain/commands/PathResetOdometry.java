@@ -1,20 +1,16 @@
 package frc.robot.subsystems.drivetrain.commands;
 
-import javax.sql.rowset.spi.TransactionalWriter;
-
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class PathResetOdometry extends CommandBase {
 
     PathPlannerTrajectory trajectory = null;
-    private double offset_;
 
     public PathResetOdometry(String pathName) {
         try {
@@ -23,7 +19,6 @@ public class PathResetOdometry extends CommandBase {
             //If you spell the path name wrong stay still.
             trajectory = PathPlanner.loadPath("Stay Still", 8, 5);
         }
-        offset_ = 0;
         
     }
 
@@ -33,7 +28,6 @@ public class PathResetOdometry extends CommandBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        offset_ = offset;
     }
 
     @Override
@@ -53,17 +47,6 @@ public class PathResetOdometry extends CommandBase {
         
         DrivetrainSubsystem.getInstance().resetOdometry(offsetPose);
         
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        super.end(interrupted);
-    }
-
-    @Override
-    public boolean isFinished() {
-        // TODO Auto-generated method stub
-        return true;
     }
     
 }

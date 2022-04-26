@@ -4,10 +4,7 @@ import java.util.List;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.lib.bioniclib.AutoRoutineBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.drivetrain.commands.PathResetOdometry;
 import frc.robot.subsystems.drivetrain.commands.TrajectoryFollow;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Shooter;

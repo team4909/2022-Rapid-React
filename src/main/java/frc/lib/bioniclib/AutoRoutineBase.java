@@ -30,6 +30,8 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
             trajectories != null ? new PathResetOdometry(trajectories.get(0)) : null,
             new InstantCommand(m_intake::resetBallCount, m_intake)
         );
+
+        addRequirements(m_intake, m_vision, m_hood, m_shooter);
     }
 
     protected abstract List<String> addTrajectories();

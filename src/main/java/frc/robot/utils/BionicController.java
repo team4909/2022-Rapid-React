@@ -1,7 +1,6 @@
 package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID;
 
 public class BionicController extends XboxController{
 
