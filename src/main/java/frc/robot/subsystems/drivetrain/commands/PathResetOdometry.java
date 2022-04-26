@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class PathResetOdometry extends CommandBase {
@@ -14,21 +15,13 @@ public class PathResetOdometry extends CommandBase {
 
     public PathResetOdometry(String pathName) {
         try {
-            trajectory = PathPlanner.loadPath(pathName, 8, 5);
+            trajectory = PathPlanner.loadPath(pathName, DriveConstants.T_MAX_VEL, DriveConstants.T_MAX_ACCEL);
         } catch (NullPointerException e) {
-            //If you spell the path name wrong stay still.
-            trajectory = PathPlanner.loadPath("Stay Still", 8, 5);
+            trajectory = PathPlanner.loadPath("Stay Still", DriveConstants.T_MAX_VEL, DriveConstants.T_MAX_ACCEL);
         }
         
     }
 
-    public PathResetOdometry(String pathName, double offset) {
-        try {
-            trajectory = PathPlanner.loadPath(pathName, 8, 5);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void initialize() {
@@ -42,7 +35,6 @@ public class PathResetOdometry extends CommandBase {
             offsetRot
         );
 
-        // DrivetrainSubsystem.getInstance().setGyroscope(offsetRot.getDegrees());
         DrivetrainSubsystem.getInstance().setGyroscope(initialPose.getRotation().getDegrees());
         
         DrivetrainSubsystem.getInstance().resetOdometry(offsetPose);

@@ -4,27 +4,7 @@
 
 package frc.robot.subsystems.drivetrain;
 
-import static frc.robot.Constants.BACK_LEFT_MODULE_DRIVE_MOTOR;
-import static frc.robot.Constants.BACK_LEFT_MODULE_STEER_ENCODER;
-import static frc.robot.Constants.BACK_LEFT_MODULE_STEER_MOTOR;
-import static frc.robot.Constants.BACK_LEFT_MODULE_STEER_OFFSET;
-import static frc.robot.Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR;
-import static frc.robot.Constants.BACK_RIGHT_MODULE_STEER_ENCODER;
-import static frc.robot.Constants.BACK_RIGHT_MODULE_STEER_MOTOR;
-import static frc.robot.Constants.BACK_RIGHT_MODULE_STEER_OFFSET;
-import static frc.robot.Constants.DRIVETRAIN_PIGEON_ID;
-import static frc.robot.Constants.DRIVETRAIN_TRACKWIDTH_METERS;
-import static frc.robot.Constants.DRIVETRAIN_WHEELBASE_METERS;
-import static frc.robot.Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR;
-import static frc.robot.Constants.FRONT_LEFT_MODULE_STEER_ENCODER;
-import static frc.robot.Constants.FRONT_LEFT_MODULE_STEER_MOTOR;
-import static frc.robot.Constants.FRONT_LEFT_MODULE_STEER_OFFSET;
-import static frc.robot.Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR;
-import static frc.robot.Constants.FRONT_RIGHT_MODULE_STEER_ENCODER;
-import static frc.robot.Constants.FRONT_RIGHT_MODULE_STEER_MOTOR;
-import static frc.robot.Constants.FRONT_RIGHT_MODULE_STEER_OFFSET;
-import static frc.robot.Constants.GEAR_RATIO;
-import static frc.robot.Constants.MODULE_CONFIGURATION;
+import static frc.robot.Constants.DriveConstants.*;
 
 import java.util.Map;
 
@@ -48,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.swervedrivespecialties.swervelib.Mk4ModuleConfiguration;
 import frc.lib.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import frc.lib.swervedrivespecialties.swervelib.SwerveModule;
-import frc.robot.Constants;
 
 public class DrivetrainSubsystem extends SubsystemBase {
 
@@ -75,7 +54,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * <p>
      * This is a measure of how fast the robot should be able to drive in a straight line.
      */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = Constants.FALCON_500_FREE_SPEED / 60.0 *
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = FALCON_500_FREE_SPEED / 60.0 *
             MODULE_CONFIGURATION.getDriveReduction() *
             MODULE_CONFIGURATION.getWheelDiameter() * Math.PI;
     /**
@@ -245,8 +224,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_pigeon.getRoll();
     }
 
-
-
     /**
      * Sets the chassisSpeeds object in drivetrain
      */
@@ -283,27 +260,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
         m_field.setRobotPose(m_odometry.getPoseMeters());
         SmartDashboard.putNumber("roll", this.getGyroRoll());
-        // if (m_frontLeftCanCoder.getLastError() != ErrorCode.OK ||
-        //     m_frontRightCanCoder.getLastError() != ErrorCode.OK ||
-        //     m_backLeftCanCoder.getLastError() != ErrorCode.OK ||
-        //     m_backRightCanCoder.getLastError() != ErrorCode.OK) {
-        //         SmartDashboard.putBoolean("Bad CanCoder Periodic", true);
-
-        // }
-        // System.out.println(getCurrentPose());
-        // System.out.println(MAX_VELOCITY_METERS_PER_SECOND);
-        // System.out.println(MAX_VOLTAGE);
-        // System.out.println("w/o scale:" + m_chassisSpeeds.vxMetersPerSecond);
-        // System.out.println("S0 m/s" + states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE);
-        // System.out.println("rad/s" + m_chassisSpeeds.omegaRadiansPerSecond);
-        // System.out.println("rad state [0] " + states[0].angle.getRadians());
-        // System.out.println(m_chassisSpeeds.vxMetersPerSecond * AUTO_DRIVE_SCALE);
         
         if (!lockInPlace_) {
             m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
             m_frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
             m_backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-            m_backRightModule.set( states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,states[3].angle.getRadians());
+            m_backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE,states[3].angle.getRadians());
         } else {
             m_frontLeftModule.set(0, -45);
             m_frontRightModule.set(0, 315);
@@ -312,22 +274,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
         }
         
         states[0].speedMetersPerSecond = Math.abs(m_frontLeftModule.getDriveVelocity());
-       states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
-       states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
-       states[3].speedMetersPerSecond = Math.abs(m_backRightModule.getDriveVelocity());
-       m_odometry.update(getGyroscopeRotation(), states);
-    }
+        states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
+        states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
+        states[3].speedMetersPerSecond = Math.abs(m_backRightModule.getDriveVelocity());
+        m_odometry.update(getGyroscopeRotation(), states);
+    } 
 
-    /**
-     * Returns the SwerveDriveKinematics object
-     */
     public SwerveDriveKinematics getKinematics(){
         return m_kinematics;
     }
 
-    /**
-     * Returns the current position of the robot from the Odometry
-     */
     public Pose2d getCurrentPose(){
         return m_odometry.getPoseMeters();
     }
@@ -343,7 +299,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setPreciseMode(boolean on) {
-        preciseModeScale = on ? Constants.PRECISE_MODE_SCALE : 1;
+        preciseModeScale = on ? PRECISE_MODE_SCALE : 1;
     }
 
     public void setLockInPlace(boolean lock) {

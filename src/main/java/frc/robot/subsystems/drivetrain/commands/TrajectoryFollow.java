@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 
 public class TrajectoryFollow extends CommandBase {
@@ -38,7 +39,7 @@ public class TrajectoryFollow extends CommandBase {
 
         if (m_trajectory == null) {
             try {
-                m_trajectory = PathPlanner.loadPath(m_pathName, 8, 5); //2.9, 3
+                m_trajectory = PathPlanner.loadPath(m_pathName, DriveConstants.T_MAX_VEL, DriveConstants.T_MAX_ACCEL); //2.9, 3
             } catch (Exception e) {
                 e.printStackTrace();
             }
