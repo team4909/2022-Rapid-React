@@ -24,6 +24,7 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
         m_vision = Vision.getInstance();
         m_hood = Hood.getInstance();
         m_shooter = Shooter.getInstance();
+        addRequirements(m_intake, m_vision, m_hood, m_shooter);
 
         trajectories = addTrajectories();
         addCommands(
@@ -31,7 +32,6 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
             new InstantCommand(m_intake::resetBallCount, m_intake)
         );
 
-        addRequirements(m_intake, m_vision, m_hood, m_shooter);
     }
 
     protected abstract List<String> addTrajectories();
