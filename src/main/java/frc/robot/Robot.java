@@ -8,10 +8,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.intake.Intake;
-// import frc.robot.subsystems.climber.Climber;
-// import frc.robot.subsystems.climber.Climber.ClimberStates;
 import frc.robot.subsystems.shooter.Hood;
-import frc.robot.utils.Rumble;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -23,9 +20,7 @@ public class Robot extends TimedRobot {
   
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
-  // private Compressor m_compressor;
 
-  // private Command llCommand;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -38,8 +33,6 @@ public class Robot extends TimedRobot {
      */
 
     m_robotContainer = new RobotContainer();
-
-    // m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   }
 
   /**
@@ -66,8 +59,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    Rumble.getInstance().runRumble(0, 0.1, 0, 1).schedule(); //Kill Rumble
-    // m_robotContainer.retryMotors();
+
   }
 
   @Override
@@ -76,7 +68,6 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    System.out.println("Auto Starting");
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // Schedule the autonomous command
@@ -104,8 +95,6 @@ public class Robot extends TimedRobot {
 
     Hood.getInstance().zeroHood();
     Intake.getInstance().intakeZero();
-    // Climber.getInstance().setState(ClimberStates.IDLE);
-
   }
 
   
@@ -113,10 +102,6 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-
-
-    // m_compressor.enableAnalog(90, 120);
-
 
   }
 

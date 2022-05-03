@@ -11,7 +11,6 @@ import frc.robot.subsystems.shooter.commands.AutoShot;
 public class FiveBallAuto extends AutoRoutineBase {
 
     public FiveBallAuto() {
-        super();
         addCommands(  
             new RunCommand(m_intake::intake, m_intake).withTimeout(0.3),
             new TrajectoryFollow(getTrajectory(0)).withTimeout(2)

@@ -11,7 +11,6 @@ import frc.robot.subsystems.shooter.commands.AutoShot;
 public class TwoBallDisrupt extends AutoRoutineBase {
 
     public TwoBallDisrupt() {
-        super();
         addCommands(
             new RunCommand(m_intake::intake, m_intake)
             .alongWith(new TrajectoryFollow(getTrajectory(0))).withTimeout(1.7),

@@ -14,11 +14,9 @@ import frc.robot.Constants.VisionConstants;
 
 public class Vision extends SubsystemBase {
 
-    //#region Constants
     private final double LIMELIGHT_HEIGHT_METERS = Units.inchesToMeters(42.5);
     private final double GOAL_HEIGHT_METERS = Units.inchesToMeters(103);
     private final double LIMELIGHT_PITCH_RADIANS = Units.degreesToRadians(15);
-    //#endregion
 
     private static Vision m_instance = null; 
     private PhotonPipelineResult m_pipelineResult;
@@ -31,14 +29,13 @@ public class Vision extends SubsystemBase {
     private double limelightOffset;
     private PIDController m_turnPID;
 
-    PhotonCamera limelight;
+    private PhotonCamera limelight;
 
-    LinearFilter m_distanceFilter;
-    LinearFilter m_offsetFilter;
+    private LinearFilter m_distanceFilter;
+    private LinearFilter m_offsetFilter;
 
     private Vision() {
         limelight = new PhotonCamera(NetworkTableInstance.getDefault(), "Limelight");
-        // SmartDashboard.putNumber("Photon Distance", 0);
         m_turnPID = 
             new PIDController(VisionConstants.kVisionPIDGains.kP, VisionConstants.kVisionPIDGains.kI, VisionConstants.kVisionPIDGains.kD);
 
@@ -56,8 +53,6 @@ public class Vision extends SubsystemBase {
     public void periodic() {
         m_pipelineResult = limelight.getLatestResult();
 
-        // SmartDashboard.putNumber("error", m_turnPID.getVelocityError());
-
         if (m_pipelineResult.hasTargets()) {
             double targetPitch = Units.degreesToRadians(m_pipelineResult.getBestTarget().getPitch());
 
@@ -68,24 +63,18 @@ public class Vision extends SubsystemBase {
                 targetPitch);
 
             m_xOffset = m_offsetFilter.calculate(m_pipelineResult.getBestTarget().getYaw());
-            SmartDashboard.putBoolean("Is Aligned", m_isAligned);
-
-            SmartDashboard.putNumber("Photon Distance", m_distance);
             m_avgDistance = m_distanceFilter.calculate(m_distance);
 
-            
-            SmartDashboard.putNumber("Photon Distance avg", m_avgDistance);
+            SmartDashboard.putBoolean("Is Aligned", m_isAligned);
+            SmartDashboard.putNumber("Photon Distance", m_distance);
 
         } else {
             m_xOffset = 0;
             m_distance = 0;
         }
 
-        if (Math.abs(this.m_xOffset) <= 1) {
-            m_isAligned = true;
-        } else {
-            m_isAligned = false;
-        }
+        if (Math.abs(this.m_xOffset) <= 1) m_isAligned = true;
+        else m_isAligned = false;
     }
 
     public void setLimelightOffset() {
@@ -94,7 +83,6 @@ public class Vision extends SubsystemBase {
 
         // Use a PID to convert between a offset yaw degrees to an angular speed for robot rotation
         double angularSpeed = -m_turnPID.calculate(offset, 0);
-        // double angularSpeed = (offset * Constants.GOAL_ALIGN_KP + Math.abs(offset - firstError) * Constants.GOAL_ALIGN_KD) * 2;
         SmartDashboard.putNumber("Angular Speed", angularSpeed);
         SmartDashboard.putNumber("Offset", offset);
         if (this.m_isAligned == true) {
@@ -118,10 +106,7 @@ public class Vision extends SubsystemBase {
         limelight.takeOutputSnapshot();
     }
 
-    /**
-     * @return seconds
-     */
-    public double getLatency() {
+    public double getLatencySeconds() {
         return m_pipelineResult.getLatencyMillis() / 1000d;
     }
 

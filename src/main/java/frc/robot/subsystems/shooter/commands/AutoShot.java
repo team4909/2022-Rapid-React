@@ -34,28 +34,27 @@ public class AutoShot extends CommandBase {
         super.setName("AutoShot");
     }
 
-    @Override
     public void execute() {
-        // m_distanceSeen = m_vision.getDistance();
         m_distanceSeen = m_vision.getDistance();
         m_vision.setLimelightOffset();
 
         double interpolatedAngle = Constants.ShooterConstants.kHoodAngleLookupTable.get(m_distanceSeen);
         double interpolatedRPM = Constants.ShooterConstants.kShooterRPMLookupTable.get(m_distanceSeen);
-        if (interpolatedRPM == 0) {
-            interpolatedRPM = 1500;
+
+        if (m_distanceSeen == 0) {
+            m_hood.setHoodAngle(Constants.kFenderShotHoodAngle);
+            m_shooter.setGoalStatic(Constants.kFenderShotVelocity, false);
+        } else {
+            m_hood.setHoodAngle(interpolatedAngle);
+            m_shooter.setGoalStatic(interpolatedRPM, false);
         }
-        m_hood.setHoodAngle(interpolatedAngle);
-        m_shooter.setGoalStatic(interpolatedRPM, false);
         SmartDashboard.putNumber("Interpolated RPM", interpolatedRPM);
     }
 
-    @Override
     public void end(boolean interrupted) {
         m_vision.setLimelightOffset(0);
     }
 
-    @Override
     public boolean isFinished() {
         return m_shooting.getAsBoolean();
 

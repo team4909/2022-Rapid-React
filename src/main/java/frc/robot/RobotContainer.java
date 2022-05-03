@@ -142,25 +142,18 @@ public class RobotContainer {
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(Constants.kFenderShotHoodAngle))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
-        
 
-        // Limelight shot: Stays the same, spins up based on limelight feedback but doesn't shoot
-        // new Button(m_operatorController::getXButton).whenPressed(new LimelightShoot());
-        // Cancel a spin up
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
-
 
         new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
             .whenActive(m_intakeSubsystem::intake)
             .whenInactive(m_intakeSubsystem::stopIntake);
 
-        // Reverse intake: Operator left trigger
         new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
             .whenActive(m_intakeSubsystem::reverseIntake)
             .whenInactive(m_intakeSubsystem::stopIntake);
 
         new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
-
 
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
         new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));

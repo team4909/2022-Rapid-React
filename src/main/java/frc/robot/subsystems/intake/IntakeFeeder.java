@@ -94,8 +94,6 @@ public class IntakeFeeder extends SubsystemBase {
         feederWheel_.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 200);
 
         feederWheel_.setIdleMode(IdleMode.kBrake);
-
-        // intakeExtension_ = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 0, 1);
     
         incomingSensor_ = new DigitalInput(2);
         lowSensor_ = new DigitalInput(1);
@@ -118,7 +116,6 @@ public class IntakeFeeder extends SubsystemBase {
     }
 
     public void intake() {
-        // intakeSolenoidState_ = true;
 
         if (currentState_.equals(IntakeState.kShootBalls)) {
             return;
@@ -144,7 +141,6 @@ public class IntakeFeeder extends SubsystemBase {
     public void stopIntake() {
         currentState_ = IntakeState.kIdle;
         m_intake.intakeIn();
-        // intakeSolenoidState_ = false; // intake in
 
     }
 
@@ -158,7 +154,6 @@ public class IntakeFeeder extends SubsystemBase {
     // Manually toggle the intake moving in and out (might not be needed, but nice to have)
     public void toggleIntakeExtension() {
         m_intake.intakeOut();
-        // intakeSolenoidState_ = !intakeSolenoidState_;
     }
 
     // Right now map this to a command/button. can make automatic with the color sensor later
@@ -166,7 +161,6 @@ public class IntakeFeeder extends SubsystemBase {
     public void reverseIntake() {
         currentState_ = IntakeState.kReverseWrongBall;
         m_intake.intakeOut();
-        // intakeSolenoidState_ = !intakeSolenoidState_; // intake in
 
     }
 
@@ -195,10 +189,6 @@ public class IntakeFeeder extends SubsystemBase {
         SmartDashboard.putNumber("Feeder Speed", feederWheel_.getEncoder().getVelocity());
 
         SmartDashboard.putString("State", currentState_.toString());
-        // Set the solenoid to be in it's state
-        // Because it's a single acting solenoid it needs to be continously set
-        // otherwise it reverts to the default state
-        // intakeExtension_.set(intakeSolenoidState_ ? Value.kReverse : Value.kForward);
         
         if (ballShot(feederBallSeen)) {
             ballsHeld_ = (ballsHeld_ == BallCount.kTwo) ? BallCount.kOne : BallCount.kZero;
