@@ -4,6 +4,7 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -17,10 +18,8 @@ public class TrajectoryFollow extends CommandBase {
 
     private String m_pathName;
     private PathPlannerTrajectory m_trajectory = null;
+    private double m_timeout = DriveConstants.T_DEFAULT_TIMEOUT;
 
-    /**
-     * Executes a trajectory that makes it remain still
-     */
     public TrajectoryFollow() {
         m_pathName = "Stay Still";
     }
@@ -31,6 +30,11 @@ public class TrajectoryFollow extends CommandBase {
 
     public TrajectoryFollow(Trajectory traj) {
         m_trajectory = (PathPlannerTrajectory) traj;
+    }
+
+    public TrajectoryFollow(Pair<String, Double> traj) {
+        m_pathName = traj.getFirst();
+        m_timeout = traj.getSecond();
     }
 
     @Override
@@ -59,6 +63,7 @@ public class TrajectoryFollow extends CommandBase {
                 thetaController,
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,
                 DrivetrainSubsystem.getInstance())
+                        .withTimeout(m_timeout)
                         .andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)))
                         .schedule();
     }

@@ -2,6 +2,7 @@ package frc.robot.subsystems.drivetrain.commands.auto_routines;
 
 import java.util.List;
 
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.lib.bioniclib.AutoRoutineBase;
@@ -12,7 +13,7 @@ public class OneBall extends AutoRoutineBase {
 
     public OneBall() {
         addCommands(
-            new TrajectoryFollow(getTrajectory(0)).withTimeout(2),
+            new TrajectoryFollow(getTrajectory(0)),
             new AutoShot(m_vision, m_shooter, m_hood).withTimeout(2),
             new RunCommand(m_intake::shoot).withTimeout(2)
             .andThen(new InstantCommand(m_intake::stopIntake))
@@ -21,7 +22,9 @@ public class OneBall extends AutoRoutineBase {
     }
 
     @Override
-    protected List<String> addTrajectories() {
-        return List.of("FenderTaxi");
+    protected List<Pair<String, Double>> addTrajectories() {
+        return List.of(
+            new Pair<String, Double>("FenderTaxi", 2.0)
+        );
     }
 }

@@ -94,6 +94,7 @@ public final class Constants {
 
         // The Max Acceleration Value for the robot [only in AUTO trajectories]
         public static final double T_MAX_ACCEL = 5;
+        public static final double T_DEFAULT_TIMEOUT = 5;
 
         public static final double PRECISE_MODE_SCALE = 0.3;
     }
