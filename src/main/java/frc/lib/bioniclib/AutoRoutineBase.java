@@ -14,11 +14,13 @@ import frc.robot.subsystems.vision.Vision;
 public abstract class AutoRoutineBase extends SequentialCommandGroup {
 
     private List<Pair<String, Double>> trajectories; //<Name, Timeout>
+    private int m_selectedTrajectory;
 
     protected IntakeFeeder m_intake;
     protected Vision m_vision;
     protected Hood m_hood;
     protected Shooter m_shooter;
+    private Pair<String, Double> trajectory;
     
     protected AutoRoutineBase() {
         m_intake = IntakeFeeder.getInstance();
@@ -27,6 +29,7 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
         m_shooter = Shooter.getInstance();
         addRequirements(m_intake, m_vision, m_hood, m_shooter);
 
+        m_selectedTrajectory = 0;
         trajectories = addTrajectories();
         addCommands(
             trajectories != null ? new PathResetOdometry(trajectories.get(0).getFirst()) : null,
@@ -36,7 +39,14 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
 
     protected abstract List<Pair<String, Double>> addTrajectories();
 
-    protected Pair<String, Double> getTrajectory(int index) {
+    //@TODO Try and write a unit test for this
+    protected Pair<String, Double> getNextTrajectory() {
+        try { trajectory = getTrajectory(++m_selectedTrajectory); } 
+        catch (IndexOutOfBoundsException e) { trajectory = getTrajectory(trajectories.size() - 1); }
+        return trajectory;
+    }
+
+    private Pair<String, Double> getTrajectory(int index) throws IndexOutOfBoundsException {
         return trajectories.get(index);
     }
     

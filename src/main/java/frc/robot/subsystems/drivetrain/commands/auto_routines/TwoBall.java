@@ -14,7 +14,7 @@ public class TwoBall extends AutoRoutineBase {
     public TwoBall() {
         addCommands(
             new RunCommand(m_intake::intake, m_intake).withTimeout(1.5),
-            new TrajectoryFollow(getTrajectory(0)),
+            new TrajectoryFollow(getNextTrajectory()),
 
             new InstantCommand(m_intake::stopIntake)
                 .andThen(new AutoShot(m_vision, m_shooter, m_hood).withTimeout(2)),
@@ -26,7 +26,6 @@ public class TwoBall extends AutoRoutineBase {
         );
     }
 
-    @Override
     protected List<Pair<String, Double>> addTrajectories() {
         return List.of(
             new Pair<String, Double>("TarmacN-E", 1.7)

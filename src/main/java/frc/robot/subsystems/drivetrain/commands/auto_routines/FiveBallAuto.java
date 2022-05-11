@@ -14,23 +14,23 @@ public class FiveBallAuto extends AutoRoutineBase {
     public FiveBallAuto() {
         addCommands(  
             new RunCommand(m_intake::intake, m_intake).withTimeout(0.3),
-            new TrajectoryFollow(getTrajectory(0))
+            new TrajectoryFollow(getNextTrajectory())
                 .raceWith(new RunCommand(m_intake::intake, m_intake))
                 .andThen(new AutoShot(m_vision, m_shooter, m_hood).withTimeout(0.5)),
             new RunCommand(m_intake::shoot).withTimeout(1.5)
                 .andThen(new InstantCommand(m_intake::stopIntake)),
 
-            new TrajectoryFollow(getTrajectory(1))
+            new TrajectoryFollow(getNextTrajectory())
                 .raceWith(new RunCommand(m_intake::intake, m_intake))
                 .andThen(new AutoShot(m_vision, m_shooter, m_hood).withTimeout(0.5)),
             new RunCommand(m_intake::shoot).withTimeout(1.5)
                 .andThen(new InstantCommand(m_intake::stopIntake))
                 .andThen(new InstantCommand(m_shooter::stop)),
 
-            new TrajectoryFollow(getTrajectory(2))
+            new TrajectoryFollow(getNextTrajectory())
                 .raceWith(new RunCommand(m_intake::intake, m_intake)),
 
-            new TrajectoryFollow(getTrajectory(3))
+            new TrajectoryFollow(getNextTrajectory())
             .andThen(new AutoShot(m_vision, m_shooter, m_hood).withTimeout(0.5)),
             new RunCommand(m_intake::shoot).withTimeout(3)
                 .andThen(new InstantCommand(m_intake::stopIntake))
@@ -38,7 +38,6 @@ public class FiveBallAuto extends AutoRoutineBase {
         );
     }
 
-    @Override
     protected List<Pair<String, Double>> addTrajectories() {
         return List.of(
             new Pair<String, Double>("Tarmac-Almost-A", 2.0),

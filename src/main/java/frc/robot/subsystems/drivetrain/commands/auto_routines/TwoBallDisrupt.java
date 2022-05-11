@@ -14,7 +14,7 @@ public class TwoBallDisrupt extends AutoRoutineBase {
     public TwoBallDisrupt() {
         addCommands(
             new RunCommand(m_intake::intake, m_intake)
-            .alongWith(new TrajectoryFollow(getTrajectory(0))),
+            .alongWith(new TrajectoryFollow(getNextTrajectory())),
 
             new InstantCommand(m_intake::stopIntake)
             .andThen(new AutoShot(m_vision, m_shooter, m_hood).withTimeout(2)),
@@ -24,7 +24,7 @@ public class TwoBallDisrupt extends AutoRoutineBase {
             .andThen(new InstantCommand(m_shooter::stop)),
 
             new RunCommand(m_intake::intake, m_intake)
-            .alongWith(new TrajectoryFollow(getTrajectory(1))),
+            .alongWith(new TrajectoryFollow(getNextTrajectory())),
 
             new InstantCommand(m_intake::stopIntake),
 
@@ -34,7 +34,6 @@ public class TwoBallDisrupt extends AutoRoutineBase {
         );
     }
 
-    @Override
     protected List<Pair<String, Double>> addTrajectories() {
         return List.of(
             new Pair<String, Double>("TarmacN-E", 1.7),

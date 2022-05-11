@@ -13,7 +13,7 @@ public class OneBall extends AutoRoutineBase {
 
     public OneBall() {
         addCommands(
-            new TrajectoryFollow(getTrajectory(0)),
+            new TrajectoryFollow(getNextTrajectory()),
             new AutoShot(m_vision, m_shooter, m_hood).withTimeout(2),
             new RunCommand(m_intake::shoot).withTimeout(2)
             .andThen(new InstantCommand(m_intake::stopIntake))
@@ -21,7 +21,6 @@ public class OneBall extends AutoRoutineBase {
         );
     }
 
-    @Override
     protected List<Pair<String, Double>> addTrajectories() {
         return List.of(
             new Pair<String, Double>("FenderTaxi", 2.0)
