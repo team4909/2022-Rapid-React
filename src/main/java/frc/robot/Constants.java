@@ -146,8 +146,8 @@ public final class Constants {
     // TODO Change if needed
 
 
-    public static final double kIntakeForwardVoltage = -6.0;
-    public static final double kIntakeReverseVoltage = 6.0;
+    public static final double kIntakeForwardVoltage = -10.0;
+    public static final double kIntakeReverseVoltage = 10.0;
     public static final double kFeederFeedingVoltage = 2.0;
     public static final double kFeederShootingVoltage = 4.0;
     public static final double kFeederReverseVoltage = -6.0;
@@ -200,7 +200,7 @@ public final class Constants {
         public static final double kClimberTimeoutLong = 10.0;
         public static final int kElevatorPIDSlot = 0;
         public static final int kPivotPIDSlot = 0;
-        public static final double kPivotForward = -4200; //-3800
+        public static final double kPivotForward = -4700; //-3800  -4200
         public static final double kMidPivotHold = -1000;
         public static final double kPivotBar = -2500;
         public static final double kExtensionMidGoal = -71;
@@ -245,6 +245,7 @@ public final class Constants {
 
         public static InterpolationTable kHoodAngleLookupTable =
             new InterpolationTable()
+            .add(2.7, 50)
             .add(3, 50.09)
             .add(3.5, 53.22) //54.52
             .add(4, 54)
@@ -258,12 +259,23 @@ public final class Constants {
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
+            .add(2.7, 1800)
             .add(3, 1904)
             .add(3.5, 2444)
             .add(4, 2708)
             .add(4.5, 2950)
             .add(5, 3112)
             .add(5.7, 3250);
+
+        public static InterpolationTable kShooterRPMLookupTableSlow = 
+            new InterpolationTable()
+            .add(2.7, 1800 * 0.8)
+            .add(3, 1904 * 0.8)
+            .add(3.5, 2444 * 0.8)
+            .add(4, 2708 * 0.8)
+            .add(4.5, 2950 * 0.8)
+            .add(5, 3112 * 0.8)
+            .add(5.7, 3250 * 0.8);
             // .add(400, 2084)
             // .add(450, 2084) // ROBOTS BY THE C
             // .add(505, 2084) // ROBOTS BY THE C
@@ -335,4 +347,6 @@ public final class Constants {
             .add(400, 1923); */
     
         }
+
+
 }

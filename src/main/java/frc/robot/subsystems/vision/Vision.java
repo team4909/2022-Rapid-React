@@ -4,10 +4,14 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.UsbCamera;
+import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConstants;
@@ -39,10 +43,6 @@ public class Vision extends SubsystemBase {
         m_turnPID = 
             new PIDController(VisionConstants.kVisionPIDGains.kP, VisionConstants.kVisionPIDGains.kI, VisionConstants.kVisionPIDGains.kD);
 
-        // m_distanceFilter = LinearFilter.singlePoleIIR(.1, 0.02);
-        // m_offsetFilter = LinearFilter.singlePoleIIR(.1, 0.02);
- 
-        // BB Try this
         m_distanceFilter = LinearFilter.movingAverage(10);
         m_offsetFilter = LinearFilter.movingAverage(10);
         SmartDashboard.putData(m_turnPID);
@@ -80,8 +80,6 @@ public class Vision extends SubsystemBase {
     public void setLimelightOffset() {
 
         double offset = -this.m_xOffset;
-
-        // Use a PID to convert between a offset yaw degrees to an angular speed for robot rotation
         double angularSpeed = -m_turnPID.calculate(offset, 0);
         SmartDashboard.putNumber("Angular Speed", angularSpeed);
         SmartDashboard.putNumber("Offset", offset);

@@ -23,11 +23,7 @@ import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBallDisrupt;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallDisrupt;
-import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBall;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.*;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeFeeder;
 import frc.robot.subsystems.shooter.Hood;
@@ -101,6 +97,7 @@ public class RobotContainer {
         m_chooser.addOption("Five Ball Auto", new FiveBallAuto());
         m_chooser.addOption("One Ball", new OneBall());
         m_chooser.addOption("Two Ball", new TwoBall());
+        m_chooser.addOption("Two Ball Alt", new TwoBallAlt());
         m_chooser.addOption("One Ball Disrupt", new OneBallDisrupt());
         m_chooser.addOption("Two Ball Disrupt", new TwoBallDisrupt());
         SmartDashboard.putData(m_chooser);
@@ -163,8 +160,6 @@ public class RobotContainer {
         //#endregion
 
     }
-
-    // new Button(m_operatorController::getXButton).whenPressed(m_VisionSubsystem::setPipelineOne);
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -5,7 +5,9 @@ import java.util.function.BooleanSupplier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.utils.InterpolationTable;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -15,6 +17,8 @@ public class AutoShot extends CommandBase {
     private final Shooter m_shooter;
     private final Hood m_hood;
     private final BooleanSupplier m_shooting;
+
+
 
     private static double m_distanceSeen = 0;
 

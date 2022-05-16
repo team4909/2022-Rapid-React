@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.utils.InterpolationTable;
 import frc.robot.utils.LEDS;
 
 import java.util.Map;
@@ -57,6 +59,9 @@ public class Shooter extends SubsystemBase {
     private Timer m_shooterTimer;
     private double m_lastTime;
 
+    private InterpolationTable rpmInterpolationTable = ShooterConstants.kShooterRPMLookupTable;
+
+    private NetworkTableEntry readyToShoot_;
 
     private Shooter() {
         flywheel_ = new TalonFX(13);
@@ -105,7 +110,8 @@ public class Shooter extends SubsystemBase {
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
         leds = LEDS.getInstance();
-
+        readyToShoot_ = Shuffleboard.getTab("Driver Info").add("Ready to Shoot", false).withPosition(8, 0).withSize(5, 6).getEntry();
+        
     }
 
     public static Shooter getInstance() {
@@ -161,8 +167,10 @@ public class Shooter extends SubsystemBase {
             backSpinPID.setReference(acceleratorDemand_, ControlType.kVelocity);
             // backSpinWheel_.set(bangBangControllerBack.calculate(backSpinWheel_.getEncoder().getVelocity(), goalDemand_ * 4));
         } else {
-            flywheel_.set(ControlMode.PercentOutput, goalDemand_);
-            backSpinPID.setReference(goalDemand_, ControlType.kDutyCycle); 
+            // flywheel_.set(ControlMode.PercentOutput, goalDemand_);
+            // backSpinPID.setReference(goalDemand_, ControlType.kDutyCycle); 
+            flywheel_.set(ControlMode.Velocity, 1500);
+            backSpinPID.setReference(1500, ControlType.kVelocity); 
         }
 
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
@@ -174,8 +182,11 @@ public class Shooter extends SubsystemBase {
         SmartDashboard.putNumber("Flywheel Ticks", flywheel_.getSelectedSensorVelocity());
         SmartDashboard.putNumber("Average Speed", movingAverage_ * kFlywheelVelocityConversion);
         
-        SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
-        SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
+        readyToShoot_.setBoolean(
+            SmartDashboard.getNumber("Average Speed", 0) >= SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false
+        );
+        // SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
+        // SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
 
         if (SmartDashboard.getBoolean("Ready", false))
             leds.setLEDsRed();
@@ -207,6 +218,8 @@ public class Shooter extends SubsystemBase {
 
         }
 
+
+
         
 
         public void periodic() {
@@ -228,6 +241,14 @@ public class Shooter extends SubsystemBase {
                 // backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
             }
         }
+    }
+
+    public void setRPMInterpolationTable(InterpolationTable table) {
+        rpmInterpolationTable = table;
+    }
+
+    public InterpolationTable getRPMInterpolationTable() {
+        return rpmInterpolationTable;
     }
 
 }
