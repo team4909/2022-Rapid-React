@@ -47,6 +47,7 @@ import frc.robot.subsystems.drivetrain.commands.auto_routines.FenderShot;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.FiveBallAuto;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBall;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.OneBallDisrupt;
+import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallAlt;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.TwoBallHanger;
 import frc.robot.subsystems.intake.Intake;
 // import frc.robot.subsystems.drivetrain.commands.auto_routines.FourBallTest;
@@ -131,6 +132,7 @@ public class RobotContainer {
     private void configureSendableChooser() {
         // m_chooser.addOption("Three Ball from Bottom of Tarmac", new ThreeBallBottomTarmac());
         m_chooser.addOption("Two Ball from Hanger Side", new TwoBallHanger(135));
+        m_chooser.addOption("Two Ball from Tarmac", new TwoBallAlt());
         m_chooser.addOption("One Ball", new OneBall());
         m_chooser.addOption("Blue One Ball Taxi", new OneBall());
         m_chooser.addOption("Five Ball Auto", new FiveBallAuto());
@@ -201,8 +203,10 @@ public class RobotContainer {
 
         new Trigger(() -> m_driverController.getPOV() == 0).whenActive(() -> m_shooterSubsystem.setRPMInterpolationTable(ShooterConstants.kShooterRPMLookupTable));
         new Trigger(() -> m_driverController.getPOV() == 180).whenActive(() -> m_shooterSubsystem.setRPMInterpolationTable(ShooterConstants.kShooterRPMLookupTableSlow));
+        new Trigger(() -> m_driverController.getPOV() == 270).whenActive(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(1800, false))
+        .andThen(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(50))));
         
-        // new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(});
+        new Trigger(() -> m_operatorController.getPOV() == 90).whenActive(new InstantCommand(() -> climber_.setState(ClimberStates.IDLE)));
         
         /////////////////////////////////
         ///      Operator Buttons     ///
