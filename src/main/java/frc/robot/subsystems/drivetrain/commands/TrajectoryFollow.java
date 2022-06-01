@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
@@ -19,6 +20,7 @@ public class TrajectoryFollow extends CommandBase {
     private String m_pathName;
     private PathPlannerTrajectory m_trajectory = null;
     private double m_timeout = DriveConstants.T_DEFAULT_TIMEOUT;
+    private Timer timer = new Timer();
 
     public TrajectoryFollow() {
         m_pathName = "Stay Still";
@@ -40,6 +42,7 @@ public class TrajectoryFollow extends CommandBase {
     @Override
     public void initialize() {
         System.out.println("Trajectory begun");
+        timer.start();
 
         if (m_trajectory == null) {
             try {
@@ -63,13 +66,18 @@ public class TrajectoryFollow extends CommandBase {
                 thetaController,
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,
                 DrivetrainSubsystem.getInstance())
-                        .withTimeout(m_timeout)
                         .andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)))
                         .schedule();
     }
 
     @Override
+    public boolean isFinished() {
+        return timer.hasElapsed(m_timeout);
+    }
+
+    @Override
     public void end(boolean interrupted) {
+        timer.stop();
         super.end(interrupted);
     }
 

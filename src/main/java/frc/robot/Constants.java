@@ -259,13 +259,13 @@ public final class Constants {
 
         public static InterpolationTable kShooterRPMLookupTable = 
             new InterpolationTable()
-            .add(2.7, 1800)
-            .add(3, 1904)
-            .add(3.5, 2444)
-            .add(4, 2708)
-            .add(4.5, 2950)
-            .add(5, 3112)
-            .add(5.7, 3250);
+            .add(2.7, 1800 * 1.1)
+            .add(3, 1904 *1.1)
+            .add(3.5, 2444*1.1)
+            .add(4, 2708*1.1)
+            .add(4.5, 2950*1.1)
+            .add(5, 3112*1.1)
+            .add(5.7, 3250*1.1);
 
         public static InterpolationTable kShooterRPMLookupTableSlow = 
             new InterpolationTable()
