@@ -40,5 +40,7 @@ public class PathResetOdometry extends CommandBase {
         DrivetrainSubsystem.getInstance().resetOdometry(offsetPose);
         
     }
+
+   public boolean isFinished() { return true; }
     
 }

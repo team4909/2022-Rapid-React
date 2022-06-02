@@ -2,12 +2,8 @@ package frc.lib.bioniclib;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.ser.impl.IndexedStringListSerializer;
-
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.drivetrain.commands.PathResetOdometry;
 import frc.robot.subsystems.intake.IntakeFeeder;
@@ -31,13 +27,13 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
         m_vision = Vision.getInstance();
         m_hood = Hood.getInstance();
         m_shooter = Shooter.getInstance();
-        // addRequirements(m_intake, m_vision, m_hood, m_shooter);
+        addRequirements(m_intake, m_vision, m_hood, m_shooter);
 
         m_selectedTrajectory = 0;
         trajectories = addTrajectories();
         addCommands(
-            // trajectories != null ? new PathResetOdometry(trajectories.get(0).getFirst()) : null,
-            // new InstantCommand(m_intake::resetBallCount, m_intake)
+            !trajectories.isEmpty() ? new PathResetOdometry(trajectories.get(0).getFirst()) : null,
+            new InstantCommand(m_intake::resetBallCount, m_intake)
         );
 
     }
@@ -46,25 +42,16 @@ public abstract class AutoRoutineBase extends SequentialCommandGroup {
 
     //@TODO Try and write a unit test for this
     protected Pair<String, Double> getNextTrajectory() {
-        System.out.println("\n\n\n\n\nAWOIEHOIAW " + m_selectedTrajectory);
         try { trajectory = getTrajectory(m_selectedTrajectory++); } 
         catch (IndexOutOfBoundsException e) { 
             trajectory = getTrajectory(trajectories.size() - 1); 
             e.printStackTrace();
         }
-        SmartDashboard.putString("currTraj", trajectory.getFirst());
         return trajectory;
     }
 
-    protected Pair<String, Double> getTrajectory(int index) {
-        Pair<String, Double> t = null;
-        try {
-            t = trajectories.get(index);
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
-            System.out.println(index);
-        }
-        return t;
+    private Pair<String, Double> getTrajectory(int index) {
+        return trajectories.get(index);
     }
     
 }
