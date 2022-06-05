@@ -78,7 +78,9 @@
       "/LiveWindow/Vision": "Subsystem",
       "/Shuffleboard/Debug/Hood/Hood": "Subsystem",
       "/Shuffleboard/Debug/Hood/InstantCommand": "Command",
+      "/SmartDashboard/AutoClimb": "Command",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/FiveBallAuto": "Command",
       "/SmartDashboard/PIDController[1]": "PIDController",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     }

@@ -4,12 +4,10 @@ import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.utils.InterpolationTable;
 import frc.robot.Constants;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.vision.Vision;
 
 public class AutoShot extends CommandBase {
 
@@ -43,11 +41,12 @@ public class AutoShot extends CommandBase {
         m_vision.setLimelightOffset();
 
         double interpolatedAngle = Constants.ShooterConstants.kHoodAngleLookupTable.get(m_distanceSeen);
-        double interpolatedRPM = Constants.ShooterConstants.kShooterRPMLookupTable.get(m_distanceSeen);
+        double interpolatedRPM = m_shooter.getRPMInterpolationTable().get(m_distanceSeen);
 
         if (m_distanceSeen == 0) {
-            m_hood.setHoodAngle(Constants.kFenderShotHoodAngle);
-            m_shooter.setGoalStatic(Constants.kFenderShotVelocity, false);
+            // When no target is seen, shoot like it's 3m away (wall to goal distance)
+            m_hood.setHoodAngle(53.22);
+            m_shooter.setGoalStatic(1904 * 1.1, false);
         } else {
             m_hood.setHoodAngle(interpolatedAngle);
             m_shooter.setGoalStatic(interpolatedRPM, false);

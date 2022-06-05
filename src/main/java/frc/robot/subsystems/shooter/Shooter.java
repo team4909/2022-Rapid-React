@@ -1,15 +1,16 @@
 package frc.robot.subsystems.shooter;
 
+import java.util.Map;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.filter.MedianFilter;
@@ -26,9 +27,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.utils.InterpolationTable;
-import frc.robot.utils.LEDS;
-
-import java.util.Map;
 
 public class Shooter extends SubsystemBase {
 
@@ -42,7 +40,6 @@ public class Shooter extends SubsystemBase {
     private final SparkMaxPIDController backSpinPID;
     private final SimpleMotorFeedforward m_flywheelFF;
     private final SimpleMotorFeedforward m_backspinFF;
-    private final LEDS leds;
 
     // Constants
     private final static int kTimeoutMs = 100;
@@ -108,8 +105,6 @@ public class Shooter extends SubsystemBase {
 
         m_shooterDisplay = new Shooter.ShooterDisplay();
         movingFilter_ = new MedianFilter(20);
-        movingAverage_ = 0;
-        leds = LEDS.getInstance();
         readyToShoot_ = Shuffleboard.getTab("Driver Info").add("Ready to Shoot", false).withPosition(8, 0).withSize(5, 6).getEntry();
         
     }
@@ -173,25 +168,20 @@ public class Shooter extends SubsystemBase {
             backSpinPID.setReference(1500, ControlType.kVelocity); 
         }
 
-        movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
-        if (m_shooterDebug) m_shooterDisplay.periodic();
+        // movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
+        // if (m_shooterDebug) m_shooterDisplay.periodic();
 
-        SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
-        SmartDashboard.putNumber("Shooter goal demand", goalDemand_);
-        SmartDashboard.putNumber("Shooter speed", goalDemand_ / kFlywheelVelocityConversion); // ticks * rpm / ticks
-        SmartDashboard.putNumber("Flywheel Ticks", flywheel_.getSelectedSensorVelocity());
-        SmartDashboard.putNumber("Average Speed", movingAverage_ * kFlywheelVelocityConversion);
+        // SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
+        // SmartDashboard.putNumber("Shooter goal demand", goalDemand_);
+        // SmartDashboard.putNumber("Shooter speed", goalDemand_ / kFlywheelVelocityConversion); // ticks * rpm / ticks
+        // SmartDashboard.putNumber("Flywheel Ticks", flywheel_.getSelectedSensorVelocity());
+        // SmartDashboard.putNumber("Average Speed", movingAverage_ * kFlywheelVelocityConversion);
         
-        readyToShoot_.setBoolean(
-            SmartDashboard.getNumber("Average Speed", 0) >= SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false
-        );
+        // readyToShoot_.setBoolean(
+        //     SmartDashboard.getNumber("Average Speed", 0) >= SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false
+        // );
         // SmartDashboard.putBoolean("Ready", SmartDashboard.getNumber("Average Speed", 0) >= 
         // SmartDashboard.getNumber("Interpolated RPM", Integer.MAX_VALUE) - 200 ? true : false);
-
-        if (SmartDashboard.getBoolean("Ready", false))
-            leds.setLEDsRed();
-        else
-            leds.setLEDsGreen();
     }
 
     private class ShooterDisplay {

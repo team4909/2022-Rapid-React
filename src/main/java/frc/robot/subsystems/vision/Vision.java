@@ -2,6 +2,7 @@ package frc.robot.subsystems.vision;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+import org.photonvision.SimVisionSystem;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.cameraserver.CameraServer;
@@ -9,6 +10,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -38,6 +40,8 @@ public class Vision extends SubsystemBase {
     private LinearFilter m_distanceFilter;
     private LinearFilter m_offsetFilter;
 
+    // private SimVisionSystem simVision;
+
     private Vision() {
         limelight = new PhotonCamera(NetworkTableInstance.getDefault(), "Limelight");
         m_turnPID = 
@@ -46,6 +50,17 @@ public class Vision extends SubsystemBase {
         m_distanceFilter = LinearFilter.movingAverage(10);
         m_offsetFilter = LinearFilter.movingAverage(10);
         SmartDashboard.putData(m_turnPID);
+
+        // simVision = new SimVisionSystem(
+        //     "Limelight",
+        //     0,
+        //     0, 
+        //     new Transform2d(), 
+        //     0, 
+        //     0, 
+        //     0, 
+        //     0, 
+        //     0);
     }
 
 

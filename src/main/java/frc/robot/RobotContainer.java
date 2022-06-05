@@ -19,8 +19,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
+import frc.robot.subsystems.climber.commands.AutoClimb;
 import frc.robot.subsystems.drivetrain.DrivetrainSubsystem;
 import frc.robot.subsystems.drivetrain.commands.DefaultDriveCommand;
 import frc.robot.subsystems.drivetrain.commands.auto_routines.*;
@@ -49,8 +51,6 @@ public class RobotContainer {
     
     private final Vision m_vision = Vision.getInstance();
 
-    private final PowerDistribution PDH;
-
     private final Hood m_hoodSubsystem  = Hood.getInstance();
     private final Shooter m_shooterSubsystem = Shooter.getInstance();
     private final IntakeFeeder m_intakeSubsystem = IntakeFeeder.getInstance();
@@ -69,10 +69,8 @@ public class RobotContainer {
     
     // Create the driver tab
     Shuffleboard.getTab("Driver");
-    PDH = new PowerDistribution(1, ModuleType.kRev);
-    PDH.clearStickyFaults(); 
-    LiveWindow.disableTelemetry(PDH);
-    System.out.println(PDH.getCurrent(1));
+
+    new AutoClimb();
 
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
@@ -131,6 +129,9 @@ public class RobotContainer {
             .whenActive(new AutoShot(m_vision, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
             .whenInactive(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
                 .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0, false))));
+
+        new Trigger(() -> m_driverController.getPOV() == 0).whenActive(() -> m_shooterSubsystem.setRPMInterpolationTable(ShooterConstants.kShooterRPMLookupTable));
+        new Trigger(() -> m_driverController.getPOV() == 180).whenActive(() -> m_shooterSubsystem.setRPMInterpolationTable(ShooterConstants.kShooterRPMLookupTableFaster));
         //#endregion
 
         //#region Operator Controls
