@@ -97,7 +97,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private double preciseModeScale = 1;
 
-    private NetworkTableEntry odometryEntry;
 
     // ChassisSpeeds object to supply the drivetrain with (X, Y, Rotation)
     private ChassisSpeeds m_chassisSpeeds;
@@ -113,7 +112,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         .withSize(2, 2)
         .withProperties(Map.of("Label position", "BOTTOM"))
         .withPosition(4, 1);
-        odometryEntry = m_driverTab.add("Odometry", "not found").getEntry();
 
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
@@ -250,7 +248,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        // odometryEntry.setString(getCurrentPose().toString());
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         

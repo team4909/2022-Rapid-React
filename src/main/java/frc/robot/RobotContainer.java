@@ -98,6 +98,7 @@ public class RobotContainer {
         m_chooser.addOption("Two Ball Alt", new TwoBallAlt());
         m_chooser.addOption("One Ball Disrupt", new OneBallDisrupt());
         m_chooser.addOption("Two Ball Disrupt", new TwoBallDisrupt());
+        m_chooser.addOption("BC Three Ball Disrupt", new BCThreeBall());
         SmartDashboard.putData(m_chooser);
     }
 
