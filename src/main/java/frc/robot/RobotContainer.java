@@ -70,7 +70,7 @@ public class RobotContainer {
     // Create the driver tab
     Shuffleboard.getTab("Driver");
 
-    new AutoClimb();
+    LiveWindow.disableAllTelemetry();
 
     // Set up the default command for the drivetrain.
     // The controls are for field-oriented driving:
@@ -141,6 +141,8 @@ public class RobotContainer {
         new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
         .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(Constants.kFenderShotHoodAngle))));
         new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
+        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
+        new Trigger(() -> m_operatorController.getPOV() == 0).whenActive(new AutoClimb());
 
         new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
 
@@ -152,13 +154,12 @@ public class RobotContainer {
             .whenActive(m_intakeSubsystem::reverseIntake)
             .whenInactive(m_intakeSubsystem::stopIntake);
 
-        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
-
         new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
         new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));
         new Button(m_operatorController::getLeftBumper).whenPressed(() -> climber_.setState(ClimberStates.RETRACTION));
         new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.PREPARE_HIGH));
         new Button(m_operatorController::getRightBumper).whenPressed(() -> climber_.setState(ClimberStates.HIGHER_CLIMB));
+        
         //#endregion
 
     }
