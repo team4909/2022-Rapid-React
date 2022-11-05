@@ -50,22 +50,22 @@ public class TrajectoryFollow extends CommandBase {
         }
         DrivetrainSubsystem.getInstance().m_field.getObject("traj").setTrajectory(m_trajectory);
 
-        ProfiledPIDController thetaController = new ProfiledPIDController(6, 0, 0,
-                new TrapezoidProfile.Constraints(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                        Math.pow(DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND, 2)));
-        thetaController.enableContinuousInput(-Math.PI, Math.PI);
+        new PPSwerveControllerCommand(
+            m_trajectory,
+            DrivetrainSubsystem.getInstance()::getCurrentPose,
+            DrivetrainSubsystem.getInstance().getKinematics(),
+            new PIDController(6, 0, 0),
+            new PIDController(6, 0, 0),
+            new PIDController(6, 0, 0),
+            DrivetrainSubsystem.getInstance()::actuateModulesAuto,
+            DrivetrainSubsystem.getInstance()
+        )
+        .withTimeout(m_timeout)
+        .andThen(
+            () -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0))
+        )
+        .schedule();
 
-        new PPSwerveControllerCommand(m_trajectory,
-                DrivetrainSubsystem.getInstance()::getCurrentPose,
-                DrivetrainSubsystem.getInstance().getKinematics(),
-                new PIDController(6, 0, 0),
-                new PIDController(6, 0, 0),
-                thetaController,
-                DrivetrainSubsystem.getInstance()::actuateModulesAuto,
-                DrivetrainSubsystem.getInstance())
-                        .withTimeout(m_timeout)
-                        .andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)))
-                        .schedule();
     }
 
     @Override
