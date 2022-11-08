@@ -10,14 +10,15 @@ import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.Climber.ClimberStates;
@@ -31,7 +32,6 @@ import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.shooter.commands.AutoShot;
 import frc.robot.subsystems.vision.Vision;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -41,8 +41,8 @@ import frc.robot.subsystems.vision.Vision;
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
 
-    private final XboxController m_driverController = new XboxController(0);
-    private final XboxController m_operatorController = new XboxController(1);
+    private final CommandXboxController m_driverController = new CommandXboxController(0);
+    private final CommandXboxController m_operatorController = new CommandXboxController(1);
 
     private final DrivetrainSubsystem m_drivetrainSubsystem = DrivetrainSubsystem.getInstance();
     private final Climber climber_ = Climber.getInstance();
@@ -57,6 +57,7 @@ public class RobotContainer {
     private final Intake m_intake = Intake.getInstance();
 
     private final SendableChooser<Command> m_chooser = new SendableChooser<>();
+
  
   /**
    * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -71,7 +72,6 @@ public class RobotContainer {
     Shuffleboard.getTab("Driver");
     PDH = new PowerDistribution(1, ModuleType.kRev);
     PDH.clearStickyFaults(); 
-    LiveWindow.disableTelemetry(PDH);
     System.out.println(PDH.getCurrent(1));
 
     // Set up the default command for the drivetrain.
@@ -110,11 +110,8 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-
         //#region Driver Controls
-        new Button(m_driverController::getBackButton).whenPressed(m_drivetrainSubsystem::zeroGyroscope);
-        new Button(m_driverController::getStartButton);
-
+        new EventLoop().bind(m_driverController.back(), m_drivetrainSubsystem::zeroGyroscope);
         new Button(m_driverController::getRightBumper)
                     .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
                     .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
@@ -158,7 +155,6 @@ public class RobotContainer {
         new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.PREPARE_HIGH));
         new Button(m_operatorController::getRightBumper).whenPressed(() -> climber_.setState(ClimberStates.HIGHER_CLIMB));
         //#endregion
-
     }
 
   /**
