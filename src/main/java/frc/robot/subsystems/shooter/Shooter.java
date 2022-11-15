@@ -38,7 +38,7 @@ public class Shooter extends SubsystemBase {
 
     private final TalonFX flywheel_;
     private final CANSparkMax backSpinWheel_;
-    private final Shooter.ShooterDisplay m_shooterDisplay;
+    // private final Shooter.ShooterDisplay m_shooterDisplay;
     private final SparkMaxPIDController backSpinPID;
     private final LEDS leds;
 
@@ -101,7 +101,7 @@ public class Shooter extends SubsystemBase {
         backSpinWheel_.setSmartCurrentLimit(30);
 
 
-        m_shooterDisplay = new Shooter.ShooterDisplay();
+        // m_shooterDisplay = new Shooter.ShooterDisplay();
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
         leds = LEDS.getInstance();
@@ -168,7 +168,7 @@ public class Shooter extends SubsystemBase {
         }
 
         movingAverage_ = movingFilter_.calculate(flywheel_.getSelectedSensorVelocity());
-        if (m_shooterDebug) m_shooterDisplay.periodic();
+        // if (m_shooterDebug) m_shooterDisplay.periodic();
 
         SmartDashboard.putBoolean("running open loop", runningOpenLoop_);
         SmartDashboard.putNumber("Shooter goal demand", goalDemand_);
@@ -188,54 +188,54 @@ public class Shooter extends SubsystemBase {
             leds.setLEDsGreen();
     }
 
-    private class ShooterDisplay {
-        private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
-        private ShuffleboardLayout m_layout = m_tab.getLayout("Shooter", BuiltInLayouts.kGrid)
-        .withPosition(2, 0).withSize(6, 6);
-        private NetworkTableEntry m_backSpeed, m_backSetpointSpeed, m_backSpinP, m_backSpinF,
-                                  m_flywheelSpeed, m_flywheelSetpointSpeed, m_flywheelP, m_flywheelF,
-                                  m_setters;
+    // private class ShooterDisplay {
+    //     private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
+    //     private ShuffleboardLayout m_layout = m_tab.getLayout("Shooter", BuiltInLayouts.kGrid)
+    //     .withPosition(2, 0).withSize(6, 6);
+    //     private NetworkTableEntry m_backSpeed, m_backSetpointSpeed, m_backSpinP, m_backSpinF,
+    //                               m_flywheelSpeed, m_flywheelSetpointSpeed, m_flywheelP, m_flywheelF,
+    //                               m_setters;
 
-        public ShooterDisplay() {
-            m_backSpeed = m_layout.add("Backspin speed", 0).withWidget(BuiltInWidgets.kDial).getEntry();
-            m_backSetpointSpeed = m_layout.add("Backspin Setpoint speed", 0d).withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
-            m_backSpinP = m_layout.add("P backspin", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_backSpinF = m_layout.add("FF backspin", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_flywheelSpeed = m_layout.add("Flywheel RPM", 0).withWidget(BuiltInWidgets.kDial).getEntry();
-            m_flywheelSetpointSpeed = m_layout.add("Flywheel Setpoint RPM", 0d).withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
+    //     public ShooterDisplay() {
+    //         m_backSpeed = m_layout.add("Backspin speed", 0).withWidget(BuiltInWidgets.kDial).getEntry();
+    //         m_backSetpointSpeed = m_layout.add("Backspin Setpoint speed", 0d).withWidget(BuiltInWidgets.kNumberSlider)
+    //             .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
+    //         m_backSpinP = m_layout.add("P backspin", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_backSpinF = m_layout.add("FF backspin", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_flywheelSpeed = m_layout.add("Flywheel RPM", 0).withWidget(BuiltInWidgets.kDial).getEntry();
+    //         m_flywheelSetpointSpeed = m_layout.add("Flywheel Setpoint RPM", 0d).withWidget(BuiltInWidgets.kNumberSlider)
+    //             .withProperties(Map.of("Min", 0, "Max", 6000)).getEntry();
             
-            m_flywheelP = m_layout.add("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
-            m_flywheelF = m_layout.add("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    //         m_flywheelP = m_layout.add("P flywheel", Constants.kShooterP).withWidget(BuiltInWidgets.kTextView).getEntry(); 
+    //         m_flywheelF = m_layout.add("FF flywheel", Constants.kShooterFF).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
 
-        }
+    //     }
 
 
 
         
 
-        public void periodic() {
-            m_backSpeed.setDouble(backSpinWheel_.getEncoder().getVelocity());
-            // This should show it as actual rpm 
-            m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
+    //     public void periodic() {
+    //         m_backSpeed.setDouble(backSpinWheel_.getEncoder().getVelocity());
+    //         // This should show it as actual rpm 
+    //         m_flywheelSpeed.setDouble(flywheel_.getSelectedSensorVelocity() * kFlywheelVelocityConversion);
             
-            if (m_setters.getBoolean(false)) {
-                setGoalStatic(m_flywheelSetpointSpeed.getDouble(0), false);
-                // runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
-                // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
+    //         if (m_setters.getBoolean(false)) {
+    //             setGoalStatic(m_flywheelSetpointSpeed.getDouble(0), false);
+    //             // runShooter(m_flywheelSetpointSpeed.getDouble(0)).schedule();
+    //             // flywheel_.set(ControlMode.Velocity, m_flywheelSetpointSpeed.getDouble(0));
 
-                // flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
-                // flywheel_.config_kF(0, m_flywheelF.getDouble(0));
+    //             // flywheel_.config_kP(0, m_flywheelP.getDouble(1)); //TODO add p as constant
+    //             // flywheel_.config_kF(0, m_flywheelF.getDouble(0));
                 
 
-                // backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
-                // backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
-                // backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
-            }
-        }
-    }
+    //             // backSpinPID.setReference(m_backSetpointSpeed.getDouble(0), ControlType.kVelocity);
+    //             // backSpinPID.setP(m_backSpinP.getDouble(0), 0); //TODO add p as constant   
+    //             // backSpinPID.setFF(m_backSpinF.getDouble(0), 0);
+    //         }
+    //     }
+    // }
 
     public void setRPMInterpolationTable(InterpolationTable table) {
         rpmInterpolationTable = table;

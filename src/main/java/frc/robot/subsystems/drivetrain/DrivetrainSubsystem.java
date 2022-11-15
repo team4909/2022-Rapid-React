@@ -16,6 +16,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Timer;
@@ -113,7 +114,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         .withSize(2, 2)
         .withProperties(Map.of("Label position", "BOTTOM"))
         .withPosition(4, 1);
-        odometryEntry = m_driverTab.add("Odometry", "not found").getEntry();
 
         m_chassisSpeeds  = new ChassisSpeeds(0.0, 0.0, 0.0);
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation());
@@ -252,14 +252,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void periodic() {
         odometryEntry.setString(getCurrentPose().toString());
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
-        
-        // Shuffleboard.getTab("Drivetrain").add("fl reading raw", m_frontLeftCanCoder.getAbsolutePosition());
+        SwerveModulePosition[] positions = new SwerveModulePosition[4];
+        for (int state = 0; state < states.length; state++)
+            positions[state] = new SwerveModulePosition(states[state].speedMetersPerSecond, states[state].angle);
 
-        // System.out.println(getGyroscopeRotation());
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY_METERS_PER_SECOND); 
         SmartDashboard.putNumber("Gyro", -m_pigeon.getYaw());
         m_field.setRobotPose(m_odometry.getPoseMeters());
-        SmartDashboard.putNumber("roll", this.getGyroRoll());
         
         if (!lockInPlace_) {
             m_frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
@@ -277,7 +276,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         states[1].speedMetersPerSecond = Math.abs(m_frontRightModule.getDriveVelocity());
         states[2].speedMetersPerSecond = Math.abs(m_backLeftModule.getDriveVelocity());
         states[3].speedMetersPerSecond = Math.abs(m_backRightModule.getDriveVelocity());
-        m_odometry.update(getGyroscopeRotation(), states);
+        m_odometry.update(getGyroscopeRotation(), positions);
     } 
 
     public SwerveDriveKinematics getKinematics(){

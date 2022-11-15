@@ -42,13 +42,13 @@ public class Hood extends SubsystemBase {
 
     private final CANSparkMax m_hood;
     private final SparkMaxPIDController m_hoodController;
-    private final Hood.HoodDisplay m_hoodDisplay;
+    // private final Hood.HoodDisplay m_hoodDisplay;
 
     private Hood() {
         this.setName("Hood");
         m_hood = new CANSparkMax(HOOD_MOTOR_ID, MotorType.kBrushless);
         m_hoodController = m_hood.getPIDController();
-        m_hoodDisplay = this.new HoodDisplay();
+        // m_hoodDisplay = this.new HoodDisplay();
 
         //#region Motor Config
         m_hood.restoreFactoryDefaults();
@@ -70,7 +70,7 @@ public class Hood extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (m_hoodDebug) m_hoodDisplay.periodic();
+        // if (m_hoodDebug) m_hoodDisplay.periodic();
         
         SmartDashboard.putNumber("HOod", m_hood.getEncoder().getVelocity());
     }
@@ -96,10 +96,6 @@ public class Hood extends SubsystemBase {
     public void setHoodAngle(double deg) {
         // m_hoodController.setReference(mapHoodAngle(deg, false), ControlType.kPosition); //TODO ADD MAPPING
         m_hoodController.setReference(deg, CANSparkMax.ControlType.kPosition);
-    }
-
-    private double getHoodMotorCurrent() {
-        return m_hood.getOutputCurrent();
     }
 
     /**
@@ -139,42 +135,42 @@ public class Hood extends SubsystemBase {
     // }
 
     // Telemetry Class
-    private class HoodDisplay {
-        private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
-        private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList)
-        .withPosition(0, 0)
-        .withSize(2, 6);
-        private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry, m_setters;
+    // private class HoodDisplay {
+    //     private ShuffleboardTab m_tab = Shuffleboard.getTab("Debug");
+    //     private ShuffleboardLayout m_layout = m_tab.getLayout("Hood", BuiltInLayouts.kList)
+    //     .withPosition(0, 0)
+    //     .withSize(2, 6);
+    //     private NetworkTableEntry m_current, m_posAngleEntry, m_posTicksEntry, m_setpointEntry, m_hoodPEntry, m_hoodDEntry, m_hoodFFEntry, m_setters;
 
-        public HoodDisplay() {
-            m_layout.add(Hood.this);
+    //     public HoodDisplay() {
+    //         m_layout.add(Hood.this);
 
-            m_current = m_layout.add("Current Amps", 0).withWidget(BuiltInWidgets.kDial).getEntry();
-            m_posAngleEntry = m_layout.add("Position (Angle)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_posTicksEntry = m_layout.add("Position (Ticks)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_current = m_layout.add("Current Amps", 0).withWidget(BuiltInWidgets.kDial).getEntry();
+    //         m_posAngleEntry = m_layout.add("Position (Angle)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_posTicksEntry = m_layout.add("Position (Ticks)", 0).withWidget(BuiltInWidgets.kTextView).getEntry();
             
-            m_setpointEntry =  m_layout.add("Setpoint", 0d).withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("Min", 0, "Max", 60)).getEntry();
-            m_hoodPEntry = m_layout.addPersistent("P", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_hoodDEntry = m_layout.addPersistent("D", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_hoodFFEntry = m_layout.addPersistent("FF", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
-            m_layout.add(new InstantCommand(() -> Hood.this.zeroHood()));
-            m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
-        }
+    //         m_setpointEntry =  m_layout.add("Setpoint", 0d).withWidget(BuiltInWidgets.kNumberSlider)
+    //             .withProperties(Map.of("Min", 0, "Max", 60)).getEntry();
+    //         m_hoodPEntry = m_layout.addPersistent("P", 1d).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_hoodDEntry = m_layout.addPersistent("D", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_hoodFFEntry = m_layout.addPersistent("FF", 0d).withWidget(BuiltInWidgets.kTextView).getEntry();
+    //         m_layout.add(new InstantCommand(() -> Hood.this.zeroHood()));
+    //         m_setters = m_layout.add("Use Debug Values", false).withWidget(BuiltInWidgets.kToggleButton).getEntry();
+    //     }
 
-        public void periodic() {
+    //     public void periodic() {
 
-            m_current.setDouble(Hood.this.getHoodMotorCurrent());
-            m_posAngleEntry.setDouble(Hood.this.getHoodAngle());
-            m_posTicksEntry.setDouble(Hood.this.m_hood.getEncoder().getPosition());
-            if (m_setters.getBoolean(false)) {
-                setHoodAngle(m_setpointEntry.getDouble(0));
-                m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
-                m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);
-                m_hoodController.setFF(m_hoodFFEntry.getDouble(kHoodFF), 0);
-            }
+    //         m_current.setDouble(Hood.this.getHoodMotorCurrent());
+    //         m_posAngleEntry.setDouble(Hood.this.getHoodAngle());
+    //         m_posTicksEntry.setDouble(Hood.this.m_hood.getEncoder().getPosition());
+    //         if (m_setters.getBoolean(false)) {
+    //             setHoodAngle(m_setpointEntry.getDouble(0));
+    //             m_hoodController.setP(m_hoodPEntry.getDouble(kHoodP), 0);   
+    //             m_hoodController.setD(m_hoodDEntry.getDouble(kHoodD), 0);
+    //             m_hoodController.setFF(m_hoodFFEntry.getDouble(kHoodFF), 0);
+    //         }
 
-        }
+    //     }
         
-    }
+    // }
 }
