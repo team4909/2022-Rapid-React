@@ -40,8 +40,6 @@ public class Shooter extends SubsystemBase {
     private final CANSparkMax backSpinWheel_;
     private final Shooter.ShooterDisplay m_shooterDisplay;
     private final SparkMaxPIDController backSpinPID;
-    private final SimpleMotorFeedforward m_flywheelFF;
-    private final SimpleMotorFeedforward m_backspinFF;
     private final LEDS leds;
 
     // Constants
@@ -56,8 +54,7 @@ public class Shooter extends SubsystemBase {
 
     private MedianFilter movingFilter_;
     private static double movingAverage_;
-    private Timer m_shooterTimer;
-    private double m_lastTime;
+
 
     private InterpolationTable rpmInterpolationTable = ShooterConstants.kShooterRPMLookupTable;
 
@@ -66,8 +63,6 @@ public class Shooter extends SubsystemBase {
     private Shooter() {
         flywheel_ = new TalonFX(13);
         backSpinWheel_ = new CANSparkMax(24, MotorType.kBrushless);
-        m_flywheelFF = Constants.ShooterConstants.kFlywheelFFConstraints;
-        m_backspinFF = Constants.ShooterConstants.kBackspinFFConstraints;
 
         // General Motor Configuration for the TalonFXs
         flywheel_.clearStickyFaults(kTimeoutMs);
@@ -110,8 +105,7 @@ public class Shooter extends SubsystemBase {
         movingFilter_ = new MedianFilter(20);
         movingAverage_ = 0;
         leds = LEDS.getInstance();
-        readyToShoot_ = Shuffleboard.getTab("Driver Info").add("Ready to Shoot", false).withPosition(8, 0).withSize(5, 6).getEntry();
-        
+           
     }
 
     public static Shooter getInstance() {

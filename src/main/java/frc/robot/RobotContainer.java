@@ -111,49 +111,51 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         //#region Driver Controls
-        new EventLoop().bind(m_driverController.back(), m_drivetrainSubsystem::zeroGyroscope);
-        new Button(m_driverController::getRightBumper)
-                    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
-                    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
+        m_driverController.back().onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope, m_drivetrainSubsystem));
+        
+        //TODO this should be .whileTrue
+        m_driverController.rightBumper()
+            .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(true)))
+            .onFalse(new InstantCommand(() -> m_drivetrainSubsystem.setPreciseMode(false)));
 
-        new Button(m_driverController::getLeftBumper)
-                    .whenHeld(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
-                    .whenReleased(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
+        m_driverController.leftBumper()
+            .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(true)))
+            .onFalse(new InstantCommand(() -> m_drivetrainSubsystem.setLockInPlace(false)));
 
-        new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis()) > 0.7))
-                    .whenActive(() -> { m_intakeSubsystem.shoot(); } )
-                    .whenInactive(() -> { m_intakeSubsystem.stopIntake();} );
+        new Trigger(() -> (Math.abs(m_driverController.getRightTriggerAxis())) > 0.7)
+                    .onTrue(new InstantCommand(m_intakeSubsystem::shoot))
+                    .onFalse(new InstantCommand(m_intakeSubsystem::stopIntake));
 
         new Trigger(() -> (Math.abs(m_driverController.getLeftTriggerAxis())) > 0.7)
-            .whenActive(new AutoShot(m_vision, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
-            .whenInactive(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
+            .onTrue(new AutoShot(m_vision, m_shooterSubsystem, m_hoodSubsystem, () -> m_driverController.getRightTriggerAxis() > 0.7))
+            .onFalse(new InstantCommand(() -> m_vision.setLimelightOffset(0), m_vision)
                 .andThen(new InstantCommand(() -> m_shooterSubsystem.setGoalStatic(0.0, false))));
         //#endregion
 
         //#region Operator Controls
-        new Button(m_operatorController::getXButton).whenPressed(m_shooterSubsystem.setLowGoalCommand(Constants.kFenderLowShotVelocity)
-        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(21))));
-        new Button(m_operatorController::getAButton).whenPressed(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
-        .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(Constants.kFenderShotHoodAngle))));
-        new Trigger(() -> m_operatorController.getPOV() == 180).whenActive(() -> {m_hoodSubsystem.zeroHood();});
+        m_operatorController.x().onTrue(m_shooterSubsystem.setLowGoalCommand(Constants.kFenderLowShotVelocity)
+            .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(21))));
+        m_operatorController.a().onTrue(m_shooterSubsystem.setGoalCommand(Constants.kFenderShotVelocity)
+            .alongWith(new InstantCommand(() -> m_hoodSubsystem.setHoodAngle(Constants.kFenderShotHoodAngle))));
 
-        new Button(m_operatorController::getBButton).whenPressed(() -> { m_shooterSubsystem.stop(); } );
+        m_operatorController.b().onTrue(new InstantCommand(m_shooterSubsystem::stop));
 
-        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis()) > 0.7))
-            .whenActive(m_intakeSubsystem::intake)
-            .whenInactive(m_intakeSubsystem::stopIntake);
+        new Trigger(() -> (Math.abs(m_operatorController.getRightTriggerAxis())) > 0.7)
+            .onTrue(new InstantCommand(m_intakeSubsystem::intake))
+            .onFalse(new InstantCommand(m_intakeSubsystem::stopIntake));
 
-        new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis()) > 0.7))
-            .whenActive(m_intakeSubsystem::reverseIntake)
-            .whenInactive(m_intakeSubsystem::stopIntake);
+        new Trigger(() -> (Math.abs(m_operatorController.getLeftTriggerAxis())) > 0.7)
+            .onTrue(new InstantCommand(m_intakeSubsystem::reverseIntake))
+            .onFalse(new InstantCommand(m_intakeSubsystem::stopIntake));
+     
+        m_operatorController.pov(180).onTrue(new InstantCommand(m_hoodSubsystem::zeroHood));
+        m_operatorController.pov(270).onTrue(new InstantCommand(m_intake::intakeZero));
 
-        new Trigger(() -> m_operatorController.getPOV() == 270).whenActive(m_intake::intakeZero);
-
-        new Button(m_operatorController::getBackButton).whenPressed(() -> climber_.setState(ClimberStates.CALIBRATE));
-        new Button(m_operatorController::getStartButton).whenPressed(() -> climber_.setState(ClimberStates.MID_ALIGN));
-        new Button(m_operatorController::getLeftBumper).whenPressed(() -> climber_.setState(ClimberStates.RETRACTION));
-        new Button(m_operatorController::getYButton).whenPressed(() -> climber_.setState(ClimberStates.PREPARE_HIGH));
-        new Button(m_operatorController::getRightBumper).whenPressed(() -> climber_.setState(ClimberStates.HIGHER_CLIMB));
+        m_operatorController.back().onTrue(new InstantCommand(() -> climber_.setState(ClimberStates.CALIBRATE), climber_));
+        m_operatorController.start().onTrue(new InstantCommand(() -> climber_.setState(ClimberStates.MID_ALIGN), climber_));
+        m_operatorController.leftBumper().onTrue(new InstantCommand(() -> climber_.setState(ClimberStates.RETRACTION), climber_));
+        m_operatorController.y().onTrue(new InstantCommand(() -> climber_.setState(ClimberStates.PREPARE_HIGH), climber_));
+        m_operatorController.rightBumper().onTrue(new InstantCommand(() -> climber_.setState(ClimberStates.HIGHER_CLIMB), climber_));
         //#endregion
     }
 
