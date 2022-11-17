@@ -67,18 +67,14 @@ public class TrajectoryFollow extends CommandBase {
                 DrivetrainSubsystem.getInstance()::actuateModulesAuto,
                 DrivetrainSubsystem.getInstance())
                         .andThen(() -> DrivetrainSubsystem.getInstance().drive(new ChassisSpeeds(0.0, 0.0, 0.0)))
-                        .schedule();
     }
 
-    @Override
     public boolean isFinished() {
         return timer.hasElapsed(m_timeout);
     }
 
-    @Override
     public void end(boolean interrupted) {
         timer.stop();
-        super.end(interrupted);
     }
 
 }
