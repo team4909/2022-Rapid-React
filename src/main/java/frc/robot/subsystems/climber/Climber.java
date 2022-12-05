@@ -154,19 +154,6 @@ public class Climber extends SubsystemBase {
         m_leftPivot.config_IntegralZone(0, (int) (200 / Constants.Climber.kClimberVelocityConversion));
         //#endregion
 
-        //#region Shuffleboard Shennaigans
-        climberLayout = Shuffleboard.getTab("Driver")
-            .getLayout("Climber", BuiltInLayouts.kList)
-            .withSize(2, 2)
-            .withProperties(Map.of("Label position", "TOP"))
-            .withPosition(1,1);
-
-        stateEntry = climberLayout.add("Climber State", "State Not Found").getEntry();
-        pivotPos = climberLayout.add("Pivot Position", "Position Not Found").getEntry();
-        elevatorPos = climberLayout.add("Elevator Position", "Position Not Found").getEntry();
-        pivotVoltage = climberLayout.add("Pivot Voltage", "Voltage Not Found").getEntry();
-        //#endregion
-
         m_state = m_lastState = ClimberStates.IDLE;
 
     }
